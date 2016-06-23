@@ -59,4 +59,4 @@ function _u($route, $values=array()) {
 	echo u($route, $values);
 }
 
-Route::suggestResolver('HTTPRoute');
+Route::suggestResolver('Orpheus\InputController\HTTPController\HTTPRoute');
