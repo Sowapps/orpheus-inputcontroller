@@ -5,8 +5,9 @@ use Orpheus\Exception\NotFoundException;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\UserException;
 use Orpheus\Config\YAML\YAML;
+use Orpheus\Core\Route;
 
-abstract class ControllerRoute {
+abstract class ControllerRoute extends Route {
 	
 	protected $name;
 	protected $path;
@@ -142,6 +143,12 @@ abstract class ControllerRoute {
 		}
 		return true;
 	}
+	
+	public function getLink() {
+		return $this->formatURL();
+	}
+	
+	public abstract function formatURL($values=array());
 	
 	public static function registerAccessRestriction($type, $callable) {
 		static::$routesRestrictions[$type]	= $callable;
