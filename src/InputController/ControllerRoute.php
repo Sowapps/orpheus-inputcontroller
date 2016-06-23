@@ -147,5 +147,9 @@ abstract class ControllerRoute {
 		static::$routesRestrictions[$type]	= $callable;
 	}
 	
+	public static function getCurrentRouteName() {
+		return InputRequest::getMainRequest()->getRouteName();
+	}
+	
 	
 }
