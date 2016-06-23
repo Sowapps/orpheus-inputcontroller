@@ -9,22 +9,6 @@ use Orpheus\Core\Route;
  * InputController library to bring MVC features
  * 
  */
- 
-addAutoload('Controller',					'inputcontroller/Controller');
-addAutoload('ControllerRoute',				'inputcontroller/ControllerRoute');
-addAutoload('InputRequest',					'inputcontroller/InputRequest');
-addAutoload('OutputResponse',				'inputcontroller/OutputResponse');
-
-addAutoload('HTTPRoute',					'inputcontroller/http/HTTPRoute');
-addAutoload('HTTPRequest',					'inputcontroller/http/HTTPRequest');
-addAutoload('HTTPController',				'inputcontroller/http/HTTPController');
-addAutoload('HTTPResponse',					'inputcontroller/http/HTTPResponse');
-addAutoload('HTMLHTTPResponse',				'inputcontroller/http/HTMLHTTPResponse');
-addAutoload('JSONHTTPResponse',				'inputcontroller/http/JSONHTTPResponse');
-addAutoload('RedirectHTTPResponse',			'inputcontroller/http/RedirectHTTPResponse');
-
-addAutoload('DelayedPageController',		'inputcontroller/controllers/DelayedPageController');
-addAutoload('StaticPageController',			'inputcontroller/controllers/StaticPageController');
 
 // define('HOOK_ROUTEMODULE', 'routeModule');
 // Hook::create(HOOK_ROUTEMODULE);
