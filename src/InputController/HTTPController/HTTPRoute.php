@@ -3,6 +3,7 @@ namespace Orpheus\InputController\HTTPController;
 
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
+use Orpheus;
 
 class HTTPRoute extends ControllerRoute {
 	
@@ -16,9 +17,10 @@ class HTTPRoute extends ControllerRoute {
 	const METHOD_PUT	= 'PUT';
 	const METHOD_DELETE	= 'DELETE';
 	
-	protected static $typesRegex	= array();
-	protected static $routes		= array();
-	protected static $knownMethods	= array(
+	protected static $typesRegex		= array();
+	protected static $routes			= array();
+	protected static $outputResponses	= array();
+	protected static $knownMethods		= array(
 		self::METHOD_GET, self::METHOD_POST, self::METHOD_PUT, self::METHOD_DELETE
 	);
 	
@@ -127,7 +129,8 @@ class HTTPRoute extends ControllerRoute {
 			throw new \Exception('Missing a valid `path` in configuration of route "'.$name.'"');
 		}
 		if( empty($config['response']) ) {
-			$config['response'] = !empty($config['output']) ? $config['output'].'HTTPResponse' : 'HTMLHTTPResponse';
+			$config['response']	= !empty($config['output']) ? static::getOutputResponse($config['output']) : 'Orpheus\InputController\HTTPController\HTMLHTTPResponse';
+// 			$config['response'] = !empty($config['output']) ? $config['output'].'HTTPResponse' : 'HTMLHTTPResponse';
 		}
 		if( empty($config['controller']) ) {
 			if( !empty($config['redirect']) ) {
@@ -159,8 +162,16 @@ class HTTPRoute extends ControllerRoute {
 		}
 	}
 	
+	public static function setOutputResponse($output, $responseClass) {
+		static::$outputResponses[$output] = $responseClass;
+	}
+	
+	public static function getOutputResponse($output) {
+		return static::$outputResponses[$output];
+	}
+	
 	public static function setTypeRegex($type, $regex) {
-		static::$typesRegex[$type]	= $regex;
+		static::$typesRegex[$type] = $regex;
 	}
 	
 	public static function getRoutes() {
@@ -192,4 +203,7 @@ class HTTPRoute extends ControllerRoute {
 HTTPRoute::setTypeRegex('int',	'\d+');
 HTTPRoute::setTypeRegex('id',	'[1-9]\d*');
 HTTPRoute::setTypeRegex('slug',	'[a-z0-9\-_]+');
+
+HTTPRoute::setOutputResponse('html',	'Orpheus\InputController\HTTPController\HTMLHTTPResponse');
+HTTPRoute::setOutputResponse('json',	'Orpheus\InputController\HTTPController\JSONHTTPResponse');
 
