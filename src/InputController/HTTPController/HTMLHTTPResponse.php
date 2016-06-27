@@ -52,8 +52,8 @@ class HTMLHTTPResponse extends HTTPResponse {
 		}
 		$rendering	= new HTMLRendering();
 		
-		$env	= $this->values;
-		$env['CONTROLLER_OUTPUT']	= $this->getControllerOutput();
+		$env = $this->values;
+		$env['CONTROLLER_OUTPUT'] = $this->getControllerOutput();
 		
 		$rendering->display($this->layout, $env);
 	}
