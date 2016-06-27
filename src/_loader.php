@@ -2,6 +2,7 @@
 use Orpheus\InputController\HTTPController\HTTPRoute;
 use Orpheus\InputController\HTTPController\HTTPRequest;
 use Orpheus\Core\Route;
+use Orpheus\Core\RequestHandler;
 
 /**
  * InputController Library
@@ -58,5 +59,8 @@ function get_current_route() {
 function _u($route, $values=array()) {
 	echo u($route, $values);
 }
+
+RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HTTPController\HTTPRequest');
+// RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\HTTPRequest');
 
 Route::suggestResolver('Orpheus\InputController\HTTPController\HTTPRoute');

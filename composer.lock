@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Sowapps/orpheus-cache.git",
-                "reference": "ef479da91cbfc516a60a56051fc5387e7590c980"
+                "reference": "a5da1e908a0b5fea7db6721c904fabfbbd6a7b07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Sowapps/orpheus-cache/zipball/ef479da91cbfc516a60a56051fc5387e7590c980",
-                "reference": "ef479da91cbfc516a60a56051fc5387e7590c980",
+                "url": "https://api.github.com/repos/Sowapps/orpheus-cache/zipball/a5da1e908a0b5fea7db6721c904fabfbbd6a7b07",
+                "reference": "a5da1e908a0b5fea7db6721c904fabfbbd6a7b07",
                 "shasum": ""
             },
             "type": "library",
@@ -46,7 +46,7 @@
                 "filesystem",
                 "orpheus"
             ],
-            "time": "2016-06-22 12:34:40"
+            "time": "2016-06-27 12:07:51"
         },
         {
             "name": "orpheus/orpheus-core",
@@ -54,12 +54,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Sowapps/orpheus-core.git",
-                "reference": "4acc7209fd406584254592c8b9a443dd61afe70f"
+                "reference": "3943fe10cb508176e8a65e552aaaf6c4dd60a9fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Sowapps/orpheus-core/zipball/4acc7209fd406584254592c8b9a443dd61afe70f",
-                "reference": "4acc7209fd406584254592c8b9a443dd61afe70f",
+                "url": "https://api.github.com/repos/Sowapps/orpheus-core/zipball/3943fe10cb508176e8a65e552aaaf6c4dd60a9fe",
+                "reference": "3943fe10cb508176e8a65e552aaaf6c4dd60a9fe",
                 "shasum": ""
             },
             "require": {
@@ -91,7 +91,7 @@
                 "core",
                 "orpheus"
             ],
-            "time": "2016-06-23 16:15:42"
+            "time": "2016-06-27 12:28:02"
         },
         {
             "name": "orpheus/orpheus-hook",
