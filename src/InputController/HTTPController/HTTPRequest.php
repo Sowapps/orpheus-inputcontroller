@@ -2,6 +2,7 @@
 namespace Orpheus\InputController\HTTPController;
 
 use Orpheus\InputController\InputRequest;
+use Orpheus\InputController\ControllerRoute;
 
 class HTTPRequest extends InputRequest {
 
@@ -48,6 +49,7 @@ class HTTPRequest extends InputRequest {
 			if( !isset($methodRoutes[$this->method]) ) { continue; }
 			/* @var $route HTTPRoute */
 			$route	= $methodRoutes[$this->method];
+			$values = null;
 			if( $route->isMatchingRequest($this, $values, $alternative) ) {
 				$this->pathValues	= (object) $values;
 				return $route;
@@ -77,7 +79,7 @@ class HTTPRequest extends InputRequest {
 		// Get Content type
 // 		list($contentType, $contentOptions)	= explodeList(';', $_SERVER['CONTENT_TYPE'], 2);
 		if( !empty($_SERVER['CONTENT_TYPE']) ) {
-			list($inputType)	= explodeList(';', $_SERVER['CONTENT_TYPE'], 2);
+			list($inputType) = explodeList(';', $_SERVER['CONTENT_TYPE'], 2);
 			$inputType	= trim($inputType);
 		} else {
 			$inputType	= 'application/x-www-form-urlencoded';
@@ -89,7 +91,7 @@ class HTTPRequest extends InputRequest {
 // 		if( isset($_SERVER['CONTENT_TYPE']) && strpos(, 'application/json')!==false ) {
 			$input	= json_decode(file_get_contents('php://input'), true);
 			if( $input === null ) {
-				throw new Exception('malformedJSONBody', HTTP_BAD_REQUEST);
+				throw new \Exception('malformedJSONBody', HTTP_BAD_REQUEST);
 			}
 		} else if( isset($_POST) ) {
 			//application/x-www-form-urlencoded
