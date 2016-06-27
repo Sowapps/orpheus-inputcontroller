@@ -64,7 +64,7 @@ class JSONHTTPResponse extends HTTPResponse {
 		}
 // 		debug('$exception', $exception);
 // 		debug('$exception', (array) $exception);
-		$other = new stdClass();
+		$other = new \stdClass();
 		$other->code	= $exception->getCode();
 		$other->message	= $exception->getMessage();
 		$other->file	= $exception->getFile();
@@ -77,14 +77,14 @@ class JSONHTTPResponse extends HTTPResponse {
 	}
 	
 	public static function generateFromUserException(UserException $exception, $values=array()) {
-		$code	= $exception->getCode();
+		$code = $exception->getCode();
 		if( !$code ) {
 			$code = HTTP_BAD_REQUEST;
 		}
 // 		reportError($exception);
 		if( $exception instanceof UserReportsException ) {
 			/* @var $exception UserReportsException */
-			$response = static::render($data->getMessage(), $exception->getReports(), $exception->getDomain());
+			$response = static::render($exception->getMessage(), $exception->getReports(), $exception->getDomain());
 		} else
 		if( $exception instanceof UserException ) {
 			$response = static::render($exception->getMessage(), null, $exception->getDomain());
