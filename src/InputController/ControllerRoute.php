@@ -6,6 +6,7 @@ use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\UserException;
 use Orpheus\Config\YAML\YAML;
 use Orpheus\Core\Route;
+use Orpheus\Core\RequestHandler;
 
 abstract class ControllerRoute extends Route {
 	
@@ -80,13 +81,15 @@ abstract class ControllerRoute extends Route {
 		if( static::isInitialized() ) { return; }
 		static::$initialized = true;
 		
+		// Load prod routes (all environments routes)
 		$conf	= YAML::build('routes', true, true);
 		$routes	= $conf->asArray();
 // 		debug('Routes', $routes);
+		// Load dev routes
 		if( DEV_VERSION ) {
 // 			debug('Loading dev routes');
 			// If there is not file routes_dev, we get an empty array
-			$conf	= YAML::build('routes_dev', true, true);
+			$conf = YAML::build('routes_dev', true, true);
 // 			debug('Routes dev', $conf->asArray());
 			foreach( $conf->asArray() as $type => $typeRoutes ) {
 // 				debug('Routes dev type : '.$type);
@@ -97,10 +100,13 @@ abstract class ControllerRoute extends Route {
 				}
 			}
 		}
-// 		debug('Routes', $routes);
-// 		die();
+		
+		// Register routes
 		foreach( $routes as $type => $typeRoutes ) {
-			$routeClass	= $type.'Route';
+			$routeClass = RequestHandler::getRouteClass($type);
+// 			debug('$routeClass => '.$routeClass);
+// 			die();
+// 			$routeClass	= $type.'Route';
 // 			debug('$type => '.$type);
 			if( !class_exists($routeClass, true) || !in_array(get_class(), class_parents($routeClass)) ) {
 // 				debug('Invalid class');

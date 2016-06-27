@@ -44,6 +44,8 @@ class HTTPRequest extends InputRequest {
 	 * @return Route
 	 */
 	public function findFirstMatchingRoute($alternative=false) {
+// 		debug('findFirstMatchingRoute', $this->getRoutes());
+// 		die();
 		/* @var ControllerRoute $route */
 		foreach( $this->getRoutes() as $methodRoutes ) {
 			if( !isset($methodRoutes[$this->method]) ) { continue; }
@@ -55,6 +57,7 @@ class HTTPRequest extends InputRequest {
 				return $route;
 			}
 		}
+// 		die();
 		return null;
 	}
 	
@@ -129,6 +132,10 @@ class HTTPRequest extends InputRequest {
 		}
 		$response->process();
 		die();
+	}
+
+	public static function getRouteClass() {
+		return '\Orpheus\InputController\HTTPController\HTTPRoute';
 	}
 	
 	/**
