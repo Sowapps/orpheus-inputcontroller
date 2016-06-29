@@ -1,4 +1,5 @@
 <?php
+namespace Orpheus\Controller;
 
 use Orpheus\InputController\HTTPController\HTTPRequest;
 use Orpheus\InputController\HTTPController\RedirectHTTPResponse;
@@ -17,11 +18,11 @@ class RedirectController extends HTTPController {
 		if( !empty($options['url_config']) ) {
 			$url = AppConfig::instance()->get($options['url_config']);
 			if( !$url ) {
-				throw new Exception('The RedirectController requires a valid url_config option, please check your configuration.');
+				throw new \Exception('The RedirectController requires a valid url_config option, please check your configuration.');
 			}
 		} else
 		if( empty($options['redirect']) ) {
-			throw new Exception('The RedirectController requires a redirect option, add it to your route configuration.');
+			throw new \Exception('The RedirectController requires a redirect option, add it to your route configuration.');
 		}
 		return new RedirectHTTPResponse(u($options['redirect']));
 	}

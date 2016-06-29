@@ -1,4 +1,5 @@
 <?php
+namespace Orpheus\Controller;
 
 use Orpheus\InputController\HTTPController\HTTPRequest;
 use Orpheus\InputController\HTTPController\HTTPController;
@@ -14,7 +15,7 @@ class StaticPageController extends HTTPController {
 	public function run(HTTPRequest $request) {
 		$options	= $request->getRoute()->getOptions();
 		if( empty($options['render']) ) {
-			throw new Exception('The StaticPageController requires a render option, add it to your routes configuration.');
+			throw new \Exception('The StaticPageController requires a render option, add it to your routes configuration.');
 		}
 		return HTMLHTTPResponse::render($options['render']);
 	}
