@@ -134,10 +134,10 @@ class HTTPRoute extends ControllerRoute {
 		}
 		if( empty($config['controller']) ) {
 			if( !empty($config['redirect']) ) {
-				$config['controller']	= 'RedirectController';
+				$config['controller']	= 'Orpheus\\Controller\\RedirectController';
 			} else
 			if( !empty($config['render']) ) {
-				$config['controller']	= 'StaticPageController';
+				$config['controller']	= 'Orpheus\\Controller\\StaticPageController';
 			} else {
 				throw new \Exception('Missing a valid `controller` in configuration of route "'.$name.'"');
 			}
