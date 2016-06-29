@@ -3,6 +3,7 @@
 use Orpheus\InputController\HTTPController\HTTPRequest;
 use Orpheus\InputController\HTTPController\RedirectHTTPResponse;
 use Orpheus\InputController\HTTPController\HTTPController;
+use Orpheus\Config\AppConfig;
 
 class RedirectController extends HTTPController {
 
@@ -12,7 +13,13 @@ class RedirectController extends HTTPController {
 	 * @see HTTPController::run()
 	 */
 	public function run(HTTPRequest $request) {
-		$options	= $request->getRoute()->getOptions();
+		$options = $request->getRoute()->getOptions();
+		if( !empty($options['url_config']) ) {
+			$url = AppConfig::instance()->get($options['url_config']);
+			if( !$url ) {
+				throw new Exception('The RedirectController requires a valid url_config option, please check your configuration.');
+			}
+		} else
 		if( empty($options['redirect']) ) {
 			throw new Exception('The RedirectController requires a redirect option, add it to your route configuration.');
 		}
