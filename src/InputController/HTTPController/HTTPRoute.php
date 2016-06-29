@@ -112,6 +112,7 @@ class HTTPRoute extends ControllerRoute {
 			// If last char is / or not, it will end with /? (optional /)
 			$regex	.= str_last($regex)==='/' ? '?' : '/?';
 		}
+		$matches = null;
 		if( preg_match('#^'.$regex.'$#i', $request->getPath(), $matches) ) {
 // 		if( preg_match('#^'.$this->pathRegex.'$#i', $request->getPath(), $matches) ) {
 			unset($matches[0]);
