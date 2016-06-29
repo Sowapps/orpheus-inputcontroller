@@ -23,8 +23,10 @@ class RedirectController extends HTTPController {
 		} else
 		if( empty($options['redirect']) ) {
 			throw new \Exception('The RedirectController requires a redirect option, add it to your route configuration.');
+		} else {
+			$url = u($options['redirect']);
 		}
-		return new RedirectHTTPResponse(u($options['redirect']));
+		return new RedirectHTTPResponse($url);
 	}
 
 }
