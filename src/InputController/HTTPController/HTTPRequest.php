@@ -81,6 +81,8 @@ class HTTPRequest extends InputRequest {
 
 		// Get Content type
 // 		list($contentType, $contentOptions)	= explodeList(';', $_SERVER['CONTENT_TYPE'], 2);
+		$method = $_SERVER['REQUEST_METHOD'];
+		
 		if( !empty($_SERVER['CONTENT_TYPE']) ) {
 			list($inputType) = explodeList(';', $_SERVER['CONTENT_TYPE'], 2);
 			$inputType	= trim($inputType);
@@ -96,16 +98,21 @@ class HTTPRequest extends InputRequest {
 			if( $input === null ) {
 				throw new \Exception('malformedJSONBody', HTTP_BAD_REQUEST);
 			}
-		} else if( isset($_POST) ) {
+		} else {
 			//application/x-www-form-urlencoded
-			$input	= $_POST;
+			if( $method === HTTPRoute::METHOD_PUT ) {
+				parse_str(file_get_contents("php://input"), $input);
+			} else
+			if( isset($_POST) ) {
+				$input	= $_POST;
+			}
 		}
 // 		$FORMAT	= isGET('format') ? strtolower(GET('format')) : 'json';
 // 		$PATH	= GET('_path');
 // 		$METHOD	= $_SERVER['REQUEST_METHOD'];
 // 		debug('$_SERVER', $_SERVER);
 // 		$request	= new static($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], $_GET);
-		$request	= new static($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_GET);
+		$request	= new static($method, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_GET);
 		$request->setContent($input, $inputType)
 			->setScheme(!empty($_SERVER['HTTPS']) ? 'https' : 'http')
 			->setDomain($_SERVER['HTTP_HOST'])
