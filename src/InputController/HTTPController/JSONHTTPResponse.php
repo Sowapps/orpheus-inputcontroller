@@ -39,6 +39,7 @@ class JSONHTTPResponse extends HTTPResponse {
 	}
 	
 	public function collectFrom($textCode, $other=null, $domain='global', $description=null) {
+		// For errors only
 		$this->data	= array(
 			'code'			=> $textCode,
 			'description'	=> t($description ? $description : $textCode, $domain),
@@ -47,8 +48,15 @@ class JSONHTTPResponse extends HTTPResponse {
 	}
 	
 	public static function render($textCode, $other=null, $domain='global', $description=null) {
-		$response	= new static();
+		$response = new static();
 		$response->collectFrom($textCode, $other, $domain, $description);
+		return $response;
+	}
+	
+	public static function returnData($data) {
+		// Return success with data
+		$response = new static();
+		$response->data = $data;
 		return $response;
 	}
 	

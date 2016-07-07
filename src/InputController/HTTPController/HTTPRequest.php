@@ -121,13 +121,13 @@ class HTTPRequest extends InputRequest {
 // 			debug('HTTPRequest::handleCurrentRequest()');
 // 			die();
 			HTTPRoute::initialize();
-			static::$mainRequest	= static::generateFromEnvironment();
+			static::$mainRequest = static::generateFromEnvironment();
 	//		debug('$request', static::$mainRequest);
 	//		die();
-			$response	= static::$mainRequest->process();
+			$response = static::$mainRequest->process();
 		} catch( Exception $e ) {
 // 			debug('handleCurrentRequest() - Exception');
-			$response	= HTMLHTTPResponse::generateFromException($e);
+			$response = HTMLHTTPResponse::generateFromException($e);
 // 			die();
 		}
 		$response->process();
