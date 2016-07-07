@@ -18,6 +18,7 @@ abstract class Controller {
 	 *
 	 * @param InputRequest $request
 	 * @return OutputResponse
+	 * @uses ControllerRoute::run()
 	 */
 	public function process(InputRequest $request) {
 		// run, preRun and postRun take parameter depending on Controller, request may be of a child class of InputRequest

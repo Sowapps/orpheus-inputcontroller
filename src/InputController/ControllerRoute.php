@@ -42,6 +42,14 @@ abstract class ControllerRoute extends Route {
 		throw new \Exception('The class "'.get_called_class().'" should override the `registerConfig()` static method from "'.get_class().'"');
 	}
 	
+	/**
+	 * 
+	 * @param InputRequest $request
+	 * @throws NotFoundException
+	 * @throws ForbiddenException
+	 * @return \Orpheus\InputController\OutputResponse
+	 * @uses \Orpheus\InputController\InputRequest::processRoute()
+	 */
 	public function run(InputRequest $request) {
 		try {
 			if( !$this->controller || !class_exists($this->controller, true) ) {
