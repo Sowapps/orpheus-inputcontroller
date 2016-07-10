@@ -135,18 +135,18 @@ class HTTPRoute extends ControllerRoute {
 		}
 		if( empty($config['controller']) ) {
 			if( !empty($config['redirect']) ) {
-				$config['controller']	= 'Orpheus\\Controller\\RedirectController';
+				$config['controller'] = 'Orpheus\\Controller\\RedirectController';
 			} else
 			if( !empty($config['render']) ) {
-				$config['controller']	= 'Orpheus\\Controller\\StaticPageController';
+				$config['controller'] = 'Orpheus\\Controller\\StaticPageController';
 			} else {
 				throw new \Exception('Missing a valid `controller` in configuration of route "'.$name.'"');
 			}
 		}
 		if( !isset($config['restrictTo']) ) {
-			$config['restrictTo']	= null;
+			$config['restrictTo'] = null;
 		}
-		$options	= $config;
+		$options = $config;
 		unset($options['path'], $options['controller'], $options['method'], $options['restrictTo']);
 		static::register($name, $config['path'], $config['controller'], isset($config['method']) ? $config['method'] : null, $config['restrictTo'], $config['response'], $options);
 	}
@@ -180,6 +180,12 @@ class HTTPRoute extends ControllerRoute {
 		return static::$routes;
 	}
 	
+	/**
+	 * 
+	 * @param string $route
+	 * @param string $method
+	 * @return HTTPRoute
+	 */
 	public static function getRoute($route, $method=null) {
 // 		$routes	= static::getRoutes();
 		if( $method ) {
