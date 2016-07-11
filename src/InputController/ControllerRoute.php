@@ -299,7 +299,7 @@ abstract class ControllerRoute extends Route {
 	 * @uses isAccessible()
 	 */
 	public static function registerAccessRestriction($type, $callable) {
-		static::$routesRestrictions[$type]	= $callable;
+		static::$routesRestrictions[$type] = $callable;
 	}
 	
 	/**
