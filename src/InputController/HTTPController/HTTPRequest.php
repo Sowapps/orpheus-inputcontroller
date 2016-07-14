@@ -6,18 +6,60 @@ use Orpheus\InputController\ControllerRoute;
 
 class HTTPRequest extends InputRequest {
 
+	/**
+	 * The used method for this request
+	 * 
+	 * @var string
+	 */
 	protected $method;
+	
+	/**
+	 * The scheme used to access this route
+	 * 
+	 * @var string
+	 */
 	protected $scheme;
+	
+	/**
+	 * The request host domain name
+	 * 
+	 * @var string
+	 */
 	protected $domain;
+	
+	/**
+	 * The headers sent to this route
+	 * 
+	 * @var array
+	 */
 	protected $headers;
+	
+	/**
+	 * The cookies sent to this route
+	 * 
+	 * @var array
+	 */
 	protected $cookies;
+	
+	/**
+	 * The uploaded files sent to this route
+	 * 
+	 * @var array
+	 */
 	protected $files;
+	
+	/**
+	 * The input content type
+	 * 
+	 * @var string
+	 * @see https://en.wikipedia.org/wiki/Media_type
+	 */
 	protected $inputType;
 	
 	/**
 	 * The values in path
 	 * 
-	 * @var strClass
+	 * @var \stdClass
 	 */
 	protected $pathValues;
 
@@ -33,10 +75,14 @@ class HTTPRequest extends InputRequest {
 		return $this->method.'("'.$this->path.'")';
 	}
 	
+	/**
+	 * Get the URL used for this request
+	 * 
+	 * @return string
+	 */
 	public function getURL() {
 		return $this->scheme.'://'.$this->domain.$this->path.($this->parameters ? '?'.http_build_query($this->parameters) : '');
 	}
-
 	
 	/**
 	 * Find a matching route according to the request
@@ -66,15 +112,18 @@ class HTTPRequest extends InputRequest {
 	}
 	
 	/**
+	 * Get all available routes
+	 * 
 	 * @return HTTPRoute[]
-	 * @see InputRequest::getRoutes()
+	 * @see \Orpheus\InputController\InputRequest::getRoutes()
 	 */
 	public function getRoutes() {
 		return HTTPRoute::getRoutes();
 	}
 	
 	/**
-	 * Get the method
+	 * Generate HTTPRequest from environment
+	 * 
 	 * @return HTTPRequest
 	 */
 	public static function generateFromEnvironment() {
@@ -122,7 +171,11 @@ class HTTPRequest extends InputRequest {
 // 		return new static($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], '', '', $_GET, getallheaders(), $inputType, $input);
 		return $request;
 	}
-
+	
+	/**
+	 * Handle the current request as a HTTPRequest one
+	 * This method ends the script
+	 */
 	public static function handleCurrentRequest() {
 		try {
 // 			debug('HTTPRequest::handleCurrentRequest()');
@@ -140,114 +193,274 @@ class HTTPRequest extends InputRequest {
 		$response->process();
 		die();
 	}
-
+	
+	/**
+	 * Get the name of the route class associated to a HTTPRequest
+	 * 
+	 * @return string
+	 */
 	public static function getRouteClass() {
 		return '\Orpheus\InputController\HTTPController\HTTPRoute';
 	}
 	
 	/**
 	 * Get the method
+	 * 
 	 * @return string
 	 */
 	public function getMethod() {
 		return $this->method;
 	}
+	
+	/**
+	 * Set the method
+	 * 
+	 * @param string $method
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
 	protected function setMethod($method) {
 		$this->method = $method;
 		return $this;
 	}
 	
+	/**
+	 * Test if this is a GET request
+	 * 
+	 * @return boolean
+	 */
 	public function isGET() { return $this->method === HTTPRoute::METHOD_GET; }
+	
+	/**
+	 * Test if this is a POST request
+	 * 
+	 * @return boolean
+	 */
 	public function isPOST() { return $this->method === HTTPRoute::METHOD_POST; }
+	
+	/**
+	 * Test if this is a PUT request
+	 * 
+	 * @return boolean
+	 */
 	public function isPUT() { return $this->method === HTTPRoute::METHOD_PUT; }
+	
+	/**
+	 * Test if this is a DELETE request
+	 * 
+	 * @return boolean
+	 */
 	public function isDELETE() { return $this->method === HTTPRoute::METHOD_DELETE; }
 	
+	/**
+	 * Get the scheme
+	 * 
+	 * @return string
+	 */
 	public function getScheme() {
 		return $this->scheme;
 	}
+	
+	/**
+	 * Set the scheme
+	 * 
+	 * @param string $scheme
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
 	protected function setScheme($scheme) {
 		$this->scheme = $scheme;
-		
 		return $this;
 	}
+	
+	/**
+	 * Get the host domain
+	 * 
+	 * @return string
+	 */
 	public function getDomain() {
 		return $this->domain;
 	}
+	
+	/**
+	 * Set the host domain
+	 * @param string $domain
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
 	protected function setDomain($domain) {
 		$this->domain = $domain;
 		return $this;
 	}
 	
+	/**
+	 * Get the headers
+	 * 
+	 * @return array
+	 */
 	public function getHeaders() {
 		return $this->headers;
 	}
+	
+	/**
+	 * Set the headers
+	 * 
+	 * @param array $headers
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
 	protected function setHeaders($headers) {
 		$this->headers = $headers;
 		return $this;
 	}
 	
+	/**
+	 * Get the input type
+	 * 
+	 * @return string
+	 */
 	public function getInputType() {
 		return $this->inputType;
 	}
+	
+	/**
+	 * Set the input type
+	 * 
+	 * @param string $inputType
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
 	protected function setInputType($inputType) {
 		$this->inputType = $inputType;;
 		return $this;
 	}
 	
+	/**
+	 * Set the content (input & input type)
+	 * 
+	 * @param string $content
+	 * @param string $contentType
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
 	protected function setContent($content, $contentType) {
 		return $this->setInput($content)->setInputType($contentType);
 	}
 	
+	/**
+	 * Get the cookies
+	 * 
+	 * @return array
+	 */
 	public function getCookies() {
 		return $this->cookies;
 	}
+	
+	/**
+	 * Set the cookies
+	 * 
+	 * @param array $cookies
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
 	protected function setCookies($cookies) {
 		$this->cookies = $cookies;
 		return $this;
 	}
-	
+
+	/**
+	 * Get the uploaded files
+	 *
+	 * @return array
+	 */
 	public function getFiles() {
 		return $this->files;
 	}
+
+	/**
+	 * Set the uploaded files
+	 *
+	 * @param array $cookies
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
 	protected function setFiles($files) {
 		$this->files = $files;
 		return $this;
 	}
 
+	/**
+	 * Get all input data
+	 *
+	 * @return array
+	 */
 	public function getAllData() {
 		return $this->getInput();
 	}
 	
+	/**
+	 * Get a data by $key, assuming $default
+	 * 
+	 * @param string $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
 	public function getData($key, $default=null) {
 		return $this->getInputValue($key, $default);
 	}
 	
+	/**
+	 * Get the data by key with array as default
+	 * 
+	 * @param string $key
+	 * @return mixed
+	 */
 	public function getArrayData($key) {
 		return $this->getInputValue($key, array());
 	}
 	
+	/**
+	 * Test if data $key is an array
+	 * 
+	 * @param string $key
+	 * @return boolean
+	 */
 	public function hasArrayData($key=null) {
 		return is_array($this->getData($key));
 	}
 	
+	/**
+	 * Test if data contains the $key
+	 * 
+	 * @param string $key
+	 * @return boolean
+	 */
 	public function hasData($key=null) {
 		return $key ? $this->hasInputValue($key) : $this->hasInput();
 	}
-	
+
+	/**
+	 * Test if path contains a value and return it as parameter
+	 *
+	 * @param string $path The path to get the value
+	 * @param string $value The value as ouput parameter
+	 * @return boolean
+	 */
 	public function hasDataKey($path=null, &$value=null) {
 		$v = $this->getData($path);
 		if( !$v || !is_array($v) ) { return false; }
-		$value	= key($v);
+		$value = key($v);
 		return true;
 	}
 	
 	/**
+	 * Get path values
+	 * 
 	 * @return stdClass
 	 */
 	public function getPathValues() {
 		return $this->pathValues;
 	}
 	
+	/**
+	 * Get path value by $key, assuming $default
+	 * 
+	 * @param string $key
+	 * @param mixed $default
+	 * @return string
+	 */
 	public function getPathValue($key, $default=null) {
 		return isset($this->pathValues->$key) ? $this->pathValues->$key : $default;
 	}

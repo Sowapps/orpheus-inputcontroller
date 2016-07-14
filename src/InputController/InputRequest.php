@@ -5,8 +5,23 @@ use Orpheus\Exception\NotFoundException;
 
 abstract class InputRequest {
 	
+	/**
+	 * The path
+	 * 
+	 * @var string
+	 */
 	protected $path;
+	/**
+	 * The input parameters (inline parameters)
+	 * 
+	 * @var array
+	 */
 	protected $parameters;
+	/**
+	 * The input (like stdin)
+	 * 
+	 * @var array
+	 */
 	protected $input;
 	/**
 	 * @var ControllerRoute $route
@@ -35,18 +50,31 @@ abstract class InputRequest {
 		return null;
 	}
 	
+	/**
+	 * Redirect response to $route
+	 * 
+	 * @param ControllerRoute $route
+	 * @return NULL
+	 * 
+	 * Should be overridden to be used
+	 */
 	public function redirect(ControllerRoute $route) {
 		return null;
 	}
 	
+	/**
+	 * Process the request by finding a route and processing it
+	 * 
+	 * @return \Orpheus\InputController\NULL|\Orpheus\InputController\OutputResponse
+	 */
 	public function process() {
-		$route	= $this->findFirstMatchingRoute();
+		$route = $this->findFirstMatchingRoute();
 		if( !$route ) {
 			// Not found, look for an alternative (with /)
-			$route	= $this->findFirstMatchingRoute(true);
+			$route = $this->findFirstMatchingRoute(true);
 			if( $route ) {
 				// Alternative found, try to redirect to this one
-				$r		= $this->redirect($route);
+				$r = $this->redirect($route);
 				if( $r ) {
 					// Redirect
 					return $r;
@@ -58,6 +86,13 @@ abstract class InputRequest {
 		return $this->processRoute($route);
 	}
 	
+	/**
+	 * Process the given route
+	 * 
+	 * @param ControllerRoute $route
+	 * @throws NotFoundException
+	 * @return \Orpheus\InputController\OutputResponse
+	 */
 	public function processRoute($route) {
 		if( !$route ) {
 			throw new NotFoundException('No route matches the current request '.$this);
@@ -66,92 +101,164 @@ abstract class InputRequest {
 		return $this->route->run($this);
 	}
 	
-	public abstract function getRoutes();
-
 	/**
-	 * Resolve the current request by calling the matching contoller
+	 * Get all available routes
 	 * 
-	 * @return Controller
+	 * @return array
 	 */
-// 	public function resolve() {
-// 		$route	= $this->findFirstMatchingRoute();
-// 		if( !$route ) {
-// 			throw new NotFoundException('noRoute');
-// 		}
-// 		$route->run();
-// 	}
+	public abstract function getRoutes();
 	
+	/**
+	 * Get the path
+	 * 
+	 * @return string
+	 */
 	public function getPath() {
 		return $this->path;
 	}
+	/**
+	 * Set the path
+	 * 
+	 * @param string $path
+	 * @return \Orpheus\InputController\InputRequest
+	 */
 	protected function setPath($path) {
 		$this->path = $path;
 		return $this;
 	}
 	
-	public function hasParameter($key) {
-		return $this->getParameter($key, null) !== null;
-	}
-	
+	/**
+	 * Get the parameter by $key, assuming $default value
+	 * 
+	 * @param string $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
 	public function getParameter($key, $default=null) {
 // 		debug('$this->parameters', $this->parameters);
 		return apath_get($this->parameters, $key, $default);
 	}
 	
+	/**
+	 * Test if parameter $key exists in this request
+	 * 
+	 * @param string $key
+	 * @return boolean
+	 */
+	public function hasParameter($key) {
+		return $this->getParameter($key, null) !== null;
+	}
+	
+	/**
+	 * Get all parameters
+	 * 
+	 * @return array
+	 */
 	public function getParameters() {
 		return $this->parameters;
 	}
-	protected function setParameters($parameters) {
+	
+	/**
+	 * Set the parameters
+	 * 
+	 * @param array
+	 * @return \Orpheus\InputController\InputRequest
+	 */
+	protected function setParameters(array $parameters) {
 		$this->parameters = $parameters;
 		return $this;
 	}
-	
+
+	/**
+	 * Test if request has any input
+	 *
+	 * @return boolean
+	 */
 	public function hasInput() {
 		return !!$this->input;
 	}
-	
+
+	/**
+	 * Get input
+	 *
+	 * @return array
+	 */
 	public function getInput() {
 		return $this->input;
 	}
-	protected function setInput($input) {
+
+	/**
+	 * Set the input
+	 *
+	 * @param array
+	 * @return \Orpheus\InputController\InputRequest
+	 */
+	protected function setInput(array $input) {
 		$this->input = $input;
 		return $this;
 	}
-	
+
+	/**
+	 * Get the input by $key, assuming $default value
+	 *
+	 * @param string $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
 	public function getInputValue($key, $default=null) {
 		return apath_get($this->input, $key, $default);
 	}
 	
+	/**
+	 * Test if input $key exists in this request
+	 *
+	 * @param string $key
+	 * @return boolean
+	 */
 	public function hasInputValue($key) {
 		return $this->getInputValue($key, null) !== null;
 	}
 	
+	/**
+	 * The current main request
+	 * 
+	 * @var \Orpheus\InputController\InputRequest
+	 */
 	protected static $mainRequest;
 
 	/**
-	 * @return InputRequest
+	 * @return \Orpheus\InputController\InputRequest
 	 */
 	public static function getMainRequest() {
 		return static::$mainRequest;
 	}
 	
+	/**
+	 * Get the route name to this request 
+	 * 
+	 * @return string
+	 */
 	public function getRouteName() {
 		return $this->route->getName();
 	}
 	
 	/**
+	 * Get the route to this request
+	 * 
 	 * @return ControllerRoute
 	 */
 	public function getRoute() {
 		return $this->route;
 	}
+	
+	/**
+	 * Set the route to this request
+	 * 
+	 * @param \Orpheus\InputController\ControllerRoute $route
+	 * @return \Orpheus\InputController\InputRequest
+	 */
 	public function setRoute($route) {
 		$this->route = $route;
 		return $this;
 	}
-	
-	
-	
-	
-	
 }

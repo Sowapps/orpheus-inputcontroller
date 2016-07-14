@@ -63,6 +63,14 @@ class HTMLHTTPResponse extends HTTPResponse {
 		$this->values	= $values;
 	}
 	
+	/**
+	 * Render the $layout with these $values
+	 * 
+	 * @param string $layout
+	 * @param array $values
+	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
+	 * @see \Orpheus\InputController\HTTPController\HTMLHTTPResponse::run()
+	 */
 	public static function render($layout, $values=array()) {
 		$response	= new static();
 		$response->collectFrom($layout, $values);
@@ -70,10 +78,11 @@ class HTMLHTTPResponse extends HTTPResponse {
 	}
 	
 	/**
-	 * Generate HTMLResponse from 
+	 * Generate HTMLResponse from Exception
 	 * 
 	 * @param Exception $exception
 	 * @param string $action
+	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
 	 */
 	public static function generateFromException(\Exception $exception, $action='Handling the request') {
 		$code = $exception->getCode();
@@ -93,7 +102,14 @@ class HTMLHTTPResponse extends HTTPResponse {
 // 			'report'	=> $exception->getMessage()."<br />\n<pre>".$exception->getTraceAsString()."</pre>",
 // 		)));
 	}
-	
+
+	/**
+	 * Generate HTMLResponse from UserException
+	 *
+	 * @param Exception $exception
+	 * @param string $action
+	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
+	 */
 	public static function generateFromUserException(UserException $exception, $values=array()) {
 		$code	= $exception->getCode();
 		if( !$code ) {
@@ -107,10 +123,21 @@ class HTMLHTTPResponse extends HTTPResponse {
 		return $response;
 	}
 	
+	/**
+	 * Get the body
+	 * 
+	 * @return string
+	 */
 	public function getBody() {
 		return $this->body;
 	}
 	
+	/**
+	 * Set the body
+	 * 
+	 * @param string $body
+	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
+	 */
 	public function setBody($body) {
 		$this->body = $body;
 		return $this;
