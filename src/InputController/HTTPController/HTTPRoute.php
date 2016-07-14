@@ -32,6 +32,7 @@ class HTTPRoute extends ControllerRoute {
 	
 	/**
 	 * Format the current route to get an URL from path
+	 * 
 	 * @param string[] $values
 	 * @return string
 	 * @throws Exception
@@ -60,6 +61,13 @@ class HTTPRoute extends ControllerRoute {
 		return $this->method.'("'.$this->path.'")';
 	}
 	
+	/**
+	 * Extract variable from configuration string
+	 * 
+	 * @param string $str
+	 * @param string $var
+	 * @param string $regex
+	 */
 	protected static function extractVariable($str, &$var=null, &$regex=null) {
 		list($p1, $p2) 	= explodeList(':', $str, 2);
 		// Optionnal only if there is a default value
@@ -77,61 +85,65 @@ class HTTPRoute extends ControllerRoute {
 		}
 	}
 	
+	/**
+	 * Generate all regex of the path from extracted variables
+	 */
 	protected function generatePathRegex() {
 		if( $this->pathRegex ) { return; }
-// 		$variables	= &$this->pathVariables;
-		$variables	= array();
-		$this->pathRegex	= preg_replace_callback(
+		$variables = array();
+		$this->pathRegex = preg_replace_callback(
 			'#\{([^\}]+)\}#sm',
 			function($matches) use(&$variables) {
 // 				debug('$matches', $matches);
+				$regex = $var = null;
 				static::extractVariable(str_replace('\.', '.', $matches[1]), $var, $regex);
-				$variables[]	= $var;
+				$variables[] = $var;
 				return '('.$regex.')';
 			},
 			str_replace('.', '\.', $this->path)
 		);
-		$this->pathVariables	= $variables;
+		$this->pathVariables = $variables;
 	}
-	
 	/**
+	 * Test current route is matching request
+	 * 
+	 * {@inheritDoc}
 	 * @param HTTPRequest $request
 	 * @param array $values
-	 * @see ControllerRoute::isMatchingRequest()
+	 * @see \Orpheus\InputController\ControllerRoute::isMatchingRequest()
 	 */
 	public function isMatchingRequest(InputRequest $request, &$values=array(), $alternative=false) {
 		// Method match && Path match (variables included)
-// 		debug('Route '.$this.' is matching request '.$request);
 		if( $this->method !== $request->getMethod() ) {
 			return false;
 		}
-// 		debug('Method ok');
-// 		debug('Path regex '.'#^'.$this->pathRegex.'$#i');
 		$regex = $this->pathRegex;
 		if( $alternative ) {
 			// If last char is / or not, it will end with /? (optional /)
-			$regex	.= str_last($regex)==='/' ? '?' : '/?';
+			$regex .= str_last($regex)==='/' ? '?' : '/?';
 		}
 		$matches = null;
 		if( preg_match('#^'.$regex.'$#i', $request->getPath(), $matches) ) {
-// 		if( preg_match('#^'.$this->pathRegex.'$#i', $request->getPath(), $matches) ) {
 			unset($matches[0]);
 			$values	= array_combine($this->pathVariables, $matches);
-// 			debug('Path ok');
 			return true;
 		}
-// 		debug('Path does not match');
 		return false;
 	}
 	
+	/**
+	 * Register route by $name from config
+	 * 
+	 * @param string $name
+	 * @param array $config
+	 * @throws \Exception
+	 */
 	public static function registerConfig($name, array $config) {
-// 		debug('registerConfig('.$name.')', $config);
 		if( empty($config['path']) ) {
 			throw new \Exception('Missing a valid `path` in configuration of route "'.$name.'"');
 		}
 		if( empty($config['response']) ) {
 			$config['response']	= !empty($config['output']) ? static::getOutputResponse($config['output']) : 'Orpheus\InputController\HTTPController\HTMLHTTPResponse';
-// 			$config['response'] = !empty($config['output']) ? $config['output'].'HTTPResponse' : 'HTMLHTTPResponse';
 		}
 		if( empty($config['controller']) ) {
 			if( !empty($config['redirect']) ) {
@@ -151,24 +163,47 @@ class HTTPRoute extends ControllerRoute {
 		static::register($name, $config['path'], $config['controller'], isset($config['method']) ? $config['method'] : null, $config['restrictTo'], $config['response'], $options);
 	}
 	
+	/**
+	 * Register route by $name
+	 * 
+	 * @param string $name
+	 * @param string $path
+	 * @param string $controller
+	 * @param string $methods
+	 * @param array $restrictTo
+	 * @param string $defaultResponse
+	 * @param array $options
+	 */
 	public static function register($name, $path, $controller, $methods=null, $restrictTo=null, $defaultResponse, $options=array()) {
 		if( $methods && !is_array($methods) ) {
-			$methods	= array($methods);
+			$methods = array($methods);
 		}
 		foreach( static::$knownMethods as $method ) {
 			if( (!$methods && !empty(static::$routes[$name][$method])) || ($methods && !in_array($method, $methods)) ) {
 				continue;
 			}
-			static::$routes[$name][$method]	= new static($name, $path, $controller, $method, $restrictTo, $defaultResponse, $options);
+			static::$routes[$name][$method] = new static($name, $path, $controller, $method, $restrictTo, $defaultResponse, $options);
 		}
 	}
 	
-	public static function setOutputResponse($output, $responseClass) {
-		static::$outputResponses[$output] = $responseClass;
-	}
-	
+	/**
+	 * Get the output response
+	 * 
+	 * @param string $output
+	 * @return mixed
+	 */
 	public static function getOutputResponse($output) {
 		return static::$outputResponses[$output];
+	}
+	
+	/**
+	 * Set the output response
+	 * 
+	 * @param string $output
+	 * @param string $responseClass
+	 */
+	public static function setOutputResponse($output, $responseClass) {
+		static::$outputResponses[$output] = $responseClass;
 	}
 	
 	public static function setTypeRegex($type, $regex) {

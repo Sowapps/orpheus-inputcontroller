@@ -6,6 +6,11 @@ use Orpheus\InputController\OutputResponse;
 
 abstract class HTTPResponse extends OutputResponse {
 	
+	/**
+	 * The HTTP response code
+	 * 
+	 * @var int
+	 */
 	protected $code;
 	
 	/**
@@ -25,10 +30,21 @@ abstract class HTTPResponse extends OutputResponse {
 		return null;
 	}
 	
+	/**
+	 * Get the code
+	 * 
+	 * @return int
+	 */
 	public function getCode() {
 		return $this->code;
 	}
 	
+	/**
+	 * Set the code
+	 * 
+	 * @param int
+	 * @return \Orpheus\InputController\HTTPController\HTTPResponse
+	 */
 	public function setCode($code) {
 		$this->code = (int) $code;
 		return $this;
