@@ -8,6 +8,8 @@ use Orpheus\Exception\UserReportsException;
 class JSONHTTPResponse extends HTTPResponse {
 
 	/**
+	 * The data of the JSON response
+	 * 
 	 * @var array
 	 */
 	protected $data;
@@ -18,14 +20,6 @@ class JSONHTTPResponse extends HTTPResponse {
 	public function __construct($data=null) {
 		$this->setData($data);
 	}
-	
-	
-// 	/**
-// 	 * @return string
-// 	 */
-// 	public function __toString() {
-// 		return $this->data.'';
-// 	}
 	
 	/**
 	 * @see HTTPResponse::run()
@@ -38,6 +32,9 @@ class JSONHTTPResponse extends HTTPResponse {
 // 		die(json_encode($data));
 	}
 	
+	/**
+	 * Collect from parameters to get data
+	 */
 	public function collectFrom($textCode, $other=null, $domain='global', $description=null) {
 		// For errors only
 		$this->data	= array(
@@ -47,24 +44,44 @@ class JSONHTTPResponse extends HTTPResponse {
 		);
 	}
 	
+	/**
+	 * Render the given data
+	 * 
+	 * @param string $textCode
+	 * @param mixed $other
+	 * @param string $domain
+	 * @param string $description
+	 * @return \Orpheus\InputController\HTTPController\JSONHTTPResponse
+	 * @see \Orpheus\InputController\HTTPController\JSONHTTPResponse::returnData()
+	 * 
+	 * We recommend to use returnData() to return data, that is more RESTful and to use this method only for errors
+	 */
 	public static function render($textCode, $other=null, $domain='global', $description=null) {
 		$response = new static();
 		$response->collectFrom($textCode, $other, $domain, $description);
 		return $response;
 	}
 	
+	/**
+	 * Get a response with the given $data
+	 * 
+	 * @param mixed $data
+	 * @return \Orpheus\InputController\HTTPController\JSONHTTPResponse
+	 * @see \Orpheus\InputController\HTTPController\JSONHTTPResponse::render()
+	 */
 	public static function returnData($data) {
 		// Return success with data
 		$response = new static();
 		$response->data = $data;
 		return $response;
 	}
-	
+
 	/**
-	 * Generate HTMLResponse from 
+	 * Generate HTMLResponse from Exception
 	 * 
-	 * @param Exception $exception
+	 * @param \Exception $exception
 	 * @param string $action
+	 * @return \Orpheus\InputController\HTTPController\JSONHTTPResponse
 	 */
 	public static function generateFromException(\Exception $exception, $action='Handling the request') {
 		$code = $exception->getCode();
@@ -84,7 +101,14 @@ class JSONHTTPResponse extends HTTPResponse {
 		$response->setCode($code);
 		return $response;
 	}
-	
+
+	/**
+	 * Generate HTMLResponse from UserException
+	 *
+	 * @param UserException $exception
+	 * @param array $values
+	 * @return \Orpheus\InputController\HTTPController\JSONHTTPResponse
+	 */
 	public static function generateFromUserException(UserException $exception, $values=array()) {
 		$code = $exception->getCode();
 		if( !$code ) {
@@ -102,10 +126,21 @@ class JSONHTTPResponse extends HTTPResponse {
 		return $response;
 	}
 	
+	/**
+	 * Get the data
+	 * 
+	 * @return mixed
+	 */
 	public function getData() {
 		return $this->data;
 	}
 	
+	/**
+	 * Set the data
+	 * 
+	 * @param mixed $data
+	 * @return \Orpheus\InputController\HTTPController\JSONHTTPResponse
+	 */
 	public function setData($data) {
 		$this->data = $data;
 		return $this;

@@ -206,6 +206,12 @@ class HTTPRoute extends ControllerRoute {
 		static::$outputResponses[$output] = $responseClass;
 	}
 	
+	/**
+	 * Set the regex of a type, used to parse paths
+	 * 
+	 * @param string $type
+	 * @param string $regex
+	 */
 	public static function setTypeRegex($type, $regex) {
 		static::$typesRegex[$type] = $regex;
 	}
@@ -234,6 +240,11 @@ class HTTPRoute extends ControllerRoute {
 		return null;
 	}
 	
+	/**
+	 * Get the known HTTP methods
+	 * 
+	 * @return string[]
+	 */
 	public static function getKnownMethods() {
 		return static::$knownMethods;
 	}
