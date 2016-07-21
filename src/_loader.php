@@ -5,6 +5,10 @@ use Orpheus\Core\Route;
 use Orpheus\Core\RequestHandler;
 use Orpheus\InputController\InputRequest;
 
+if( !defined('ORPHEUSPATH') ) {
+	// Do not load in a non-orpheus environment
+	return;
+}
 
 /**
  * Generate URL to a route
