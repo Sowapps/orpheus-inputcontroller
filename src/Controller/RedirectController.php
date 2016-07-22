@@ -1,4 +1,8 @@
 <?php
+/**
+ * RedirectController
+ */
+
 namespace Orpheus\Controller;
 
 use Orpheus\InputController\HTTPController\HTTPRequest;
@@ -6,9 +10,17 @@ use Orpheus\InputController\HTTPController\RedirectHTTPResponse;
 use Orpheus\InputController\HTTPController\HTTPController;
 use Orpheus\Config\AppConfig;
 
+/**
+ * The RedirectController class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class RedirectController extends HTTPController {
 
 	/**
+	 * Run the controller
+	 * 
 	 * @param HTTPRequest $request The input HTTP request
 	 * @return HTTPResponse The output HTTP response
 	 * @see HTTPController::run()

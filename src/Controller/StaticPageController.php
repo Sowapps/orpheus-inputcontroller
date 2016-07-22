@@ -1,13 +1,24 @@
 <?php
+/**
+ * StaticPageController
+ */
 namespace Orpheus\Controller;
 
 use Orpheus\InputController\HTTPController\HTTPRequest;
 use Orpheus\InputController\HTTPController\HTTPController;
 use Orpheus\InputController\HTTPController\HTMLHTTPResponse;
 
+/**
+ * The StaticPageController class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class StaticPageController extends HTTPController {
 
 	/**
+	 * Run the controller
+	 * 
 	 * @param HTTPRequest $request The input HTTP request
 	 * @return HTTPResponse The output HTTP response
 	 * @see HTTPController::run()
