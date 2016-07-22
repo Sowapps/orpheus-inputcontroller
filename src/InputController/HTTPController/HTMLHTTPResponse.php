@@ -1,22 +1,37 @@
 <?php
+/**
+ * HTMLHTTPResponse
+ */
+
 namespace Orpheus\InputController\HTTPController;
 
 use Orpheus\Rendering\HTMLRendering;
 use Orpheus\Exception\UserException;
 
+/**
+ * The HTMLHTTPResponse class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class HTMLHTTPResponse extends HTTPResponse {
 
 	/**
+	 * The HTML body of the response
+	 * 
 	 * @var string
 	 */
 	protected $body;
 
 	/**
+	 * The layout to use ot generate HTML
+	 * 
 	 * @var string
 	 */
 	protected $layout;
 	
 	/**
+	 * The values to send to the layout
 	 * 
 	 * @var array
 	 */
@@ -38,7 +53,9 @@ class HTMLHTTPResponse extends HTTPResponse {
 // 	}
 	
 	/**
-	 * @see HTTPResponse::run()
+	 * 
+	 * {@inheritDoc}
+	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::run()
 	 */
 	public function run() {
 		if( !headers_sent() ) {
@@ -58,6 +75,11 @@ class HTMLHTTPResponse extends HTTPResponse {
 		$rendering->display($this->layout, $env);
 	}
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::collectFrom()
+	 */
 	public function collectFrom($layout, $values=array()) {
 		$this->layout	= $layout;
 		$this->values	= $values;

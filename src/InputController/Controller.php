@@ -1,11 +1,25 @@
 <?php
+/**
+ * Controller
+ */
+
 namespace Orpheus\InputController;
 
 use Orpheus\Exception\UserException;
 
+/**
+ * The Controller class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 abstract class Controller {
 
-	/* @var $request InputRequest */
+	/**
+	 * The request calling this controller
+	 * 
+	 * @var \Orpheus\InputController\InputRequest
+	 */
 	protected $request;
 	
 	/**
@@ -24,6 +38,11 @@ abstract class Controller {
 	 */
 	protected $options = array();
 	
+	/**
+	 * Get this controller as string
+	 * 
+	 * @return string
+	 */
 	public function __toString() {
 		return get_called_class();
 	}
@@ -67,11 +86,18 @@ abstract class Controller {
 		return $result;
 	}
 	
+	/**
+	 * Process the given UserException
+	 * 
+	 * @param UserException $e
+	 * @throws \Orpheus\Exception\UserException
+	 */
 	public function processUserException(UserException $e) {
 		throw $e;// Throw to request
 	}
 	
 	/**
+	 * Get the request
 	 * 
 	 * @return \Orpheus\InputController\InputRequest
 	 */

@@ -1,9 +1,19 @@
 <?php
+/**
+ * HTTPRequest
+ */
+
 namespace Orpheus\InputController\HTTPController;
 
 use Orpheus\InputController\InputRequest;
 use Orpheus\InputController\ControllerRoute;
 
+/**
+ * The HTTPRequest class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class HTTPRequest extends InputRequest {
 
 	/**

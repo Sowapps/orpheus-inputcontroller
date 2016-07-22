@@ -1,4 +1,8 @@
 <?php
+/**
+ * ControllerRoute
+ */
+
 namespace Orpheus\InputController;
 
 use Orpheus\Exception\NotFoundException;
@@ -8,6 +12,12 @@ use Orpheus\Config\YAML\YAML;
 use Orpheus\Core\Route;
 use Orpheus\Core\RequestHandler;
 
+/**
+ * The ControllerRoute class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 abstract class ControllerRoute extends Route {
 	
 	/**
@@ -52,10 +62,30 @@ abstract class ControllerRoute extends Route {
 	 */
 	protected $defaultResponse;
 	
+	/**
+	 * Registered routes
+	 *
+	 * @var array
+	 */
 	protected static $routes = array();
 	
+	/**
+	 * Registered route restrictions
+	 * 
+	 * @var array
+	 */
 	protected static $routesRestrictions = array();
-	
+
+	/**
+	 * Constructor
+	 *
+	 * @param string $name
+	 * @param string $path
+	 * @param string $controller
+	 * @param array $restrictTo
+	 * @param string $defaultResponse
+	 * @param array $options
+	 */
 	protected function __construct($name, $path, $controller, $restrictTo, $defaultResponse, $options) {
 		$this->name			= $name;
 		$this->path			= $path;
@@ -154,6 +184,11 @@ abstract class ControllerRoute extends Route {
 		return $response::generateFromException($exception);
 	}
 	
+	/**
+	 * Define this class initialized
+	 * 
+	 * @var string
+	 */
 	protected static $initialized = false;
 	
 	/**
@@ -262,6 +297,11 @@ abstract class ControllerRoute extends Route {
 		return $this->options;
 	}
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see \Orpheus\Core\Route::isAccessible()
+	 */
 	public function isAccessible() {
 		if( !CHECK_MODULE_ACCESS ) {
 			return true;
@@ -279,6 +319,11 @@ abstract class ControllerRoute extends Route {
 		return true;
 	}
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see \Orpheus\Core\Route::getLink()
+	 */
 	public function getLink() {
 		return $this->formatURL();
 	}

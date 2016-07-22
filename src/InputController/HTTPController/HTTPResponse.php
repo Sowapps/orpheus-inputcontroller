@@ -1,9 +1,19 @@
 <?php
+/**
+ * HTTPResponse
+ */
+
 namespace Orpheus\InputController\HTTPController;
 
 
 use Orpheus\InputController\OutputResponse;
 
+/**
+ * The HTTPResponse class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 abstract class HTTPResponse extends OutputResponse {
 	
 	/**

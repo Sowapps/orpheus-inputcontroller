@@ -1,10 +1,30 @@
 <?php
+/**
+ * RedirectHTTPResponse
+ */
+
 namespace Orpheus\InputController\HTTPController;
 
+/**
+ * The RedirectHTTPResponse class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class RedirectHTTPResponse extends HTTPResponse {
 	
+	/**
+	 * The destination URI to redirect client
+	 * 
+	 * @var string
+	 */
 	protected $destinationURI;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param string $destinationURI
+	 */
 	public function __construct($destinationURI) {
 		$this->setCode(HTTP_MOVED_TEMPORARILY);
 		if( exists_route($destinationURI) ) {
@@ -14,7 +34,9 @@ class RedirectHTTPResponse extends HTTPResponse {
 	}
 	
 	/**
-	 * @see HTTPResponse::process()
+	 * 
+	 * {@inheritDoc}
+	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::run()
 	 */
 	public function run() {
 		
@@ -23,13 +45,28 @@ class RedirectHTTPResponse extends HTTPResponse {
 		
 	}
 	
+	/**
+	 * Set this redirection permanent
+	 */
 	public function setPermanent() {
 		$this->setCode(HTTP_MOVED_PERMANENTLY);
 	}
 	
+	/**
+	 * Get the destination URI
+	 * 
+	 * @return string
+	 */
 	public function getDestinationURI() {
 		return $this->destinationURI;
 	}
+	
+	/**
+	 * Set the destination URI
+	 * 
+	 * @param string $destinationURI
+	 * @return \Orpheus\InputController\HTTPController\RedirectHTTPResponse
+	 */
 	public function setDestinationURI($destinationURI) {
 		$this->destinationURI = $destinationURI;
 		return $this;

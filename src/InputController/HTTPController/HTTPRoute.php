@@ -1,15 +1,43 @@
 <?php
+/**
+ * HTTPRoute
+ */
+
 namespace Orpheus\InputController\HTTPController;
 
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 use Orpheus;
 
+/**
+ * The HTTPRoute class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class HTTPRoute extends ControllerRoute {
 	
+	/**
+	 * The method to reach this route
+	 *
+	 * @var string
+	 */
 	protected $method;
-	protected $defaults;
+	
+// 	protected $defaults;
+
+	/**
+	 * Path with converted regex
+	 * 
+	 * @var string
+	 */
 	protected $pathRegex;
+	
+	/**
+	 * Variables in path
+	 * 
+	 * @var string[]
+	 */
 	protected $pathVariables;
 	
 	const METHOD_GET	= 'GET';
@@ -17,16 +45,50 @@ class HTTPRoute extends ControllerRoute {
 	const METHOD_PUT	= 'PUT';
 	const METHOD_DELETE	= 'DELETE';
 	
+	/**
+	 * Registered regex for a type
+	 * 
+	 * @var array
+	 */
 	protected static $typesRegex		= array();
+	
+	/**
+	 * Registered routes
+	 * 
+	 * @var array
+	 */
 	protected static $routes			= array();
+	
+	/**
+	 * Registered response class for output option
+	 * 
+	 * @var array
+	 */
 	protected static $outputResponses	= array();
+	
+	/**
+	 * All known methods
+	 * 
+	 * @var array
+	 */
 	protected static $knownMethods		= array(
 		self::METHOD_GET, self::METHOD_POST, self::METHOD_PUT, self::METHOD_DELETE
 	);
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param string $name
+	 * @param string $path
+	 * @param string $controller
+	 * @param string $methods
+	 * @param array $restrictTo
+	 * @param string $defaultResponse
+	 * @param array $options
+	 */
 	protected function __construct($name, $path, $controller, $method, $restrictTo, $defaultResponse, $options) {
 		parent::__construct($name, $path, $controller, $restrictTo, $defaultResponse, $options);
-		$this->method	= $method;
+		$this->method = $method;
 		$this->generatePathRegex();
 	}
 	
@@ -57,6 +119,11 @@ class HTTPRoute extends ControllerRoute {
 		return SITEROOT.(isset($path[0]) && $path[0]==='/' ? substr($path, 1) : $path);
 	}
 	
+	/**
+	 * Get route as string
+	 * 
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->method.'("'.$this->path.'")';
 	}
@@ -104,6 +171,7 @@ class HTTPRoute extends ControllerRoute {
 		);
 		$this->pathVariables = $variables;
 	}
+	
 	/**
 	 * Test current route is matching request
 	 * 
@@ -216,6 +284,11 @@ class HTTPRoute extends ControllerRoute {
 		static::$typesRegex[$type] = $regex;
 	}
 	
+	/**
+	 * Get registered routes
+	 * 
+	 * @return array
+	 */
 	public static function getRoutes() {
 // 		$routes	= parent::getRoutes();
 		return static::$routes;

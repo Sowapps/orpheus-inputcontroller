@@ -1,10 +1,20 @@
 <?php
+/**
+ * JSONHTTPResponse
+ */
+
 namespace Orpheus\InputController\HTTPController;
 
 
 use Orpheus\Exception\UserException;
 use Orpheus\Exception\UserReportsException;
 
+/**
+ * The JSONHTTPResponse class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class JSONHTTPResponse extends HTTPResponse {
 
 	/**
@@ -15,6 +25,8 @@ class JSONHTTPResponse extends HTTPResponse {
 	protected $data;
 	
 	/**
+	 * Constructor
+	 * 
 	 * @param array $data
 	 */
 	public function __construct($data=null) {
@@ -22,7 +34,9 @@ class JSONHTTPResponse extends HTTPResponse {
 	}
 	
 	/**
-	 * @see HTTPResponse::run()
+	 * 
+	 * {@inheritDoc}
+	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::run()
 	 */
 	public function run() {
 		if( !headers_sent() ) {
@@ -33,7 +47,13 @@ class JSONHTTPResponse extends HTTPResponse {
 	}
 	
 	/**
-	 * Collect from parameters to get data
+	 * 
+	 * {@inheritDoc}
+	 * @param string $textCode
+	 * @param mixed $other
+	 * @param string $domain
+	 * @param string $description
+	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::collectFrom()
 	 */
 	public function collectFrom($textCode, $other=null, $domain='global', $description=null) {
 		// For errors only

@@ -1,4 +1,8 @@
 <?php
+/**
+ * Loader for Orpheus Input Controller library
+ */
+
 use Orpheus\InputController\HTTPController\HTTPRoute;
 use Orpheus\InputController\HTTPController\HTTPRequest;
 use Orpheus\Core\Route;

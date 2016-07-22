@@ -1,8 +1,18 @@
 <?php
+/**
+ * InputRequest
+ */
+
 namespace Orpheus\InputController;
 
 use Orpheus\Exception\NotFoundException;
 
+/**
+ * The InputRequest class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 abstract class InputRequest {
 	
 	/**
@@ -11,23 +21,33 @@ abstract class InputRequest {
 	 * @var string
 	 */
 	protected $path;
+	
 	/**
 	 * The input parameters (inline parameters)
 	 * 
 	 * @var array
 	 */
 	protected $parameters;
+	
 	/**
 	 * The input (like stdin)
 	 * 
 	 * @var array
 	 */
 	protected $input;
+	
 	/**
 	 * @var ControllerRoute $route
 	 */
 	protected $route;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param string $path
+	 * @param array $parameters
+	 * @param array $input
+	 */
 	public function __construct($path, $parameters, $input) {
 		$this->path			= $path;
 		$this->parameters	= $parameters;
@@ -116,6 +136,7 @@ abstract class InputRequest {
 	public function getPath() {
 		return $this->path;
 	}
+	
 	/**
 	 * Set the path
 	 * 
