@@ -56,7 +56,7 @@ abstract class HTTPController extends Controller {
 	 * 
 	 * {@inheritDoc}
 	 * @see \Orpheus\InputController\Controller::processUserException()
-	 * @param UserException $e
+	 * @param UserException $exception
 	 * @param array $values
 	 */
 	public function processUserException(UserException $exception, $values=array()) {

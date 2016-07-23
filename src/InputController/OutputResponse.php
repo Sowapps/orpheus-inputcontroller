@@ -64,8 +64,8 @@ abstract class OutputResponse {
 	/**
 	 * Generate OutputResponse from UserException
 	 *
-	 * @param Exception $exception
-	 * @param string $action
+	 * @param UserException $exception
+	 * @param array $values
 	 * @return \Orpheus\InputController\OutputResponse
 	 */
 	public static function generateFromUserException(UserException $exception, $values=array()) {
