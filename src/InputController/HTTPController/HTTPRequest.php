@@ -74,13 +74,23 @@ class HTTPRequest extends InputRequest {
 	protected $pathValues;
 
 	/**
-	 * @see InputRequest::__construct()
+	 * Constructor
+	 * 
+	 * @param string $path
+	 * @param string $path
+	 * @param array $parameters
+	 * @param array $input
 	 */
 	public function __construct($method, $path, $parameters=null, $input=null) {
 		parent::__construct($path, $parameters, $input);
 		$this->setMethod($method);
 	}
 	
+	/**
+	 * Get this request as string
+	 * 
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->method.'("'.$this->path.'")';
 	}
@@ -97,26 +107,31 @@ class HTTPRequest extends InputRequest {
 	/**
 	 * Find a matching route according to the request
 	 * 
+	 * @param boolean $alternative Is this looking for an alternative route ?
 	 * @return Route
 	 */
 	public function findFirstMatchingRoute($alternative=false) {
-// 		debug('findFirstMatchingRoute', $this->getRoutes());
-// 		die();
 		/* @var ControllerRoute $route */
 		foreach( $this->getRoutes() as $methodRoutes ) {
 			if( !isset($methodRoutes[$this->method]) ) { continue; }
 			/* @var $route HTTPRoute */
-			$route	= $methodRoutes[$this->method];
+			$route = $methodRoutes[$this->method];
 			$values = null;
 			if( $route->isMatchingRequest($this, $values, $alternative) ) {
-				$this->pathValues	= (object) $values;
+				$this->pathValues = (object) $values;
 				return $route;
 			}
 		}
-// 		die();
 		return null;
 	}
 	
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * @see \Orpheus\InputController\InputRequest::redirect()
+	 * @param ControllerRoute $route
+	 * @return RedirectHTTPResponse
+	 */
 	public function redirect(ControllerRoute $route) {
 		return new RedirectHTTPResponse(u($route->getName()));
 	}
@@ -166,11 +181,6 @@ class HTTPRequest extends InputRequest {
 				$input	= $_POST;
 			}
 		}
-// 		$FORMAT	= isGET('format') ? strtolower(GET('format')) : 'json';
-// 		$PATH	= GET('_path');
-// 		$METHOD	= $_SERVER['REQUEST_METHOD'];
-// 		debug('$_SERVER', $_SERVER);
-// 		$request	= new static($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], $_GET);
 		$request	= new static($method, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_GET);
 		$request->setContent($input, $inputType)
 			->setScheme(!empty($_SERVER['HTTPS']) ? 'https' : 'http')
@@ -178,7 +188,6 @@ class HTTPRequest extends InputRequest {
 			->setHeaders(getallheaders())
 			->setCookies($_COOKIE)
 			->setFiles($_FILES);
-// 		return new static($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI'], '', '', $_GET, getallheaders(), $inputType, $input);
 		return $request;
 	}
 	
@@ -188,17 +197,11 @@ class HTTPRequest extends InputRequest {
 	 */
 	public static function handleCurrentRequest() {
 		try {
-// 			debug('HTTPRequest::handleCurrentRequest()');
-// 			die();
 			HTTPRoute::initialize();
 			static::$mainRequest = static::generateFromEnvironment();
-	//		debug('$request', static::$mainRequest);
-	//		die();
 			$response = static::$mainRequest->process();
 		} catch( Exception $e ) {
-// 			debug('handleCurrentRequest() - Exception');
 			$response = HTMLHTTPResponse::generateFromException($e);
-// 			die();
 		}
 		$response->process();
 		die();
@@ -383,7 +386,7 @@ class HTTPRequest extends InputRequest {
 	/**
 	 * Set the uploaded files
 	 *
-	 * @param array $cookies
+	 * @param array $files
 	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
 	 */
 	protected function setFiles($files) {
