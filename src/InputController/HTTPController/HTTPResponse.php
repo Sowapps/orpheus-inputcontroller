@@ -28,6 +28,9 @@ abstract class HTTPResponse extends OutputResponse {
 	 */
 	public abstract function run();
 	
+	/**
+	 * Process the response
+	 */
 	public function process() {
 		if( $this->code ) {
 			http_response_code($this->code);
@@ -35,7 +38,13 @@ abstract class HTTPResponse extends OutputResponse {
 		$this->run();
 	}
 	
-
+	/**
+	 * Collect response data from parameters
+	 * 
+	 * @param string $layout
+	 * @param array $values
+	 * @return NULL
+	 */
 	public function collectFrom($layout, $values=array()) {
 		return null;
 	}

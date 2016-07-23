@@ -38,6 +38,8 @@ class HTMLHTTPResponse extends HTTPResponse {
 	protected $values;
 	
 	/**
+	 * Constructor
+	 * 
 	 * @param string $body
 	 */
 	public function __construct($body=null) {
@@ -79,10 +81,14 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 * 
 	 * {@inheritDoc}
 	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::collectFrom()
+	 * @param string $layout
+	 * @param array $values
+	 * @return NULL
 	 */
 	public function collectFrom($layout, $values=array()) {
 		$this->layout	= $layout;
 		$this->values	= $values;
+		return null;
 	}
 	
 	/**
@@ -128,8 +134,8 @@ class HTMLHTTPResponse extends HTTPResponse {
 	/**
 	 * Generate HTMLResponse from UserException
 	 *
-	 * @param Exception $exception
-	 * @param string $action
+	 * @param UserException $exception
+	 * @param array $values
 	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
 	 */
 	public static function generateFromUserException(UserException $exception, $values=array()) {
