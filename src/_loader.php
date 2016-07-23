@@ -34,7 +34,7 @@ function u($routeName, $values=array()) {
 /**
  * Display URL to a route
  * 
- * @param string $routeName
+ * @param string $route
  * @param array $values
  * @throws Exception
  */

@@ -76,7 +76,7 @@ class HTTPRequest extends InputRequest {
 	/**
 	 * Constructor
 	 * 
-	 * @param string $path
+	 * @param string $method
 	 * @param string $path
 	 * @param array $parameters
 	 * @param array $input

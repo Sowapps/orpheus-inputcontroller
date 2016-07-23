@@ -17,6 +17,7 @@ use Orpheus\Exception\UserException;
 abstract class HTTPController extends Controller {
 	
 	/**
+	 * Run this controller
 	 * 
 	 * @param HTTPRequest $request
 	 * @return HTTPResponse
@@ -55,6 +56,8 @@ abstract class HTTPController extends Controller {
 	 * 
 	 * {@inheritDoc}
 	 * @see \Orpheus\InputController\Controller::processUserException()
+	 * @param UserException $e
+	 * @param array $values
 	 */
 	public function processUserException(UserException $exception, $values=array()) {
 		return $this->getRoute()->processUserException($exception, $values);

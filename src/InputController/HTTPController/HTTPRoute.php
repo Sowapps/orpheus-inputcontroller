@@ -23,8 +23,6 @@ class HTTPRoute extends ControllerRoute {
 	 * @var string
 	 */
 	protected $method;
-	
-// 	protected $defaults;
 
 	/**
 	 * Path with converted regex
@@ -81,7 +79,7 @@ class HTTPRoute extends ControllerRoute {
 	 * @param string $name
 	 * @param string $path
 	 * @param string $controller
-	 * @param string $methods
+	 * @param string $method
 	 * @param array $restrictTo
 	 * @param string $defaultResponse
 	 * @param array $options
@@ -178,6 +176,7 @@ class HTTPRoute extends ControllerRoute {
 	 * {@inheritDoc}
 	 * @param HTTPRequest $request
 	 * @param array $values
+	 * @param boolean $alternative
 	 * @see \Orpheus\InputController\ControllerRoute::isMatchingRequest()
 	 */
 	public function isMatchingRequest(InputRequest $request, &$values=array(), $alternative=false) {
@@ -295,6 +294,7 @@ class HTTPRoute extends ControllerRoute {
 	}
 	
 	/**
+	 * Get the route object for the $route name
 	 * 
 	 * @param string $route
 	 * @param string $method

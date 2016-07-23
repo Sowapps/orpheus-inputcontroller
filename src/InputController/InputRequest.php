@@ -37,6 +37,8 @@ abstract class InputRequest {
 	protected $input;
 	
 	/**
+	 * The found route for this request
+	 * 
 	 * @var ControllerRoute $route
 	 */
 	protected $route;
@@ -57,6 +59,7 @@ abstract class InputRequest {
 	/**
 	 * Find a matching route according to the request
 	 * 
+	 * @param boolean $alternative
 	 * @return Route
 	 */
 	public function findFirstMatchingRoute($alternative=false) {
@@ -248,6 +251,8 @@ abstract class InputRequest {
 	protected static $mainRequest;
 
 	/**
+	 * Get the main input request
+	 * 
 	 * @return \Orpheus\InputController\InputRequest
 	 */
 	public static function getMainRequest() {
