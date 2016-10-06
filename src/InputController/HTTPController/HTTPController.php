@@ -30,11 +30,12 @@ abstract class HTTPController extends Controller {
 	 * @param HTTPRequest $request
 	 */
 	public function prepare(HTTPRequest $request) {
-		$route = $this->getRoute();
-		$routeOptions = $route->getOptions();
-		if( !isset($routeOptions['session']) || $routeOptions['session'] ) {
-			startSession();
-		}
+		// Moved to route process
+// 		$route = $this->getRoute();
+// 		$routeOptions = $route->getOptions();
+// 		if( !isset($routeOptions['session']) || $routeOptions['session'] ) {
+// 			startSession();
+// 		}
 	}
 
 	/**
