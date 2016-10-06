@@ -25,6 +25,19 @@ abstract class HTTPController extends Controller {
 	public abstract function run(HTTPRequest $request);
 
 	/**
+	 * Prepare controller for request before running
+	 * 
+	 * @param HTTPRequest $request
+	 */
+	public function prepare(HTTPRequest $request) {
+		$route = $this->getRoute();
+		$routeOptions = $route->getOptions();
+		if( !isset($routeOptions['session']) || $routeOptions['session'] ) {
+			startSession();
+		}
+	}
+
+	/**
 	 * Before running controller
 	 * 
 	 * @param HTTPRequest $request

@@ -159,9 +159,9 @@ class HTTPRequest extends InputRequest {
 		
 		if( !empty($_SERVER['CONTENT_TYPE']) ) {
 			list($inputType) = explodeList(';', $_SERVER['CONTENT_TYPE'], 2);
-			$inputType	= trim($inputType);
+			$inputType = trim($inputType);
 		} else {
-			$inputType	= 'application/x-www-form-urlencoded';
+			$inputType = 'application/x-www-form-urlencoded';
 		}
 		
 		// Get input
@@ -178,10 +178,10 @@ class HTTPRequest extends InputRequest {
 				parse_str(file_get_contents("php://input"), $input);
 			} else
 			if( isset($_POST) ) {
-				$input	= $_POST;
+				$input = $_POST;
 			}
 		}
-		$request	= new static($method, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_GET);
+		$request = new static($method, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_GET);
 		$request->setContent($input, $inputType)
 			->setScheme(!empty($_SERVER['HTTPS']) ? 'https' : 'http')
 			->setDomain($_SERVER['HTTP_HOST'])
