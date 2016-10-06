@@ -91,6 +91,19 @@ class HTTPRoute extends ControllerRoute {
 	}
 	
 	/**
+	 * Prepare environment for this route
+	 * 
+	 * @param HTTPRequest $request
+	 */
+	public function prepare(HTTPRequest $request) {
+// 		$route = $this->getRoute();
+		$routeOptions = $this->getOptions();
+		if( !isset($routeOptions['session']) || $routeOptions['session'] ) {
+			startSession();
+		}
+	}
+	
+	/**
 	 * Format the current route to get an URL from path
 	 * 
 	 * @param string[] $values
