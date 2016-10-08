@@ -63,7 +63,7 @@ class HTMLHTTPResponse extends HTTPResponse {
 		if( !headers_sent() ) {
 			header('Content-Type: text/html; charset="UTF-8"');
 		}
-		if( $this->body ) {
+		if( isset($this->body) ) {
 			// if already generated we display the body
 			echo $this->getBody();
 			return;
