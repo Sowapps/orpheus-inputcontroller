@@ -339,6 +339,7 @@ class HTTPRoute extends ControllerRoute {
 
 //http://fr.php.net/manual/fr/regexp.reference.escape.php
 //http://fr.php.net/manual/fr/regexp.reference.character-classes.php
+// Case Insensitive
 HTTPRoute::setTypeRegex('int',	'\d+');
 HTTPRoute::setTypeRegex('id',	'[1-9]\d*');
 HTTPRoute::setTypeRegex('slug',	'[a-z0-9\-_]+');
