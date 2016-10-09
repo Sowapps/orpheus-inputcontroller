@@ -249,7 +249,7 @@ class HTTPRoute extends ControllerRoute {
 	 * @param string $name
 	 * @param string $path
 	 * @param string $controller
-	 * @param string $methods
+	 * @param string|array $methods
 	 * @param array $restrictTo
 	 * @param string $defaultResponse
 	 * @param array $options
