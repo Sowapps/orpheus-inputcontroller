@@ -475,7 +475,7 @@ class HTTPRequest extends InputRequest {
 	 * @return string The path value for $key
 	 */
 	public function getPathValue($key, $default=null) {
-		return $this->hasPathValue() ? $this->pathValues->$key : $default;
+		return $this->hasPathValue($key) ? $this->pathValues->$key : $default;
 	}
 	
 	/**
