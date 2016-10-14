@@ -472,9 +472,19 @@ class HTTPRequest extends InputRequest {
 	 * 
 	 * @param string $key
 	 * @param mixed $default
-	 * @return string
+	 * @return string The path value for $key
 	 */
 	public function getPathValue($key, $default=null) {
-		return isset($this->pathValues->$key) ? $this->pathValues->$key : $default;
+		return $this->hasPathValue() ? $this->pathValues->$key : $default;
+	}
+	
+	/**
+	 * Check request has path value $key
+	 * 
+	 * @param string $key
+	 * @return boolean True if it has the $key value in path
+	 */
+	public function hasPathValue($key) {
+		return isset($this->pathValues->$key);
 	}
 }
