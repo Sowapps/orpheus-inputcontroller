@@ -200,7 +200,7 @@ class HTTPRequest extends InputRequest {
 			HTTPRoute::initialize();
 			static::$mainRequest = static::generateFromEnvironment();
 			$response = static::$mainRequest->process();
-		} catch( Exception $e ) {
+		} catch( \Exception $e ) {
 			$response = HTMLHTTPResponse::generateFromException($e);
 		}
 		$response->process();
