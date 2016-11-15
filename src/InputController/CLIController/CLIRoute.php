@@ -56,7 +56,7 @@ class CLIRoute extends ControllerRoute {
 	 * @param array $options
 	 */
 	protected function __construct($name, $path, $controller, $parameters, $options) {
-		parent::__construct($name, $path, $controller, null, null, $options);
+		parent::__construct($name, $path, $controller, null, 'Orpheus\InputController\CLIController\CLIResponse', $options);
 // 		$this->parameters = $parameters;
 		foreach( $parameters as $arg ) {
 			$this->parameters[$arg->getLongName()] = &$arg;
