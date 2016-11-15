@@ -67,6 +67,15 @@ class CLIRoute extends ControllerRoute {
 	}
 	
 	/**
+	 * Prepare environment for this route
+	 * 
+	 * @param CLIRequest $request
+	 */
+	public function prepare(CLIRequest $request) {
+		
+	}
+	
+	/**
 	 * Format the current route to get an URL from path
 	 * 
 	 * @param string[] $values
