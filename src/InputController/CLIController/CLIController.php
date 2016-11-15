@@ -28,9 +28,9 @@ abstract class CLIController extends Controller {
 	/**
 	 * Request a input line to user
 	 */
-	public function requestInputLine($text=null) {
+	public function requestInputLine($text=null, $return=true) {
 		if( $text ) {
-			echo $text."\n";
+			echo $text.($return ? "\n" : ' ');
 		}
 		return trim(fgets(STDIN));
 	}
