@@ -7,9 +7,8 @@ namespace Orpheus\InputController\CLIController;
 
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
-use Orpheus;
 use Orpheus\InputController\TypeValidator;
-use Orpheus\InputController\CLIArgument;
+use Orpheus\InputController\CLIController\CLIArgument;
 
 /**
  * The CLIRoute class

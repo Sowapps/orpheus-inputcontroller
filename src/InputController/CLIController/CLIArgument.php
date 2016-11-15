@@ -3,7 +3,7 @@
  * TypeValidator
  */
 
-namespace Orpheus\InputController;
+namespace Orpheus\InputController\CLIController;
 
 /**
  * The CLIArgument class
