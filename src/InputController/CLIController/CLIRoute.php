@@ -154,6 +154,7 @@ class CLIRoute extends ControllerRoute {
 // 			$config['restrictTo'] = null;
 // 		}
 		$options = $config;
+		debug('$options', $options);
 		unset($options['path'], $options['controller'], $options['parameters']);
 		static::register($name, $config['path'], $config['controller'], $parameters, $options);
 	}
