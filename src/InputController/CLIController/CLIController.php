@@ -32,7 +32,7 @@ abstract class CLIController extends Controller {
 		if( $text ) {
 			echo $text."\n";
 		}
-		return fgets(STDIN);
+		return trim(fgets(STDIN));
 	}
 	
 	/**
