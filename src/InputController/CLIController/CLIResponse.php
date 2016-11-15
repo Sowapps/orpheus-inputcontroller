@@ -63,4 +63,24 @@ class CLIResponse extends OutputResponse {
 		$response = new static(convertExceptionAsText($exception, 0, $action));
 		return $response;
 	}
+	
+	/**
+	 * Get the body
+	 * 
+	 * @return string
+	 */
+	public function getBody() {
+		return $this->body;
+	}
+	
+	/**
+	 * Set the body
+	 * 
+	 * @param string $body
+	 * @return \Orpheus\InputController\CLIController\CLIResponse
+	 */
+	public function setBody($body) {
+		$this->body = $body;
+		return $this;
+	}
 }
