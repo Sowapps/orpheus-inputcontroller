@@ -14,7 +14,7 @@ use Orpheus\InputController\OutputResponse;
  * @author Florent Hazard <contact@sowapps.com>
  *
  */
-abstract class CLIResponse extends OutputResponse {
+class CLIResponse extends OutputResponse {
 	
 	/**
 	 * The HTML body of the response
