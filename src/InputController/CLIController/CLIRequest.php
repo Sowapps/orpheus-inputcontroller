@@ -50,6 +50,7 @@ class CLIRequest extends InputRequest {
 	 * @return CLIRequest
 	 */
 	public static function generateFromEnvironment() {
+		global $argc, $argv;
 		
 		$stdin = defined('STDIN') ? STDIN : fopen('php://stdin', 'r');
 		$data = stream_get_meta_data($stdin);
