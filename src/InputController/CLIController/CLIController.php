@@ -17,6 +17,15 @@ use Orpheus\Exception\UserException;
 abstract class CLIController extends Controller {
 	
 	/**
+	 * Print text line
+	 */
+	public function printLine($text=null) {
+		if( $text ) {
+			echo $text."\n";
+		}
+	}
+	
+	/**
 	 * Request a input line to user
 	 */
 	public function requestInputLine($text=null) {
