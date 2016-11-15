@@ -36,6 +36,10 @@ class CLIResponse extends OutputResponse {
 	 * @param string $body
 	 */
 	public function __construct($code=0, $body=null) {
+		if( is_string($code) ) {
+			$body = $code;
+			$code = 0;
+		}
 		$this->setCode($code);
 		$this->setBody($body);
 	}
