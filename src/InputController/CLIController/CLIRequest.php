@@ -67,8 +67,8 @@ class CLIRequest extends InputRequest {
 			$parameters = array_slice($argv, 1);
 		}
 		
-		$request = new static($path, $parameters);
-		$request->setContent($input);
+		$request = new static($path, $parameters, $input);
+// 		$request->setContent($input);
 		return $request;
 	}
 	
