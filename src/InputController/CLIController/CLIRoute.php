@@ -126,6 +126,7 @@ class CLIRoute extends ControllerRoute {
 	 * @throws \Exception
 	 */
 	public static function registerConfig($name, array $config) {
+		debug('Config '.$name, $config);
 		if( empty($config['path']) ) {
 			throw new \Exception('Missing a valid "path" in configuration of route "'.$name.'"');
 		}
