@@ -85,7 +85,7 @@ class CLIRequest extends InputRequest {
 			$response = CLIResponse::generateFromException($e);
 		}
 		$response->process();
-		die();
+		exit($response->getCode());
 	}
 	
 	/**

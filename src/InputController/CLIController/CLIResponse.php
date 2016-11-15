@@ -17,6 +17,13 @@ use Orpheus\InputController\OutputResponse;
 class CLIResponse extends OutputResponse {
 	
 	/**
+	 * The returned response code
+	 * 
+	 * @var int
+	 */
+	protected $code;
+	
+	/**
 	 * The HTML body of the response
 	 * 
 	 * @var string
@@ -28,7 +35,8 @@ class CLIResponse extends OutputResponse {
 	 * 
 	 * @param string $body
 	 */
-	public function __construct($body=null) {
+	public function __construct($code=0, $body=null) {
+		$this->setCode($code);
 		$this->setBody($body);
 	}
 	
@@ -62,6 +70,26 @@ class CLIResponse extends OutputResponse {
 	public static function generateFromException(\Exception $exception, $action='Handling the request') {
 		$response = new static(convertExceptionAsText($exception, 0, $action));
 		return $response;
+	}
+	
+	/**
+	 * Get the code
+	 * 
+	 * @return int
+	 */
+	public function getCode() {
+		return $this->code;
+	}
+	
+	/**
+	 * Set the code
+	 * 
+	 * @param int
+	 * @return \Orpheus\InputController\CLIController\CLIResponse
+	 */
+	public function setCode($code) {
+		$this->code = (int) $code;
+		return $this;
 	}
 	
 	/**
