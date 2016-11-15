@@ -60,7 +60,7 @@ class CLIResponse extends OutputResponse {
 	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
 	 */
 	public static function generateFromException(\Exception $exception, $action='Handling the request') {
-		$response = new static(convertExceptionAsText($exception, $action));
+		$response = new static(convertExceptionAsText($exception, 0, $action));
 		return $response;
 	}
 }
