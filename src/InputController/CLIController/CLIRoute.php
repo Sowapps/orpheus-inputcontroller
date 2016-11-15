@@ -126,15 +126,15 @@ class CLIRoute extends ControllerRoute {
 	 * @throws \Exception
 	 */
 	public static function registerConfig($name, array $config) {
-		debug('Config '.$name, $config);
+// 		debug('Config '.$name, $config);
 		if( empty($config['path']) ) {
 			throw new \Exception('Missing a valid "path" in configuration of route "'.$name.'"');
 		}
 		
 		$parameters = array();
 		if( isset($config['parameters']) && is_array($config['parameters']) ) {
-			foreach( $config['parameters'] as $name => $config ) {
-				$parameters[] = CLIArgument::make($name, $config);
+			foreach( $config['parameters'] as $paramName => $paramConfig ) {
+				$parameters[] = CLIArgument::make($paramName, $paramConfig);
 			}
 		}
 // 		if( empty($config['response']) ) {
@@ -154,7 +154,7 @@ class CLIRoute extends ControllerRoute {
 // 			$config['restrictTo'] = null;
 // 		}
 		$options = $config;
-		debug('$options', $options);
+// 		debug('$options', $options);
 		unset($options['path'], $options['controller'], $options['parameters']);
 		static::register($name, $config['path'], $config['controller'], $parameters, $options);
 	}
