@@ -86,7 +86,7 @@ abstract class CLIController extends Controller {
 			}
 		} catch( UserException $e ) {
 			$this->printLine($e->getMessage());
-			return new CLIResponse(1, 'Usage: '.$this->getRoute());
+			return new CLIResponse(1, 'Usage: '.$this->getRoute()->getUsageCommand());
 		}
 	}
 	
