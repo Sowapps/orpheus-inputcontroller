@@ -9,6 +9,11 @@ use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 use Orpheus\InputController\TypeValidator;
 use Orpheus\InputController\CLIController\CLIArgument;
+use Orpheus\DataType\AbstractType;
+use Orpheus\DataType\StringType;
+use Orpheus\DataType\IntegerType;
+use Orpheus\DataType\FileType;
+use Orpheus\DataType\BooleanType;
 
 /**
  * The CLIRoute class
@@ -85,16 +90,12 @@ class CLIRoute extends ControllerRoute {
 	public function formatURL($values=array()) {
 		$params = '';
 		if( $values ) {
-			foreach( $values as $key => $value ) {
-				if( !isset($this->parameters[$key]) ) {
-					continue;
-				}
+			foreach( $this->parameters as $key => $arg ) {
+				$value = isset($values[$key]) ? $values[$key] : null;
 				$arg = $this->parameters[$key];
-				$type = $arg->getType();
-				if( !static::validateParameter($type, $value) ) {
-					throw new \Exception('The given value "'.$value.'" of parameter "'.$key.'" is not a valid value of type "'.$type.'" to generate command for route '.$this->name);
+				if( $arg->verify($value) ) {
+					$params .= ' '.$arg->getLongCommand($value);
 				}
-				$params .= ' '.$arg->getLongCommand($value);
 			}
 		}
 		return static::getRootCommand().' '.$this->getPath().$params;
@@ -102,6 +103,18 @@ class CLIRoute extends ControllerRoute {
 	
 	public static function getRootCommand() {
 		return 'php -f app/console/run.php';
+	}
+	
+	public function getUsageCommand() {
+		$params = '';
+		foreach( $this->parameters as $arg ) {
+			$param = $arg->getLongCommand($arg->getType());
+			if( !$arg->isRequired() ) {
+				$param = '['.$param.']';
+			}
+			$params .= ' '.$param;
+		}
+		return static::getRootCommand().$this->getPath().$params;
 	}
 	
 	/**
@@ -135,7 +148,6 @@ class CLIRoute extends ControllerRoute {
 	 * @throws \Exception
 	 */
 	public static function registerConfig($name, array $config) {
-// 		debug('Config '.$name, $config);
 		if( empty($config['path']) ) {
 			throw new \Exception('Missing a valid "path" in configuration of route "'.$name.'"');
 		}
@@ -146,24 +158,7 @@ class CLIRoute extends ControllerRoute {
 				$parameters[] = CLIArgument::make($paramName, $paramConfig);
 			}
 		}
-// 		if( empty($config['response']) ) {
-// 			$config['response']	= !empty($config['output']) ? static::getOutputResponse($config['output']) : 'Orpheus\InputController\CLIController\HTMLCLIResponse';
-// 		}
-// 		if( empty($config['controller']) ) {
-// 			if( !empty($config['redirect']) ) {
-// 				$config['controller'] = 'Orpheus\\Controller\\RedirectController';
-// 			} else
-// 			if( !empty($config['render']) ) {
-// 				$config['controller'] = 'Orpheus\\Controller\\StaticPageController';
-// 			} else {
-// 				throw new \Exception('Missing a valid `controller` in configuration of route "'.$name.'"');
-// 			}
-// 		}
-// 		if( !isset($config['restrictTo']) ) {
-// 			$config['restrictTo'] = null;
-// 		}
 		$options = $config;
-// 		debug('$options', $options);
 		unset($options['path'], $options['controller'], $options['parameters']);
 		static::register($name, $config['path'], $config['controller'], $parameters, $options);
 	}
@@ -179,36 +174,6 @@ class CLIRoute extends ControllerRoute {
 	 */
 	public static function register($name, $path, $controller, $parameters, $options=array()) {
 		static::$routes[$name] = new static($name, $path, $controller, $parameters, $options);
-	}
-	
-	/**
-	 * Add the type validator to validate parameters
-	 * 
-	 * @param TypeValidator $validator
-	 * @return boolean
-	 */
-	public static function validateParameter($type, $value) {
-		$validator = static::getTypeValidator($type);
-		return $validator->validate($value);
-	}
-	
-	/**
-	 * Get a type validator by type name
-	 * 
-	 * @param string $type
-	 * @return TypeValidator
-	 */
-	public static function getTypeValidator($type) {
-		return static::$typeValidators[$type];
-	}
-	
-	/**
-	 * Add the type validator to validate parameters
-	 * 
-	 * @param TypeValidator $validator
-	 */
-	public static function addTypeValidator(TypeValidator $validator) {
-		static::$typeValidators[$validator->getName()] = $validator;
 	}
 	
 	/**
@@ -230,15 +195,28 @@ class CLIRoute extends ControllerRoute {
 	public static function getRoute($route) {
 		return static::$routes[$route];
 	}
+
+	public function getParameters() {
+		return $this->parameters;
+	}
+
+	public function getParametersBySN() {
+		return $this->parametersBySN;
+	}
 	
 }
 
 //http://fr.php.net/manual/fr/regexp.reference.escape.php
 //http://fr.php.net/manual/fr/regexp.reference.character-classes.php
 // Case Insensitive
+/*
+CLIRoute::addTypeValidator(TypeValidator::make('int', '\d+'));
+CLIRoute::addTypeValidator(TypeValidator::make('boolean', '(?:true|false|[0-1])', function(&$value) {
+	$value = boolval($value);
+	return true;
+}));
 CLIRoute::addTypeValidator(TypeValidator::make('file', function($value) {
 	return is_readable($value);
 }));
-// CLIRoute::setTypeRegex('id',	'[1-9]\d*');
-// CLIRoute::setTypeRegex('slug',	'[a-z0-9\-_]+');
+*/
 

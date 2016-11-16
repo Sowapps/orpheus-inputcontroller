@@ -1,0 +1,20 @@
+<?php
+/**
+ * IntegerType
+ */
+
+namespace Orpheus\DataType;
+
+/**
+ * The TypeValidator class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
+class StringType extends AbstractType {
+	
+	public function __construct() {
+		parent::__construct('string');
+	}
+	
+}

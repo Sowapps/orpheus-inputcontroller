@@ -57,6 +57,20 @@ abstract class CLIController extends Controller {
 	 * @param CLIRequest $request
 	 */
 	public function preRun(CLIRequest $request) {
+		// Verify parameters
+		$values = $request->getParameters();
+		/* @var CLIRoute $route */
+		$route = $this->getRoute();
+		try {
+			foreach( $route->getParameters() as $key => $arg ) {
+				$value = isset($values[$key]) ? $values[$key] : null;
+				$arg = $this->parameters[$key];
+				$arg->verify($value);
+			}
+		} catch( Exception $e ) {
+			$this->printLine($e->getMessage());
+			return new CLIResponse(1, 'Usage: '.$this->getRoute());
+		}
 	}
 	
 	/**
