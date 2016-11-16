@@ -48,6 +48,13 @@ class CLIArgument {
 	protected $required;
 	
 	/**
+	 * Registered regex for a type
+	 * 
+	 * @var array
+	 */
+	protected static $typeValidators = array();
+	
+	/**
 	 * Constructor
 	 * 
 	 * @param string $longName

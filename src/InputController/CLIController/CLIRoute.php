@@ -32,13 +32,6 @@ class CLIRoute extends ControllerRoute {
 	protected $parametersBySN = array();
 	
 	/**
-	 * Registered regex for a type
-	 * 
-	 * @var array
-	 */
-	protected static $typeValidators = array();
-	
-	/**
 	 * Registered routes
 	 * 
 	 * @var array
