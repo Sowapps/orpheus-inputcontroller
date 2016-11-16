@@ -58,11 +58,30 @@ abstract class CLIController extends Controller {
 	 */
 	public function preRun(CLIRequest $request) {
 		// Verify parameters
-		$values = $request->getParameters();
+// 		$values = $request->getParameters();
 		/* @var CLIRoute $route */
 		$route = $this->getRoute();
 		try {
 			$input = array();
+			
+			// Generate options for getopt()
+			$shortArgs = '';
+			$longArgs = array();
+			foreach( $route->getParameters() as $key => $arg ) {
+				$opt = ':'.($arg->isRequiringValue() ? '' : ':');
+				$longArgs[] = $arg->getLongName().$opt;
+				if( $arg->hasShortName() ) {
+					$shortArgs .= $arg->getShortName().$opt;
+				}
+			}
+			$values = getopt($shortArgs, $longArgs);
+			
+			// Assign parameter to input value
+			foreach( $route->getParameters() as $key => $arg ) {
+				// null means no value satisfying
+				$input[$key] = array($arg, $arg->getValueFrom($values));
+			}
+			/*
 			// Assign long parameters
 			foreach( $route->getParameters() as $key => $arg ) {
 				$value = isset($values[$key]) ? $values[$key] : null;
@@ -78,6 +97,7 @@ abstract class CLIController extends Controller {
 					$input[$arg->getLongName()] = array($arg, $value);
 				}
 			}
+			*/
 			// Verify and format parameters
 			foreach( $input as $key => &$val ) {
 				list($arg, $value) = $val;

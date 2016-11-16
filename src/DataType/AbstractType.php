@@ -39,6 +39,26 @@ abstract class AbstractType {
 	}
 	
 	/**
+	 * Get value from input array
+	 * 
+	 * @param array $values
+	 * @param string $argName
+	 * @param string $argAltName
+	 * @return mixed
+	 * 
+	 * Getting $values from getopt()
+	 */
+	public function getValueFrom(array $values, $argName, $argAltName) {
+		if( isset($values[$argName]) ) {
+			return $values[$argName];
+		}
+		if( $argAltName && isset($values[$argAltName]) ) {
+			return $values[$argAltName];
+		}
+		return null;
+	}
+	
+	/**
 	 * Validate the given value with this type
 	 * 
 	 * @param mixed $value
@@ -98,4 +118,16 @@ abstract class AbstractType {
 	public function getName() {
 		return $this->name;
 	}
+
+	/**
+	 * Is this type falsable ?
+	 * 
+	 * @return boolean
+	 * 
+	 * Only boolean should be
+	 */
+	public function isFalsable() {
+		return false;
+	}
+	
 }

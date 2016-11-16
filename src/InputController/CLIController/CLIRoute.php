@@ -95,11 +95,12 @@ class CLIRoute extends ControllerRoute {
 	public function getUsageCommand() {
 		$params = '';
 		foreach( $this->parameters as $arg ) {
-			$param = $arg->getLongCommand($arg->getType());
-			if( !$arg->isRequired() ) {
-				$param = '['.$param.']';
-			}
-			$params .= ' '.$param;
+// 			$param = $arg->getLongCommand($arg->getType());
+// 			if( !$arg->isRequired() ) {
+// 				$param = '['.$param.']';
+// 			}
+// 			$params .= ' '.$param;
+			$params .= ' '.$arg->getUsageCommand();
 		}
 		return static::getRootCommand().' '.$this->getPath().$params;
 	}

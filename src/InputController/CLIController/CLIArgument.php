@@ -86,18 +86,34 @@ class CLIArgument {
 		return new static($name, $shortName, $type, $required);
 	}
 	
-	public function getLongCommand($value) {
+	public function getUsageCommand() {
+		$param = $this->getLongCommand($this->getType(), true);
+		if( !$this->isRequired() ) {
+			$param = '['.$param.']';
+		}
+		return $param;
+	}
+	
+	public function getLongCommand($value, $usage=false) {
 // 		if( $value === false ) {
 // 			return '';
 // 		}
-		$command = '--'.$this->getLongName();
+		$type = $this->getTypeValidator();
+		$command = '--'.($usage && $type->isFalsable() ? '(not-)' : '').$this->getLongName();
 		if( $value !== true ) {
-			$type = $this->getTypeValidator();
 			$command .= '="'.$type->format($value).'"';
 		}
 		return $command;
 	}
 
+	public function isRequiringValue() {
+		return !$this->getTypeValidator()->isFalsable();
+	}
+
+	public function getValueFrom($values) {
+		return $this->getTypeValidator()->getValueFrom($values, $this->getLongName(), $this->getShortName());
+	}
+	
 	public function verify(&$value) {
 		if( $value === null ) {
 			if( $this->isRequired() ) {
