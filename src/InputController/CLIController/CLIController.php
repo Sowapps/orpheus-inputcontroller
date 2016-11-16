@@ -82,7 +82,7 @@ abstract class CLIController extends Controller {
 			foreach( $input as $key => &$val ) {
 				list($arg, $value) = $val;
 				$arg->verify($value);
-				$val = $arg->parse($value);
+				$val = $arg->getTypeValidator()->parse($value);
 			}
 		} catch( Exception $e ) {
 			$this->printLine($e->getMessage());
