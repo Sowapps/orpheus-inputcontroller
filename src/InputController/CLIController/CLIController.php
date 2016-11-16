@@ -60,13 +60,15 @@ abstract class CLIController extends Controller {
 		// Verify parameters
 // 		$values = $request->getParameters();
 		/* @var CLIRoute $route */
-		$route = $this->getRoute();
-		try {
-			$input = array();
+// 		$route = $this->getRoute();
+// 		try {
+// 			$input = array();
+			// Process options
 			
-			debug("Arguments", $request->getParameters());
+// 			debug("Arguments", $request->getParameters());
 			
 			// Generate options for getopt()
+			/*
 			$shortArgs = '';
 			$longArgs = array();
 			foreach( $route->getParameters() as $key => $arg ) {
@@ -76,15 +78,16 @@ abstract class CLIController extends Controller {
 					$shortArgs .= $arg->getShortName().$opt;
 				}
 			}
-			debug("getopt($shortArgs, --)", $longArgs);
+// 			debug("getopt($shortArgs, --)", $longArgs);
 			$values = getopt($shortArgs, $longArgs);
-			debug("Get values", $values);
+// 			debug("Get values", $values);
 			
 			// Assign parameter to input value
 			foreach( $route->getParameters() as $key => $arg ) {
 				// null means no value satisfying
 				$input[$key] = array($arg, $arg->getValueFrom($values));
 			}
+			*/
 			/*
 			// Assign long parameters
 			foreach( $route->getParameters() as $key => $arg ) {
@@ -102,16 +105,18 @@ abstract class CLIController extends Controller {
 				}
 			}
 			*/
+			/*
 			// Verify and format parameters
 			foreach( $input as $key => &$val ) {
 				list($arg, $value) = $val;
 				$arg->verify($value);
 				$val = $arg->getTypeValidator()->parse($value);
 			}
-		} catch( UserException $e ) {
-			$this->printLine($e->getMessage());
-			return new CLIResponse(1, 'Usage: '.$this->getRoute()->getUsageCommand());
-		}
+			*/
+// 		} catch( UserException $e ) {
+// 			$this->printLine($e->getMessage());
+// 			return new CLIResponse(1, 'Usage: '.$this->getRoute()->getUsageCommand());
+// 		}
 	}
 	
 	/**

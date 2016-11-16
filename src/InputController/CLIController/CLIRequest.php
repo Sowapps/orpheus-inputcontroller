@@ -58,6 +58,7 @@ class CLIRequest extends InputRequest {
 			$input = trim(stream_get_contents($stdin));
 		}
 		
+		/*
 		$path = '/';
 		if( $argc > 1 && $argv[1][0] !== '-' ) {
 			$path = $argv[1];
@@ -65,6 +66,9 @@ class CLIRequest extends InputRequest {
 		} else {
 			$parameters = array_slice($argv, 1);
 		}
+		*/
+		$path = $argv[1];
+		$parameters = array_slice($argv, 2);
 		
 		$request = new static($path, $parameters, $input);
 // 		$request->setContent($input);
