@@ -84,7 +84,7 @@ abstract class CLIController extends Controller {
 				$arg->verify($value);
 				$val = $arg->getTypeValidator()->parse($value);
 			}
-		} catch( Exception $e ) {
+		} catch( UserException $e ) {
 			$this->printLine($e->getMessage());
 			return new CLIResponse(1, 'Usage: '.$this->getRoute());
 		}

@@ -10,6 +10,7 @@ use Orpheus\DataType\StringType;
 use Orpheus\DataType\IntegerType;
 use Orpheus\DataType\FileType;
 use Orpheus\DataType\BooleanType;
+use Orpheus\Exception\UserException;
 
 /**
  * The CLIArgument class
@@ -100,14 +101,14 @@ class CLIArgument {
 	public function verify(&$value) {
 		if( $value === null ) {
 			if( $this->isRequired() ) {
-				throw new \Exception('The parameter "'.$this->longName.'" is required');
+				throw new UserException('The parameter "'.$this->longName.'" is required');
 			} else {
 				return false;
 			}
 		}
 		$type = $this->getType();
 		if( !static::validateParameter($type, $value) ) {
-			throw new \Exception('The given value "'.$value.'" of parameter "'.$this->longName.'" is not a valid value of type "'.$type.'"');
+			throw new UserException('The given value "'.$value.'" of parameter "'.$this->longName.'" is not a valid value of type "'.$type.'"');
 		}
 		return true;
 	}
