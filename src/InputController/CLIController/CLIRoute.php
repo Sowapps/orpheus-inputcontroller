@@ -53,7 +53,7 @@ class CLIRoute extends ControllerRoute {
 		foreach( $parameters as $arg ) {
 			$this->parameters[$arg->getLongName()] = &$arg;
 			if( $arg->hasShortName() ) {
-				$this->parameters[$arg->getShortName()] = &$arg;
+				$this->parametersBySN[$arg->getShortName()] = &$arg;
 			}
 		}
 	}
@@ -94,7 +94,6 @@ class CLIRoute extends ControllerRoute {
 	
 	public function getUsageCommand() {
 		$params = '';
-		debug('$this->parameters', $this->parameters);
 		foreach( $this->parameters as $arg ) {
 			$param = $arg->getLongCommand($arg->getType());
 			if( !$arg->isRequired() ) {
