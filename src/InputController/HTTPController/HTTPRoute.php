@@ -127,8 +127,8 @@ class HTTPRoute extends ControllerRoute {
 			},
 			$this->path
 		);
-		debug('Site Root '.SITEROOT.' and path '.$path.' with first char ['.$path[0].']');
-		die();
+		debug('Site Root '.SITEROOT.' and path '.$path.' with first char ['.$path[0].'] => '.substr($path, 1));
+		die(SITEROOT.(isset($path[0]) && $path[0]==='/' ? substr($path, 1) : $path));
 		return SITEROOT.(isset($path[0]) && $path[0]==='/' ? substr($path, 1) : $path);
 	}
 	
