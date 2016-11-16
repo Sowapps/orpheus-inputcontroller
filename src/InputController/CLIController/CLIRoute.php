@@ -7,13 +7,7 @@ namespace Orpheus\InputController\CLIController;
 
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
-use Orpheus\InputController\TypeValidator;
 use Orpheus\InputController\CLIController\CLIArgument;
-use Orpheus\DataType\AbstractType;
-use Orpheus\DataType\StringType;
-use Orpheus\DataType\IntegerType;
-use Orpheus\DataType\FileType;
-use Orpheus\DataType\BooleanType;
 
 /**
  * The CLIRoute class

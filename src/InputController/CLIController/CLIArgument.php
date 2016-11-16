@@ -6,6 +6,10 @@
 namespace Orpheus\InputController\CLIController;
 
 use Orpheus\DataType\AbstractType;
+use Orpheus\DataType\StringType;
+use Orpheus\DataType\IntegerType;
+use Orpheus\DataType\FileType;
+use Orpheus\DataType\BooleanType;
 
 /**
  * The CLIArgument class
