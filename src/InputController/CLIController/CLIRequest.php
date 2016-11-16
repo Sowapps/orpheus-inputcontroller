@@ -6,7 +6,6 @@
 namespace Orpheus\InputController\CLIController;
 
 use Orpheus\InputController\InputRequest;
-use Orpheus\InputController\ControllerRoute;
 
 /**
  * The CLIRequest class

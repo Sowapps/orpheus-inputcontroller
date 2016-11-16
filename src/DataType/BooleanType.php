@@ -14,7 +14,7 @@ namespace Orpheus\DataType;
 class BooleanType extends AbstractType {
 	
 	public function __construct() {
-		parent::__construct('boolean', '(?:true|false|[0-1])');
+		parent::__construct('bool', '(?:true|false|[0-1])');
 	}
 	
 	public function parse($value) {

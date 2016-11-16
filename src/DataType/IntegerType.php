@@ -14,7 +14,7 @@ namespace Orpheus\DataType;
 class IntegerType extends AbstractType {
 	
 	public function __construct() {
-		parent::__construct('integer', '\d+');
+		parent::__construct('int', '\d+');
 	}
 	
 	public function parse($value) {

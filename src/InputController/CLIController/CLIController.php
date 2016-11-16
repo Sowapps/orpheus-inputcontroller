@@ -62,10 +62,27 @@ abstract class CLIController extends Controller {
 		/* @var CLIRoute $route */
 		$route = $this->getRoute();
 		try {
+			$input = array();
+			// Assign long parameters
 			foreach( $route->getParameters() as $key => $arg ) {
 				$value = isset($values[$key]) ? $values[$key] : null;
-				$arg = $this->parameters[$key];
+				$input[$arg->getLongName()] = array($arg, $value);
+// 				$arg = $this->parameters[$key];
+// 				$arg->verify($value);
+// 				$value = ;
+			}
+			// Assign short parameters
+			foreach( $route->getParametersBySN() as $key => $arg ) {
+				$value = isset($values[$key]) ? $values[$key] : null;
+				if( !array_key_exists($arg->getLongName(), $input) ) {
+					$input[$arg->getLongName()] = array($arg, $value);
+				}
+			}
+			// Verify and format parameters
+			foreach( $input as $key => &$val ) {
+				list($arg, $value) = $val;
 				$arg->verify($value);
+				$val = $arg->parse($value);
 			}
 		} catch( Exception $e ) {
 			$this->printLine($e->getMessage());
