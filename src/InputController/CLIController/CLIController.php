@@ -64,6 +64,8 @@ abstract class CLIController extends Controller {
 		try {
 			$input = array();
 			
+			debug("Arguments", $request->getParameters());
+			
 			// Generate options for getopt()
 			$shortArgs = '';
 			$longArgs = array();
