@@ -74,7 +74,9 @@ abstract class CLIController extends Controller {
 					$shortArgs .= $arg->getShortName().$opt;
 				}
 			}
+			debug("getopt($shortArgs, --)", $longArgs);
 			$values = getopt($shortArgs, $longArgs);
+			debug("Get values", $values);
 			
 			// Assign parameter to input value
 			foreach( $route->getParameters() as $key => $arg ) {
