@@ -234,7 +234,7 @@ abstract class ControllerRoute extends Route {
 			try {
 				// Optional
 				static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package);
-			} catch( Exception $e ) {
+			} catch( \Exception $e ) {
 				
 			}
 		}
