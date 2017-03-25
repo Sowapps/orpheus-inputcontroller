@@ -231,7 +231,12 @@ abstract class ControllerRoute extends Route {
 		// Load dev routes
 		if( DEV_VERSION ) {
 			// If there is not file routes_dev, we get an empty array
-			static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package);
+			try {
+				// Optional
+				static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package);
+			} catch( Exception $e ) {
+				
+			}
 		}
 		
 		if( !empty($packageRoutes[self::REQUIREMENTS_KEY]) && is_array($packageRoutes[self::REQUIREMENTS_KEY]) ) {
