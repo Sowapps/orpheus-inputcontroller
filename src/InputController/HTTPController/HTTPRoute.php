@@ -154,7 +154,7 @@ class HTTPRoute extends ControllerRoute {
 			$var	= $p2;
 			$regex	= $p1;
 			if( ctype_alpha($regex) && isset(static::$typesRegex[$regex]) ) {
-				$regex	= static::$typesRegex[$regex];
+				$regex = static::$typesRegex[$regex];
 			}
 		} else {
 			// {variable}, regex=[^\/]+

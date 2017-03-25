@@ -24,7 +24,7 @@ class StaticPageController extends HTTPController {
 	 * @see HTTPController::run()
 	 */
 	public function run(HTTPRequest $request) {
-		$options	= $request->getRoute()->getOptions();
+		$options = $request->getRoute()->getOptions();
 		if( empty($options['render']) ) {
 			throw new \Exception('The StaticPageController requires a render option, add it to your routes configuration.');
 		}

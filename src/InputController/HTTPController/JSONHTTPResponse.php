@@ -5,7 +5,6 @@
 
 namespace Orpheus\InputController\HTTPController;
 
-
 use Orpheus\Exception\UserException;
 use Orpheus\Exception\UserReportsException;
 
