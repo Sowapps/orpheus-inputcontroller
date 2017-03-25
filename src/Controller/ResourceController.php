@@ -39,9 +39,9 @@ class ResourceController extends HTTPController {
 	 * @param string $path
 	 * @return string The absolute path to resource
 	 */
-	public function resolveResource($webPath, $library) {
+	public function resolveResource($webPath, $package) {
 		
-		return VENDORPATH.$library.'/res/'.$webPath;
+		return VENDORPATH.$package.'/res/'.$webPath;
 		
 // 		return APPLICATIONPATH.$webPath;
 	}

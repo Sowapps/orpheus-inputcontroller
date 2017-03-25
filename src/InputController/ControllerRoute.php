@@ -203,39 +203,77 @@ abstract class ControllerRoute extends Route {
 		if( static::isInitialized() ) { return; }
 		static::$initialized = true;
 		
-		// Load prod routes (all environments routes)
-		$conf	= YAML::build('routes', true, true);
-		$routes	= $conf->asArray();
-// 		debug('Routes', $routes);
-		// Load dev routes
-		if( DEV_VERSION ) {
-// 			debug('Loading dev routes');
-			// If there is not file routes_dev, we get an empty array
-			$conf = YAML::build('routes_dev', true, true);
-// 			debug('Routes dev', $conf->asArray());
-			foreach( $conf->asArray() as $type => $typeRoutes ) {
-// 				debug('Routes dev type : '.$type);
-				if( isset($routes[$type]) ) {
-					$routes[$type]	= array_merge($typeRoutes, $routes[$type]);
-				} else {
-					$routes[$type]	= $typeRoutes;
-				}
-			}
-		}
+		$routes = array();
+		
+		// TODO: Add cache, but what kind of ?
+		
+		static::loadRoutes($routes);
 		
 		// Register routes
 		foreach( $routes as $type => $typeRoutes ) {
 			$routeClass = RequestHandler::getRouteClass($type);
-// 			debug('$routeClass => '.$routeClass);
-// 			die();
-// 			$routeClass	= $type.'Route';
-// 			debug('$type => '.$type);
 			if( !class_exists($routeClass, true) || !in_array(get_class(), class_parents($routeClass)) ) {
-// 				debug('Invalid class');
 				continue;
 			}
 			foreach( $typeRoutes as $routeName => $routeConfig ) {
 				$routeClass::registerConfig($routeName, $routeConfig);
+			}
+		}
+	}
+	
+	const REQUIREMENTS_KEY = 'require-packages';
+	
+	protected static function loadRoutes(&$routes, $package=null) {
+		
+		$packageRoutes = array();
+		// Load prod routes (all environments routes)
+		static::populateRoutesFromFile($packageRoutes, 'routes', $package);
+		// Load dev routes
+		if( DEV_VERSION ) {
+			// If there is not file routes_dev, we get an empty array
+			static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package);
+		}
+		
+		if( !empty($packageRoutes[self::REQUIREMENTS_KEY]) && is_array($packageRoutes[self::REQUIREMENTS_KEY]) ) {
+			$packageAndRequiredRoutes = array();
+			foreach( $packageRoutes[self::REQUIREMENTS_KEY] as $requirement ) {
+				if( is_string($requirement) ) {
+					$requirement = array(
+						'name' => $requirement
+					);
+				}
+				if( empty($requirement['name']) ) {
+					continue;
+				}
+				static::loadRoutes($packageAndRequiredRoutes, $requirement['name']);
+			}
+			unset($packageRoutes[self::REQUIREMENTS_KEY]);
+			static::mergeRoutes($packageAndRequiredRoutes, $packageRoutes);
+			unset($packageRoutes);
+			
+		} else {
+			
+			// Remove invalid requirements
+			unset($packageRoutes[self::REQUIREMENTS_KEY]);
+			$packageAndRequiredRoutes = &$packageRoutes;
+			
+		}
+		
+		static::mergeRoutes($routes, $packageAndRequiredRoutes);
+	}
+	
+	protected static function populateRoutesFromFile(&$routes, $file, $package=null) {
+		$conf = YAML::buildFrom($package, $file, true);
+		static::mergeRoutes($routes, $conf->asArray());
+	}
+	
+	protected static function mergeRoutes(&$routes, $added) {
+		// First level (only) is merged
+		foreach( $added as $type => $typeRoutes ) {
+			if( isset($routes[$type]) ) {
+				$routes[$type]	= array_merge($typeRoutes, $routes[$type]);
+			} else {
+				$routes[$type]	= $typeRoutes;
 			}
 		}
 	}
