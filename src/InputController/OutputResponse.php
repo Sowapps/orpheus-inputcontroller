@@ -5,6 +5,7 @@
 
 namespace Orpheus\InputController;
 
+use Exception;
 use Orpheus\Exception\UserException;
 
 /**
@@ -28,7 +29,6 @@ abstract class OutputResponse {
 	 * @param string $controllerOutput
 	 */
 	public function setControllerOutput($controllerOutput) {
-// 		debug('Set controller output response with '.strlen($controllerOutput).' characters');
 		$this->controllerOutput	= $controllerOutput;
 	}
 		
@@ -57,7 +57,7 @@ abstract class OutputResponse {
 	 * @param string $action
 	 * @return \Orpheus\InputController\OutputResponse
 	 */
-	public static function generateFromException(\Exception $exception, $action=null) {
+	public static function generateFromException(Exception $exception, $action=null) {
 		return new static();
 	}
 
