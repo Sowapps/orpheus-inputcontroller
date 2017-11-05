@@ -71,7 +71,7 @@ abstract class Controller {
 		// run, preRun and postRun take parameter depending on Controller, request may be of a child class of InputRequest
 		$this->request = $request;
 		
-		$this->prepare($request);
+// 		$this->prepare($request);
 		
 		if( $this->catchControllerOuput ) {
 			ob_start();

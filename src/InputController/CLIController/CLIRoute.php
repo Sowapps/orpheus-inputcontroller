@@ -27,10 +27,10 @@ class CLIRoute extends ControllerRoute {
 	
 	/**
 	 * Available parameters by short name
-	 * 
+	 *
 	 * @var CLIArgument[]
 	 */
-// 	protected $parametersBySN = array();
+	// 	protected $parametersBySN = array();
 	
 	/**
 	 * Registered routes
@@ -58,15 +58,6 @@ class CLIRoute extends ControllerRoute {
 // 				$this->parametersBySN[$arg->getShortName()] = &$arg;
 // 			}
 // 		}
-	}
-	
-	/**
-	 * Prepare environment for this route
-	 * 
-	 * @param CLIRequest $request
-	 */
-	public function prepare(CLIRequest $request) {
-		
 	}
 	
 	/**

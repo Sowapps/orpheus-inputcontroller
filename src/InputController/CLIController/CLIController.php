@@ -44,79 +44,11 @@ abstract class CLIController extends Controller {
 	public abstract function run(CLIRequest $request);
 
 	/**
-	 * Prepare controller for request before running
-	 * 
-	 * @param CLIRequest $request
-	 */
-	public function prepare(CLIRequest $request) {
-	}
-
-	/**
 	 * Before running controller
 	 * 
 	 * @param CLIRequest $request
 	 */
 	public function preRun(CLIRequest $request) {
-		// Verify parameters
-// 		$values = $request->getParameters();
-		/* @var CLIRoute $route */
-// 		$route = $this->getRoute();
-// 		try {
-// 			$input = array();
-			// Process options
-			
-// 			debug("Arguments", $request->getParameters());
-			
-			// Generate options for getopt()
-			/*
-			$shortArgs = '';
-			$longArgs = array();
-			foreach( $route->getParameters() as $key => $arg ) {
-				$opt = ':'.($arg->isRequiringValue() ? '' : ':');
-				$longArgs[] = $arg->getLongName().$opt;
-				if( $arg->hasShortName() ) {
-					$shortArgs .= $arg->getShortName().$opt;
-				}
-			}
-// 			debug("getopt($shortArgs, --)", $longArgs);
-			$values = getopt($shortArgs, $longArgs);
-// 			debug("Get values", $values);
-			
-			// Assign parameter to input value
-			foreach( $route->getParameters() as $key => $arg ) {
-				// null means no value satisfying
-				$input[$key] = array($arg, $arg->getValueFrom($values));
-			}
-			*/
-			/*
-			// Assign long parameters
-			foreach( $route->getParameters() as $key => $arg ) {
-				$value = isset($values[$key]) ? $values[$key] : null;
-				$input[$arg->getLongName()] = array($arg, $value);
-// 				$arg = $this->parameters[$key];
-// 				$arg->verify($value);
-// 				$value = ;
-			}
-			// Assign short parameters
-			foreach( $route->getParametersBySN() as $key => $arg ) {
-				$value = isset($values[$key]) ? $values[$key] : null;
-				if( !array_key_exists($arg->getLongName(), $input) ) {
-					$input[$arg->getLongName()] = array($arg, $value);
-				}
-			}
-			*/
-			/*
-			// Verify and format parameters
-			foreach( $input as $key => &$val ) {
-				list($arg, $value) = $val;
-				$arg->verify($value);
-				$val = $arg->getTypeValidator()->parse($value);
-			}
-			*/
-// 		} catch( UserException $e ) {
-// 			$this->printLine($e->getMessage());
-// 			return new CLIResponse(1, 'Usage: '.$this->getRoute()->getUsageCommand());
-// 		}
 	}
 	
 	/**
