@@ -5,6 +5,7 @@
 
 namespace Orpheus\Controller;
 
+use Exception;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Cache\APCache;
 use Orpheus\Exception\NotFoundException;
@@ -25,7 +26,7 @@ class DelayedPageController extends HTTPController {
 	 * Run the controller
 	 * 
 	 * @param HTTPRequest $request The input HTTP request
-	 * @return HTTPResponse The output HTTP response
+	 * @return HTMLHTTPResponse The output HTTP response
 	 * @see HTTPController::run()
 	 */
 	public function run(HTTPRequest $request) {
@@ -36,7 +37,7 @@ class DelayedPageController extends HTTPController {
 		$cache = new APCache('delayedpage', $pathValues->page);
 		$content = null;
 		if( !$cache->get($content) ) {
-			$cache->reset();
+			$cache->clear();
 			throw new NotFoundException('The delayed page "'.$pathValues->page.'" was not found');
 		}
 		return new HTMLHTTPResponse($content);
@@ -47,14 +48,14 @@ class DelayedPageController extends HTTPController {
 	 * 
 	 * @param string $page
 	 * @param string $content
-	 * @throws \Exception
+	 * @throws Exception
 	 * @return string
 	 */
 	public static function store($page, $content) {
 		// Do it and in some case, routes will not be loaded
 		// Case this is not loaded will lead to infinite loop
 		if( !ControllerRoute::isInitialized() ) {
-			throw new \Exception('Routes not initialized, application is not able to show content, it will fail again & again...');
+			throw new Exception('Routes not initialized, application is not able to show content, it will fail again & again...');
 		}
 		
 		$cache	= new APCache('delayedpage', $page, 60);
