@@ -5,9 +5,11 @@
 
 namespace Orpheus\InputController\HTTPController;
 
+use Exception;
 use Orpheus\Rendering\HTMLRendering;
 use Orpheus\Exception\UserException;
 use Orpheus\Exception\ForbiddenException;
+use Orpheus\Config\Config;
 
 /**
  * The HTMLHTTPResponse class
@@ -47,14 +49,6 @@ class HTMLHTTPResponse extends HTTPResponse {
 		$this->setBody($body);
 	}
 	
-	
-// 	/**
-// 	 * @return string
-// 	 */
-// 	public function __toString() {
-// 		return $this->body.'';
-// 	}
-	
 	/**
 	 * 
 	 * {@inheritDoc}
@@ -68,9 +62,8 @@ class HTMLHTTPResponse extends HTTPResponse {
 			// if already generated we display the body
 			echo $this->getBody();
 			return;
-// 			die($this->getBody());
 		}
-		$rendering	= new HTMLRendering();
+		$rendering = new HTMLRendering();
 		
 		$env = $this->values;
 		$env['CONTROLLER_OUTPUT'] = $this->getControllerOutput();
@@ -87,8 +80,8 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 * @return NULL
 	 */
 	public function collectFrom($layout, $values=array()) {
-		$this->layout	= $layout;
-		$this->values	= $values;
+		$this->layout = $layout;
+		$this->values = $values;
 		return null;
 	}
 	
@@ -101,7 +94,7 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 * @see \Orpheus\InputController\HTTPController\HTMLHTTPResponse::run()
 	 */
 	public static function render($layout, $values=array()) {
-		$response	= new static();
+		$response = new static();
 		$response->collectFrom($layout, $values);
 		return $response;
 	}
@@ -113,26 +106,18 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 * @param string $action
 	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
 	 */
-	public static function generateFromException(\Exception $exception, $action='Handling the request') {
-		if( $exception instanceof ForbiddenException ) {
+	public static function generateFromException(Exception $exception, $action='Handling the request') {
+		if( Config::get('forbidden_to_home', true) && $exception instanceof ForbiddenException ) {
 			return new RedirectHTTPResponse(u(DEFAULTROUTE));
 		}
+		;
 		$code = $exception->getCode();
 		if( $code < 100 ) {
 			$code = HTTP_INTERNAL_SERVER_ERROR;
 		}
 		$response = new static(convertExceptionAsHTMLPage($exception, $code, $action));
 		$response->setCode($code);
-// 		http_response_code($code);
 		return $response;
-// 		$code	= $exception->getCode();
-// 		http_response_code($code ? $code : 500);
-// 		$rendering	= new HTMLRendering();
-// 		return new static($rendering->render('error', array(
-// 			'action'	=> $action,
-// 			'date'		=> dt(),
-// 			'report'	=> $exception->getMessage()."<br />\n<pre>".$exception->getTraceAsString()."</pre>",
-// 		)));
 	}
 
 	/**
@@ -143,13 +128,13 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
 	 */
 	public static function generateFromUserException(UserException $exception, $values=array()) {
-		$code	= $exception->getCode();
+		$code = $exception->getCode();
 		if( !$code ) {
 			$code = HTTP_BAD_REQUEST;
 		}
 		reportError($exception);
-		$values['titleRoute']	= 'usererror';
-		$values['Content']		= '';
+		$values['titleRoute'] = 'usererror';
+		$values['Content'] = '';
 		$response = static::render('page_skeleton', $values);
 		$response->setCode($code);
 		return $response;

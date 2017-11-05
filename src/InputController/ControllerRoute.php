@@ -5,6 +5,7 @@
 
 namespace Orpheus\InputController;
 
+use Exception;
 use Orpheus\Exception\NotFoundException;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\UserException;
@@ -87,12 +88,12 @@ abstract class ControllerRoute extends Route {
 	 * @param array $options
 	 */
 	protected function __construct($name, $path, $controller, $restrictTo, $defaultResponse, $options) {
-		$this->name			= $name;
-		$this->path			= $path;
-		$this->controllerClass	= $controller;
-		$this->restrictTo	= $restrictTo;
-		$this->options		= $options;
-		$this->defaultResponse	= $defaultResponse;
+		$this->name = $name;
+		$this->path = $path;
+		$this->controllerClass = $controller;
+		$this->restrictTo = $restrictTo;
+		$this->options = $options;
+		$this->defaultResponse = $defaultResponse;
 	}
 
 	/**
@@ -113,7 +114,6 @@ abstract class ControllerRoute extends Route {
 	public static function getRoutes() {
 		static::initialize();
 		return static::$routes;
-		// 		throw new Exception('The class "'.get_called_class().'" should override the `getRoutes()` static method from "'.get_class().'"');
 	}
 
 	/**
@@ -121,10 +121,10 @@ abstract class ControllerRoute extends Route {
 	 *
 	 * @param string $name
 	 * @param array $config
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function registerConfig($name, array $config) {
-		throw new \Exception('The class "'.get_called_class().'" should override the `registerConfig()` static method from "'.get_class().'"');
+		throw new Exception('The class "'.get_called_class().'" should override the `registerConfig()` static method from "'.get_class().'"');
 	}
 
 	/**
@@ -156,6 +156,15 @@ abstract class ControllerRoute extends Route {
 			return $this->processException($exception);
 		}
 	}
+	
+	/**
+	 * Prepare environment for this route
+	 *
+	 * @param HTTPRequest $request
+	 */
+	public function prepare(InputRequest $request) {
+		
+	}
 
 	/**
 	 * Process the given $exception with the default response
@@ -177,7 +186,7 @@ abstract class ControllerRoute extends Route {
 	 * @param \Orpheus\Exception\UserException $exception
 	 * @return \Orpheus\InputController\OutputResponse
 	 */
-	public function processException(\Exception $exception) {
+	public function processException(Exception $exception) {
 		// This exception is fatal, this is an Orpheus page
 		$response = $this->defaultResponse;
 		return $response::generateFromException($exception);
@@ -194,7 +203,6 @@ abstract class ControllerRoute extends Route {
 	 * Initialize the route class by loading the configuration (once only)
 	 */
 	public static function initialize() {
-		// 		debug('ControllerRoute::initialize()');
 		if( static::isInitialized() ) { return; }
 		static::$initialized = true;
 
@@ -236,7 +244,7 @@ abstract class ControllerRoute extends Route {
 			try {
 				// Optional
 				static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package);
-			} catch( \Exception $e ) {
+			} catch( Exception $e ) {
 			}
 		}
 
@@ -370,7 +378,7 @@ abstract class ControllerRoute extends Route {
 		if( $this->restrictTo ) {
 			foreach( $this->restrictTo as $type => $options ) {
 				if( empty(static::$routesRestrictions[$type]) ) {
-					throw new \Exception('Unknown route access type "'.$type.'" in config file');
+					throw new Exception('Unknown route access type "'.$type.'" in config file');
 				}
 				if( !call_user_func(static::$routesRestrictions[$type], $this, $options)) {
 					return false;
