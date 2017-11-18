@@ -73,6 +73,16 @@ function get_current_route() {
 	return $request->getRoute()->getName();
 }
 
+/**
+ * Get the link of the current request
+ * 
+ * @return string
+ */
+function get_current_link() {
+	$request = InputRequest::getMainRequest();
+	return $request->getRoute()->getLink();
+}
+
 RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HTTPController\HTTPRequest');
 RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\CLIController\CLIRequest');
 

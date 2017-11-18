@@ -487,4 +487,13 @@ class HTTPRequest extends InputRequest {
 	public function hasPathValue($key) {
 		return isset($this->pathValues->$key);
 	}
+	
+	/**
+	 * Get the main http request or null if not a HTTP request
+	 *
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
+	public static function getMainHTTPRequest() {
+		return static::$mainRequest instanceof HTTPRequest ? static::$mainRequest: null;
+	}
 }
