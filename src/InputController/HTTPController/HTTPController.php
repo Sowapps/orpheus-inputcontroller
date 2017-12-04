@@ -64,4 +64,13 @@ abstract class HTTPController extends Controller {
 	public function processUserException(UserException $exception, $values=array()) {
 		return $this->getRoute()->processUserException($exception, $values);
 	}
+	
+	/**
+	 * Get the HTTP request
+	 *
+	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 */
+	public function getRequest() {
+		return $this->request;
+	}
 }
