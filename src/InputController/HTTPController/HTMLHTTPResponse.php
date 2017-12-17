@@ -63,7 +63,7 @@ class HTMLHTTPResponse extends HTTPResponse {
 			echo $this->getBody();
 			return;
 		}
-		$rendering = new HTMLRendering();
+		$rendering = HTMLRendering::getCurrent();
 		
 		$env = $this->values;
 		$env['CONTROLLER_OUTPUT'] = $this->getControllerOutput();
