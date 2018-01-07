@@ -9,7 +9,7 @@ use Orpheus\Exception\UserException;
 
 /**
  * The Controller class
- * 
+ *
  * @author Florent Hazard <contact@sowapps.com>
  *
  */
@@ -17,7 +17,7 @@ abstract class Controller {
 
 	/**
 	 * The request calling this controller
-	 * 
+	 *
 	 * @var \Orpheus\InputController\InputRequest
 	 */
 	protected $request;
@@ -26,28 +26,28 @@ abstract class Controller {
 	 * The route calling this controller
 	 * A controller could be called without any route and any request
 	 * This variable comes to get the route without any request
-	 * 
+	 *
 	 * @var \Orpheus\InputController\ControllerRoute
 	 */
 	protected $route;
 	
 	/**
 	 * Running options for this controller
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $options = array();
 	
 	/**
-	 * Catch controller output when running it 
-	 * 
+	 * Catch controller output when running it
+	 *
 	 * @var boolean
 	 */
 	protected $catchControllerOuput = false;
 	
 	/**
 	 * Get this controller as string
-	 * 
+	 *
 	 * @return string
 	 */
 	public function __toString() {
@@ -63,7 +63,7 @@ abstract class Controller {
 	 * @see Controller::preRun()
 	 * @see Controller::run()
 	 * @see Controller::postRun()
-	 * 
+	 *
 	 * preRun() and postRun() are not declared in this class because PHP does not handle inheritance of parameters
 	 * if preRun() is declared getting a InputRequest, we could not declare a preRun() using a HTTPRequest
 	 */
@@ -71,27 +71,26 @@ abstract class Controller {
 		// run, preRun and postRun take parameter depending on Controller, request may be of a child class of InputRequest
 		$this->request = $request;
 		
-// 		$this->prepare($request);
-		
 		if( $this->catchControllerOuput ) {
 			ob_start();
 		}
 		$result	= null;
 		$values = array();
-		$this->fillValues($values);
 		try {
 			// Could prevent Run & PostRun
-			// We recommend that PreRun only return Redirections and Exceptions
+			// We recommend that PreRun only return Redirects and Exceptions
 			$result	= $this->preRun($request);
 		} catch( UserException $e ) {
-			$result	= $this->processUserException($e, $values);
+			$result	= $this->processUserException($e);
 		}
+		// Require initialization
+		$this->fillValues($values);
 		if( !$result ) {
 			// PreRun could prevent Run & PostRun
 			try {
 				$result	= $this->run($request);
 			} catch( UserException $e ) {
-				$result	= $this->processUserException($e, $values);
+				$result	= $this->processUserException($e);
 			}
 			$this->postRun($request, $result);
 		}
@@ -103,9 +102,38 @@ abstract class Controller {
 	}
 	
 	/**
+	 * Run this controller
+	 *
+	 * @param InputRequest $request
+	 * @return OutputResponse|null
+	 */
+	public abstract function run($request);
+	
+	/**
+	 * Before running controller
+	 *
+	 * @param InputRequest $request
+	 * @return OutputResponse|null
+	 */
+	public function preRun($request) {
+		return null;
+	}
+	
+	/**
+	 * After running the controller
+	 *
+	 * @param InputRequest $request
+	 * @return OutputResponse|null
+	 */
+	public function postRun($request, $response) {
+		return $response;
+	}
+	
+	/**
 	 * Process the given UserException
-	 * 
+	 *
 	 * @param UserException $e
+	 * @return mixed
 	 * @throws \Orpheus\Exception\UserException
 	 */
 	public function processUserException(UserException $e) {
@@ -114,7 +142,7 @@ abstract class Controller {
 	
 	/**
 	 * Get the request
-	 * 
+	 *
 	 * @return \Orpheus\InputController\InputRequest
 	 */
 	public function getRequest() {
@@ -133,7 +161,7 @@ abstract class Controller {
 	
 	/**
 	 * Get the route
-	 * 
+	 *
 	 * @return \Orpheus\InputController\ControllerRoute
 	 */
 	public function getRoute() {
@@ -143,7 +171,7 @@ abstract class Controller {
 	
 	/**
 	 * Get the route name
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getRouteName() {
@@ -153,7 +181,7 @@ abstract class Controller {
 	
 	/**
 	 * Fill array with default values
-	 * 
+	 *
 	 * @param array $values
 	 */
 	public function fillValues(&$values=array()) {
@@ -164,7 +192,7 @@ abstract class Controller {
 	
 	/**
 	 * Render the given $layout in $response using $values
-	 * 
+	 *
 	 * @param mixed $response
 	 * @param string $layout
 	 * @param array $values
@@ -178,7 +206,7 @@ abstract class Controller {
 	
 	/**
 	 * Get an option by $key
-	 * 
+	 *
 	 * @param string $key
 	 * @param mixed $default
 	 * @return string|mixed
@@ -189,7 +217,7 @@ abstract class Controller {
 	
 	/**
 	 * Set an option by $key
-	 * 
+	 *
 	 * @param string $key
 	 * @param mixed $value
 	 * @return \Orpheus\InputController\Controller

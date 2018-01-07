@@ -19,31 +19,6 @@ abstract class HTTPController extends Controller {
 	protected $catchControllerOuput = true;
 	
 	/**
-	 * Run this controller
-	 * 
-	 * @param HTTPRequest $request
-	 * @return HTTPResponse
-	 */
-	public abstract function run(HTTPRequest $request);
-
-	/**
-	 * Before running controller
-	 * 
-	 * @param HTTPRequest $request
-	 */
-	public function preRun(HTTPRequest $request) {
-	}
-	
-	/**
-	 * After running the controller
-	 * 
-	 * @param HTTPRequest $request
-	 * @param HTTPResponse $response
-	 */
-	public function postRun(HTTPRequest $request, HTTPResponse $response) {
-	}
-	
-	/**
 	 * Render the given $layout with $values
 	 * 
 	 * @param string $layout
