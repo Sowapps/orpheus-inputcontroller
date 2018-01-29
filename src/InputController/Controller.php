@@ -75,9 +75,6 @@ abstract class Controller {
 			ob_start();
 		}
 		$result	= null;
-//		$values = array();
-//		// Require initialization
-//		$this->fillValues($values);
 		try {
 			// Could prevent Run & PostRun
 			// We recommend that PreRun only return Redirects and Exceptions
