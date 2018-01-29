@@ -225,7 +225,7 @@ abstract class ControllerRoute extends Route {
 	}
 
 	const REQUIREMENTS_KEY = 'require-packages';
-	const GENERATOR_KEY = 'generators';
+	const PROVIDERS_KEY = 'providers';
 
 	/**
 	 * Load routes from $package or app (if null)
@@ -274,10 +274,10 @@ abstract class ControllerRoute extends Route {
 				
 		}
 		
-		if( !empty($packageRoutes[self::GENERATOR_KEY]) && is_array($packageRoutes[self::GENERATOR_KEY]) ) {
-			foreach( $packageRoutes[self::GENERATOR_KEY] as $generatorClass ) {
-				$generator = new $generatorClass();
-				static::mergeRoutes($packageAndRequiredRoutes, $generator->getRoutes());
+		if( !empty($packageRoutes[self::PROVIDERS_KEY]) && is_array($packageRoutes[self::PROVIDERS_KEY]) ) {
+			foreach( $packageRoutes[self::PROVIDERS_KEY] as $providerClass ) {
+				$provider = new $providerClass();
+				static::mergeRoutes($packageAndRequiredRoutes, $provider->getRoutes());
 			}
 		}
 		
