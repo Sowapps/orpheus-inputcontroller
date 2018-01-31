@@ -133,12 +133,10 @@ class JSONHTTPResponse extends HTTPResponse {
 		if( !$code ) {
 			$code = HTTP_BAD_REQUEST;
 		}
-// 		reportError($exception);
 		if( $exception instanceof UserReportsException ) {
 			/* @var $exception UserReportsException */
 			$response = static::render($exception->getMessage(), $exception->getReports(), $exception->getDomain());
-		} else
-		if( $exception instanceof UserException ) {
+		} else {
 			$response = static::render($exception->getMessage(), null, $exception->getDomain());
 		}
 		$response->setCode($code);
