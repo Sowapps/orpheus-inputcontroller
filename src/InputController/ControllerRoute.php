@@ -279,6 +279,7 @@ abstract class ControllerRoute extends Route {
 				$provider = new $providerClass();
 				static::mergeRoutes($packageAndRequiredRoutes, $provider->getRoutes());
 			}
+			unset($packageRoutes[self::PROVIDERS_KEY]);
 		}
 		
 		static::mergeRoutes($routes, $packageAndRequiredRoutes);
