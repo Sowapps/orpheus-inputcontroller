@@ -168,10 +168,15 @@ class HTTPRequest extends InputRequest {
 		$input	= null;
 		if( $inputType === 'application/json' ) {
 // 		if( isset($_SERVER['CONTENT_TYPE']) && strpos(, 'application/json')!==false ) {
-			$input	= json_decode(file_get_contents('php://input'), true);
-			if( $input === null ) {
-				throw new \Exception('malformedJSONBody', HTTP_BAD_REQUEST);
+			if( $method === HTTPRoute::METHOD_PUT || $method === HTTPRoute::METHOD_POST ) {
+				$input = json_decode(file_get_contents('php://input'), true);
 			}
+			if( !$input ) {
+				$input = array();
+			}
+//			if( $input === null ) {
+//				throw new \Exception('malformedJSONBody', HTTP_BAD_REQUEST);
+//			}
 		} else {
 			//application/x-www-form-urlencoded
 			if( $method === HTTPRoute::METHOD_PUT ) {
