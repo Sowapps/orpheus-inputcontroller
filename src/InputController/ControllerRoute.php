@@ -242,11 +242,7 @@ abstract class ControllerRoute extends Route {
 		// Load dev routes
 		if( DEV_VERSION ) {
 			// If there is not file routes_dev, we get an empty array
-			try {
-				// Optional
-				static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package);
-			} catch( Exception $e ) {
-			}
+			static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package, true);
 		}
 
 		if( !empty($packageRoutes[self::REQUIREMENTS_KEY]) && is_array($packageRoutes[self::REQUIREMENTS_KEY]) ) {
@@ -292,9 +288,11 @@ abstract class ControllerRoute extends Route {
 	 * @param string $file
 	 * @param string $package
 	 */
-	protected static function populateRoutesFromFile(&$routes, $file, $package=null) {
-		$conf = YAML::buildFrom($package, $file, true);
-		static::mergeRoutes($routes, $conf->asArray());
+	protected static function populateRoutesFromFile(&$routes, $file, $package=null, $optional=false) {
+		$conf = YAML::buildFrom($package, $file, true, $optional);
+		if( $conf ) {
+			static::mergeRoutes($routes, $conf->asArray());
+		}
 	}
 
 	/**
