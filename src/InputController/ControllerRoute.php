@@ -263,19 +263,18 @@ abstract class ControllerRoute extends Route {
 			unset($packageRoutes);
 				
 		} else {
-				
 			// Remove invalid requirements
 			unset($packageRoutes[self::REQUIREMENTS_KEY]);
 			$packageAndRequiredRoutes = &$packageRoutes;
-				
 		}
 		
-		if( !empty($packageRoutes[self::PROVIDERS_KEY]) && is_array($packageRoutes[self::PROVIDERS_KEY]) ) {
-			foreach( $packageRoutes[self::PROVIDERS_KEY] as $providerClass ) {
+		// Handle new providers for custom routing
+		if( !empty($packageAndRequiredRoutes[self::PROVIDERS_KEY]) && is_array($packageAndRequiredRoutes[self::PROVIDERS_KEY]) ) {
+			foreach( $packageAndRequiredRoutes[self::PROVIDERS_KEY] as $providerClass ) {
 				$provider = new $providerClass();
 				static::mergeRoutes($packageAndRequiredRoutes, $provider->getRoutes());
 			}
-			unset($packageRoutes[self::PROVIDERS_KEY]);
+			unset($packageAndRequiredRoutes[self::PROVIDERS_KEY]);
 		}
 		
 		static::mergeRoutes($routes, $packageAndRequiredRoutes);
