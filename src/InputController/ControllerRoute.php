@@ -6,12 +6,12 @@
 namespace Orpheus\InputController;
 
 use Exception;
-use Orpheus\Exception\NotFoundException;
-use Orpheus\Exception\ForbiddenException;
-use Orpheus\Exception\UserException;
 use Orpheus\Config\YAML\YAML;
-use Orpheus\Core\Route;
 use Orpheus\Core\RequestHandler;
+use Orpheus\Core\Route;
+use Orpheus\Exception\ForbiddenException;
+use Orpheus\Exception\NotFoundException;
+use Orpheus\Exception\UserException;
 
 /**
  * The ControllerRoute class
@@ -20,7 +20,7 @@ use Orpheus\Core\RequestHandler;
  *
  */
 abstract class ControllerRoute extends Route {
-
+	
 	/**
 	 * A route is identified by its name
 	 *
@@ -207,8 +207,6 @@ abstract class ControllerRoute extends Route {
 		static::$initialized = true;
 
 		$routes = array();
-
-		// TODO: Add cache, but what kind of ?
 
 		static::loadRoutes($routes);
 

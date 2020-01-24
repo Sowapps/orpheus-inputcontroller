@@ -5,11 +5,12 @@
 
 namespace Orpheus\InputController\CLIController;
 
+use Exception;
 use Orpheus\InputController\InputRequest;
 
 /**
  * The CLIRequest class
- * 
+ *
  * @author Florent Hazard <contact@sowapps.com>
  *
  */
@@ -17,7 +18,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Get this request as string
-	 * 
+	 *
 	 * @return string
 	 */
 	public function __toString() {
@@ -26,7 +27,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Get the URL used for this request
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getURL() {
@@ -35,7 +36,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Get all available routes
-	 * 
+	 *
 	 * @return CLIRoute[]
 	 * @see \Orpheus\InputController\InputRequest::getRoutes()
 	 */
@@ -45,7 +46,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Generate CLIRequest from environment
-	 * 
+	 *
 	 * @return CLIRequest
 	 */
 	public static function generateFromEnvironment() {
@@ -54,24 +55,14 @@ class CLIRequest extends InputRequest {
 		$stdin = defined('STDIN') ? STDIN : fopen('php://stdin', 'r');
 		$data = stream_get_meta_data($stdin);
 		$input = null;
-		if( empty($data['seekable']) ) {
+		if( empty($data['seekable']) && !empty($data['unread_bytes']) ) {
+			stream_set_blocking($stdin, false);
 			$input = trim(stream_get_contents($stdin));
 		}
-		
-		/*
-		$path = '/';
-		if( $argc > 1 && $argv[1][0] !== '-' ) {
-			$path = $argv[1];
-			$parameters = array_slice($argv, 2);
-		} else {
-			$parameters = array_slice($argv, 1);
-		}
-		*/
 		$path = $argv[1];
 		$parameters = array_slice($argv, 2);
 		
 		$request = new static($path, $parameters, $input);
-// 		$request->setContent($input);
 		return $request;
 	}
 	
@@ -84,7 +75,7 @@ class CLIRequest extends InputRequest {
 			CLIRoute::initialize();
 			static::$mainRequest = static::generateFromEnvironment();
 			$response = static::$mainRequest->process();
-		} catch( \Exception $e ) {
+		} catch( Exception $e ) {
 			$response = CLIResponse::generateFromException($e);
 		}
 		$response->process();
@@ -93,7 +84,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Get the name of the route class associated to a CLIRequest
-	 * 
+	 *
 	 * @return string
 	 */
 	public static function getRouteClass() {
@@ -102,7 +93,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Set the content (input & input type)
-	 * 
+	 *
 	 * @param string $content
 	 * @param string $contentType
 	 * @return \Orpheus\InputController\CLIController\CLIRequest
@@ -110,7 +101,7 @@ class CLIRequest extends InputRequest {
 	protected function setContent($content) {
 		return $this->setInput($content);
 	}
-
+	
 	/**
 	 * Get all input data
 	 *
@@ -122,7 +113,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Get a data by $key, assuming $default
-	 * 
+	 *
 	 * @param string $key
 	 * @param mixed $default
 	 * @return mixed
@@ -133,7 +124,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Get the data by key with array as default
-	 * 
+	 *
 	 * @param string $key
 	 * @return mixed
 	 */
@@ -143,7 +134,7 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Test if data $key is an array
-	 * 
+	 *
 	 * @param string $key
 	 * @return boolean
 	 */
@@ -153,14 +144,14 @@ class CLIRequest extends InputRequest {
 	
 	/**
 	 * Test if data contains the $key
-	 * 
+	 *
 	 * @param string $key
 	 * @return boolean
 	 */
 	public function hasData($key=null) {
 		return $key ? $this->hasInputValue($key) : $this->hasInput();
 	}
-
+	
 	/**
 	 * Test if path contains a value and return it as parameter
 	 *

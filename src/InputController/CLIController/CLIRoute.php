@@ -5,25 +5,25 @@
 
 namespace Orpheus\InputController\CLIController;
 
+use Exception;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
-use Orpheus\InputController\CLIController\CLIArgument;
 
 /**
  * The CLIRoute class
- * 
+ *
  * @author Florent Hazard <contact@sowapps.com>
- * 
+ *
  * TODO: Process options
  */
 class CLIRoute extends ControllerRoute {
 	
 	/**
-	 * Available parameters
-	 * 
-	 * @var string[]
+	 * Registered routes
+	 *
+	 * @var array
 	 */
-	protected $parameters = array();
+	protected static $routes = [];
 	
 	/**
 	 * Available parameters by short name
@@ -31,17 +31,16 @@ class CLIRoute extends ControllerRoute {
 	 * @var CLIArgument[]
 	 */
 	// 	protected $parametersBySN = array();
-	
 	/**
-	 * Registered routes
-	 * 
-	 * @var array
+	 * Available parameters
+	 *
+	 * @var string[]
 	 */
-	protected static $routes = array();
+	protected $parameters = [];
 	
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param string $name
 	 * @param string $path
 	 * @param string $controller
@@ -50,37 +49,29 @@ class CLIRoute extends ControllerRoute {
 	 */
 	protected function __construct($name, $path, $controller, $parameters, $options) {
 		parent::__construct($name, $path, $controller, null, 'Orpheus\InputController\CLIController\CLIResponse', $options);
-// 		$this->parameters = $parameters;
+		// 		$this->parameters = $parameters;
 		// TODO : Process options
-// 		foreach( $parameters as $arg ) {
-// 			$this->parameters[$arg->getLongName()] = &$arg;
-// 			if( $arg->hasShortName() ) {
-// 				$this->parametersBySN[$arg->getShortName()] = &$arg;
-// 			}
-// 		}
+		// 		foreach( $parameters as $arg ) {
+		// 			$this->parameters[$arg->getLongName()] = &$arg;
+		// 			if( $arg->hasShortName() ) {
+		// 				$this->parametersBySN[$arg->getShortName()] = &$arg;
+		// 			}
+		// 		}
 	}
 	
 	/**
 	 * Format the current route to get an URL from path
-	 * 
+	 *
 	 * @param string[] $values
 	 * @return string
 	 * @throws Exception
 	 */
-	public function formatURL($values=array()) {
+	public function formatURL($values = []) {
 		$params = '';
 		if( $values ) {
-			// TODO : Process options
-// 			foreach( $this->parameters as $key => $arg ) {
-// 				$value = isset($values[$key]) ? $values[$key] : null;
-// 				$arg = $this->parameters[$key];
-// 				if( $arg->verify($value) ) {
-// 					$params .= ' '.$arg->getLongCommand($value);
-// 				}
-// 			}
 			$params = implode(' ', $values);
 		}
-		return static::getRootCommand().' '.$this->getPath().$params;
+		return static::getRootCommand() . ' ' . $this->getPath() . $params;
 	}
 	
 	public static function getRootCommand() {
@@ -90,19 +81,14 @@ class CLIRoute extends ControllerRoute {
 	public function getUsageCommand() {
 		$params = '';
 		foreach( $this->parameters as $arg ) {
-// 			$param = $arg->getLongCommand($arg->getType());
-// 			if( !$arg->isRequired() ) {
-// 				$param = '['.$param.']';
-// 			}
-// 			$params .= ' '.$param;
-			$params .= ' '.$arg->getUsageCommand();
+			$params .= ' ' . $arg->getUsageCommand();
 		}
-		return static::getRootCommand().' '.$this->getPath().$params;
+		return static::getRootCommand() . ' ' . $this->getPath() . $params;
 	}
 	
 	/**
 	 * Get route as string
-	 * 
+	 *
 	 * @return string
 	 */
 	public function __toString() {
@@ -111,57 +97,61 @@ class CLIRoute extends ControllerRoute {
 	
 	/**
 	 * Test current route is matching request
-	 * 
+	 *
 	 * {@inheritDoc}
 	 * @param CLIRequest $request
 	 * @param array $values
 	 * @param boolean $alternative
 	 * @see \Orpheus\InputController\ControllerRoute::isMatchingRequest()
 	 */
-	public function isMatchingRequest(InputRequest $request, &$values=array(), $alternative=false) {
+	public function isMatchingRequest(InputRequest $request, &$values = [], $alternative = false) {
 		// CLI does not use alternative
 		return $request->getPath() === $this->getPath();
 	}
 	
+	public function getParameters() {
+		return $this->parameters;
+	}
+	
 	/**
 	 * Register route by $name from config
-	 * 
+	 *
 	 * @param string $name
 	 * @param array $config
 	 * @throws \Exception
 	 */
 	public static function registerConfig($name, array $config) {
 		if( empty($config['path']) ) {
-			throw new \Exception('Missing a valid "path" in configuration of route "'.$name.'"');
+			throw new \Exception('Missing a valid "path" in configuration of route "' . $name . '"');
 		}
 		
-// 		$parameters = array();
-// 		if( isset($config['parameters']) && is_array($config['parameters']) ) {
-// 			foreach( $config['parameters'] as $paramName => $paramConfig ) {
-// 				$parameters[] = CLIArgument::make($paramName, $paramConfig);
-// 			}
-// 		}
+		// 		$parameters = array();
+		// 		if( isset($config['parameters']) && is_array($config['parameters']) ) {
+		// 			foreach( $config['parameters'] as $paramName => $paramConfig ) {
+		// 				$parameters[] = CLIArgument::make($paramName, $paramConfig);
+		// 			}
+		// 		}
 		$options = $config;
 		unset($options['path'], $options['controller'], $options['parameters']);
-		static::register($name, $config['path'], $config['controller'], array(), $options);
+		static::register($name, $config['path'], $config['controller'], [], $options);
 	}
 	
 	/**
 	 * Register route by $name
-	 * 
+	 *
 	 * @param string $name
 	 * @param string $path
 	 * @param string $controller
 	 * @param array $parameters
 	 * @param array $options
 	 */
-	public static function register($name, $path, $controller, $parameters, $options=array()) {
+	public static function register($name, $path, $controller, $parameters, $options = []) {
 		static::$routes[$name] = new static($name, $path, $controller, $parameters, $options);
 	}
 	
 	/**
 	 * Get registered routes
-	 * 
+	 *
 	 * @return array
 	 */
 	public static function getRoutes() {
@@ -170,7 +160,7 @@ class CLIRoute extends ControllerRoute {
 	
 	/**
 	 * Get the route object for the $route name
-	 * 
+	 *
 	 * @param string $route
 	 * @param string $method
 	 * @return CLIRoute
@@ -178,14 +168,10 @@ class CLIRoute extends ControllerRoute {
 	public static function getRoute($route) {
 		return static::$routes[$route];
 	}
-
-	public function getParameters() {
-		return $this->parameters;
-	}
-
-// 	public function getParametersBySN() {
-// 		return $this->parametersBySN;
-// 	}
+	
+	// 	public function getParametersBySN() {
+	// 		return $this->parametersBySN;
+	// 	}
 	
 }
 

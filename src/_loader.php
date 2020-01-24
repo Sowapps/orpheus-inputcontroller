@@ -3,10 +3,9 @@
  * Loader for Orpheus Input Controller library
  */
 
-use Orpheus\InputController\HTTPController\HTTPRoute;
-use Orpheus\InputController\HTTPController\HTTPRequest;
-use Orpheus\Core\Route;
 use Orpheus\Core\RequestHandler;
+use Orpheus\Core\Route;
+use Orpheus\InputController\HTTPController\HTTPRoute;
 use Orpheus\InputController\InputRequest;
 
 if( !defined('ORPHEUSPATH') ) {
@@ -68,7 +67,6 @@ function is_current_route($route) {
  * @return string
  */
 function get_current_route() {
-// 	$request = HTTPRequest::getMainRequest();
 	$request = InputRequest::getMainRequest();
 	return $request->getRoute()->getName();
 }

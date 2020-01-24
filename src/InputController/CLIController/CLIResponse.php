@@ -6,12 +6,13 @@
 namespace Orpheus\InputController\CLIController;
 
 
-use Orpheus\InputController\OutputResponse;
+use Exception;
 use Orpheus\Exception\UserException;
+use Orpheus\InputController\OutputResponse;
 
 /**
  * The CLIResponse class
- * 
+ *
  * @author Florent Hazard <contact@sowapps.com>
  *
  */
@@ -19,24 +20,24 @@ class CLIResponse extends OutputResponse {
 	
 	/**
 	 * The returned response code
-	 * 
+	 *
 	 * @var int
 	 */
 	protected $code;
 	
 	/**
 	 * The HTML body of the response
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $body;
 	
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param string $body
 	 */
-	public function __construct($code=0, $body=null) {
+	public function __construct($code = 0, $body = null) {
 		if( is_string($code) ) {
 			$body = $code;
 			$code = 0;
@@ -50,46 +51,52 @@ class CLIResponse extends OutputResponse {
 	 */
 	public function process() {
 		if( isset($this->body) ) {
-			echo $this->getBody();
+			if( $this->isSuccess() ) {
+				echo $this->getBody();
+			} else {
+				fwrite(STDERR, $this->getBody() . PHP_EOL);
+			}
 		}
+	}
+	
+	public function isSuccess() {
+		return !$this->getCode();
+	}
+	
+	/**
+	 * Get the body
+	 *
+	 * @return string
+	 */
+	public function getBody() {
+		return $this->body;
+	}
+	
+	/**
+	 * Set the body
+	 *
+	 * @param string $body
+	 * @return \Orpheus\InputController\CLIController\CLIResponse
+	 */
+	public function setBody($body) {
+		$this->body = $body;
+		return $this;
 	}
 	
 	/**
 	 * Collect response data from parameters
-	 * 
+	 *
 	 * @param string $layout
 	 * @param array $values
 	 * @return NULL
 	 */
-	public function collectFrom($layout, $values=array()) {
+	public function collectFrom($layout, $values = []) {
 		return null;
-	}
-
-	/**
-	 * Generate CLIResponse from Exception
-	 *
-	 * @param Exception $exception
-	 * @param string $action
-	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
-	 */
-	public static function generateFromException(\Exception $exception, $action='Handling the request') {
-		return new static(1, convertExceptionAsText($exception, 0, $action));
-	}
-	
-	/**
-	 * Generate CLIResponse from UserException
-	 * 
-	 * @param UserException $exception
-	 * @param array $values
-	 * @return \Orpheus\InputController\CLIController\CLIResponse
-	 */
-	public static function generateFromUserException(UserException $exception, $values=array()) {
-		return static::generateFromException($exception);
 	}
 	
 	/**
 	 * Get the code
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getCode() {
@@ -98,7 +105,7 @@ class CLIResponse extends OutputResponse {
 	
 	/**
 	 * Set the code
-	 * 
+	 *
 	 * @param int
 	 * @return \Orpheus\InputController\CLIController\CLIResponse
 	 */
@@ -108,22 +115,24 @@ class CLIResponse extends OutputResponse {
 	}
 	
 	/**
-	 * Get the body
-	 * 
-	 * @return string
+	 * Generate CLIResponse from UserException
+	 *
+	 * @param UserException $exception
+	 * @param array $values
+	 * @return static
 	 */
-	public function getBody() {
-		return $this->body;
+	public static function generateFromUserException(UserException $exception, $values = []) {
+		return static::generateFromException($exception);
 	}
 	
 	/**
-	 * Set the body
-	 * 
-	 * @param string $body
-	 * @return \Orpheus\InputController\CLIController\CLIResponse
+	 * Generate CLIResponse from Exception
+	 *
+	 * @param Exception $exception
+	 * @param string $action
+	 * @return static
 	 */
-	public function setBody($body) {
-		$this->body = $body;
-		return $this;
+	public static function generateFromException(\Exception $exception, $action = 'Handling the request') {
+		return new static(1, convertExceptionAsText($exception, 0, $action));
 	}
 }
