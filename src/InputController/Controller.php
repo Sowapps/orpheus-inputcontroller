@@ -14,11 +14,11 @@ use Orpheus\Exception\UserException;
  *
  */
 abstract class Controller {
-
+	
 	/**
 	 * The request calling this controller
 	 *
-	 * @var \Orpheus\InputController\InputRequest
+	 * @var InputRequest
 	 */
 	protected $request;
 	
@@ -27,7 +27,7 @@ abstract class Controller {
 	 * A controller could be called without any route and any request
 	 * This variable comes to get the route without any request
 	 *
-	 * @var \Orpheus\InputController\ControllerRoute
+	 * @var ControllerRoute
 	 */
 	protected $route;
 	
@@ -36,7 +36,7 @@ abstract class Controller {
 	 *
 	 * @var array
 	 */
-	protected $options = array();
+	protected $options = [];
 	
 	/**
 	 * Catch controller output when running it
@@ -53,16 +53,16 @@ abstract class Controller {
 	public function __toString() {
 		return get_called_class();
 	}
-
+	
 	/**
 	 * Process the $request
 	 *
 	 * @param InputRequest $request
 	 * @return OutputResponse
 	 * @uses ControllerRoute::run()
-	 * @see Controller::preRun()
-	 * @see Controller::run()
-	 * @see Controller::postRun()
+	 * @see  Controller::preRun()
+	 * @see  Controller::run()
+	 * @see  Controller::postRun()
 	 *
 	 * preRun() and postRun() are not declared in this class because PHP does not handle inheritance of parameters
 	 * if preRun() is declared getting a InputRequest, we could not declare a preRun() using a HTTPRequest
@@ -74,20 +74,20 @@ abstract class Controller {
 		if( $this->catchControllerOuput ) {
 			ob_start();
 		}
-		$result	= null;
+		$result = null;
 		try {
 			// Could prevent Run & PostRun
 			// We recommend that PreRun only return Redirects and Exceptions
-			$result	= $this->preRun($request);
+			$result = $this->preRun($request);
 		} catch( UserException $e ) {
-			$result	= $this->processUserException($e);
+			$result = $this->processUserException($e);
 		}
 		if( !$result ) {
 			// PreRun could prevent Run & PostRun
 			try {
-				$result	= $this->run($request);
+				$result = $this->run($request);
 			} catch( UserException $e ) {
-				$result	= $this->processUserException($e);
+				$result = $this->processUserException($e);
 			}
 			$this->postRun($request, $result);
 		}
@@ -97,14 +97,6 @@ abstract class Controller {
 		
 		return $result;
 	}
-	
-	/**
-	 * Run this controller
-	 *
-	 * @param InputRequest $request
-	 * @return OutputResponse|null
-	 */
-	public abstract function run($request);
 	
 	/**
 	 * Before running controller
@@ -117,6 +109,25 @@ abstract class Controller {
 	}
 	
 	/**
+	 * Process the given UserException
+	 *
+	 * @param UserException $e
+	 * @return mixed
+	 * @throws UserException
+	 */
+	public function processUserException(UserException $e) {
+		throw $e;// Throw to request
+	}
+	
+	/**
+	 * Run this controller
+	 *
+	 * @param InputRequest $request
+	 * @return OutputResponse|null
+	 */
+	public abstract function run($request);
+	
+	/**
 	 * After running the controller
 	 *
 	 * @param InputRequest $request
@@ -124,46 +135,6 @@ abstract class Controller {
 	 */
 	public function postRun($request, $response) {
 		return $response;
-	}
-	
-	/**
-	 * Process the given UserException
-	 *
-	 * @param UserException $e
-	 * @return mixed
-	 * @throws \Orpheus\Exception\UserException
-	 */
-	public function processUserException(UserException $e) {
-		throw $e;// Throw to request
-	}
-	
-	/**
-	 * Get the request
-	 *
-	 * @return \Orpheus\InputController\InputRequest
-	 */
-	public function getRequest() {
-		return $this->request;
-	}
-
-	/**
-	 * Set the route
-	 *
-	 * @param \Orpheus\InputController\ControllerRoute
-	 */
-	public function setRoute($route) {
-		$this->route = $route;
-		return $this;
-	}
-	
-	/**
-	 * Get the route
-	 *
-	 * @return \Orpheus\InputController\ControllerRoute
-	 */
-	public function getRoute() {
-		return $this->route ? $this->route : ($this->request ? $this->request->getRoute() : null);
-// 		return $this->request->getRoute();
 	}
 	
 	/**
@@ -177,14 +148,22 @@ abstract class Controller {
 	}
 	
 	/**
-	 * Fill array with default values
+	 * Get the route
 	 *
-	 * @param array $values
+	 * @return ControllerRoute
 	 */
-	public function fillValues(&$values=array()) {
-		$values['Controller']	= $this;
-		$values['Request']		= $this->getRequest();
-		$values['Route']		= $this->getRoute();
+	public function getRoute() {
+		return $this->route ? $this->route : ($this->request ? $this->request->getRoute() : null);
+	}
+	
+	/**
+	 * Set the route
+	 *
+	 * @param ControllerRoute
+	 */
+	public function setRoute($route) {
+		$this->route = $route;
+		return $this;
 	}
 	
 	/**
@@ -195,10 +174,40 @@ abstract class Controller {
 	 * @param array $values
 	 * @return mixed The $response
 	 */
-	public function render($response, $layout, $values=array()) {
+	public function render($response, $layout, $values = []) {
 		$this->fillValues($values);
 		$response->collectFrom($layout, $values);
 		return $response;
+	}
+	
+	/**
+	 * Fill array with default values
+	 *
+	 * @param array $values
+	 */
+	public function fillValues(&$values = []) {
+		$values['Controller'] = $this;
+		$values['Request'] = $this->getRequest();
+		$values['Route'] = $this->getRoute();
+	}
+	
+	/**
+	 * Get parameter values of this controller
+	 * Use it to generate routes (as for menus) with path parameters & you can get the current context
+	 *
+	 * @param array $values
+	 */
+	public function getValues() {
+		return [];
+	}
+	
+	/**
+	 * Get the request
+	 *
+	 * @return InputRequest
+	 */
+	public function getRequest() {
+		return $this->request;
 	}
 	
 	/**
@@ -208,7 +217,7 @@ abstract class Controller {
 	 * @param mixed $default
 	 * @return string|mixed
 	 */
-	public function getOption($key, $default=null) {
+	public function getOption($key, $default = null) {
 		return array_key_exists($key, $this->options) ? $this->options[$key] : $default;
 	}
 	
@@ -217,7 +226,7 @@ abstract class Controller {
 	 *
 	 * @param string $key
 	 * @param mixed $value
-	 * @return \Orpheus\InputController\Controller
+	 * @return Controller
 	 */
 	public function setOption($key, $value) {
 		$this->options[$key] = $value;

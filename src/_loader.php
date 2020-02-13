@@ -15,35 +15,35 @@ if( !defined('ORPHEUSPATH') ) {
 
 /**
  * Generate URL to a route
- * 
+ *
  * @param string $routeName
  * @param array $values
- * @throws Exception
  * @return string
+ * @throws Exception
  */
-function u($routeName, $values=array()) {
+function u($routeName, $values = []) {
 	/* @var $route HTTPRoute */
 	$route = HTTPRoute::getRoute($routeName);
 	if( !$route ) {
-		throw new Exception('Unable to find route '.$routeName);
+		throw new Exception('Unable to find route ' . $routeName);
 	}
 	return $route->formatURL($values);
 }
 
 /**
  * Display URL to a route
- * 
+ *
  * @param string $route
  * @param array $values
  * @throws Exception
  */
-function _u($route, $values=array()) {
+function _u($route, $values = []) {
 	echo u($route, $values);
 }
 
 /**
  * Test if a route exists
- * 
+ *
  * @param string $routeName
  * @return boolean
  */
@@ -53,7 +53,7 @@ function exists_route($routeName) {
 
 /**
  * Test if the $route is the one of the current request
- * 
+ *
  * @param string
  * @return boolean
  */
@@ -63,7 +63,7 @@ function is_current_route($route) {
 
 /**
  * Get the route name of the current request
- * 
+ *
  * @return string
  */
 function get_current_route() {
@@ -73,7 +73,7 @@ function get_current_route() {
 
 /**
  * Get the link of the current request
- * 
+ *
  * @return string
  */
 function get_current_link() {

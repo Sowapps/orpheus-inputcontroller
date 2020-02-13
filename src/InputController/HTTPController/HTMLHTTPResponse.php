@@ -6,61 +6,49 @@
 namespace Orpheus\InputController\HTTPController;
 
 use Exception;
-use Orpheus\Rendering\HTMLRendering;
-use Orpheus\Exception\UserException;
-use Orpheus\Exception\ForbiddenException;
 use Orpheus\Config\Config;
+use Orpheus\Exception\ForbiddenException;
+use Orpheus\Exception\UserException;
+use Orpheus\Rendering\HTMLRendering;
 
 /**
  * The HTMLHTTPResponse class
- * 
+ *
  * @author Florent Hazard <contact@sowapps.com>
  *
  */
 class HTMLHTTPResponse extends HTTPResponse {
-
-	/**
-	 * The HTML body of the response
-	 * 
-	 * @var string
-	 */
-	protected $body;
-
+	
 	/**
 	 * The layout to use ot generate HTML
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $layout;
 	
 	/**
 	 * The values to send to the layout
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $values;
 	
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param string $body
 	 */
-	public function __construct($body=null) {
-		$this->setBody($body);
+	public function __construct($body = null, $contentType = 'text/html; charset="UTF-8"') {
+		parent::__construct($body, $contentType);
 	}
 	
 	/**
-	 * 
+	 *
 	 * {@inheritDoc}
-	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::run()
+	 * @see HTTPResponse::run()
 	 */
 	public function run() {
-		if( !headers_sent() ) {
-			header('Content-Type: text/html; charset="UTF-8"');
-		}
-		if( isset($this->body) ) {
-			// if already generated we display the body
-			echo $this->getBody();
+		if( parent::run() ) {
 			return;
 		}
 		$rendering = HTMLRendering::getCurrent();
@@ -72,45 +60,16 @@ class HTMLHTTPResponse extends HTTPResponse {
 	}
 	
 	/**
-	 * 
-	 * {@inheritDoc}
-	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::collectFrom()
-	 * @param string $layout
-	 * @param array $values
-	 * @return NULL
-	 */
-	public function collectFrom($layout, $values=array()) {
-		$this->layout = $layout;
-		$this->values = $values;
-		return null;
-	}
-	
-	/**
-	 * Render the $layout with these $values
-	 * 
-	 * @param string $layout
-	 * @param array $values
-	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
-	 * @see \Orpheus\InputController\HTTPController\HTMLHTTPResponse::run()
-	 */
-	public static function render($layout, $values=array()) {
-		$response = new static();
-		$response->collectFrom($layout, $values);
-		return $response;
-	}
-	
-	/**
 	 * Generate HTMLResponse from Exception
-	 * 
+	 *
 	 * @param Exception $exception
 	 * @param string $action
-	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
+	 * @return HTMLHTTPResponse
 	 */
-	public static function generateFromException(Exception $exception, $action='Handling the request') {
+	public static function generateFromException(Exception $exception, $action = 'Handling the request') {
 		if( Config::get('forbidden_to_home', true) && $exception instanceof ForbiddenException ) {
-			return new RedirectHTTPResponse(u(DEFAULTROUTE));
+			return new RedirectHTTPResponse(u(DEFAULT_ROUTE));
 		}
-		;
 		$code = $exception->getCode();
 		if( $code < 100 ) {
 			$code = HTTP_INTERNAL_SERVER_ERROR;
@@ -119,45 +78,59 @@ class HTMLHTTPResponse extends HTTPResponse {
 		$response->setCode($code);
 		return $response;
 	}
-
+	
 	/**
 	 * Generate HTMLResponse from UserException
 	 *
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
+	 * @return HTMLHTTPResponse
 	 */
-	public static function generateFromUserException(UserException $exception, $values=array()) {
+	public static function generateFromUserException(UserException $exception, $values = []) {
 		$code = $exception->getCode();
 		if( !$code ) {
 			$code = HTTP_BAD_REQUEST;
 		}
 		reportError($exception);
-		$values['titleRoute'] = 'usererror';
+		$defaultLayout = 'user_error';
+		$layout = $defaultLayout . '_' . $code;
+		if( !HTMLRendering::getCurrent()->existsLayoutPath($layout) ) {
+			$layout = $defaultLayout;
+		}
+		$values['titleRoute'] = $layout;
 		$values['Content'] = '';
-		$response = static::render('page_skeleton', $values);
+		$values['exception'] = $exception;
+		$response = static::render($layout, $values);
 		$response->setCode($code);
 		return $response;
 	}
 	
 	/**
-	 * Get the body
-	 * 
-	 * @return string
+	 * Render the $layout with these $values
+	 *
+	 * @param string $layout
+	 * @param array $values
+	 * @return HTMLHTTPResponse
+	 * @see HTMLHTTPResponse::run()
 	 */
-	public function getBody() {
-		return $this->body;
+	public static function render($layout, $values = []) {
+		$response = new static();
+		$response->collectFrom($layout, $values);
+		return $response;
 	}
 	
 	/**
-	 * Set the body
-	 * 
-	 * @param string $body
-	 * @return \Orpheus\InputController\HTTPController\HTMLHTTPResponse
+	 *
+	 * {@inheritDoc}
+	 * @param string $layout
+	 * @param array $values
+	 * @return NULL
+	 * @see HTTPResponse::collectFrom()
 	 */
-	public function setBody($body) {
-		$this->body = $body;
-		return $this;
+	public function collectFrom($layout, $values = []) {
+		$this->layout = $layout;
+		$this->values = $values;
+		return null;
 	}
 	
 }

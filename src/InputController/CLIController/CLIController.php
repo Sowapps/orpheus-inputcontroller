@@ -49,7 +49,7 @@ abstract class CLIController extends Controller {
 	 * {@inheritDoc}
 	 * @param UserException $exception
 	 * @param array $values
-	 * @see \Orpheus\InputController\Controller::processUserException()
+	 * @see Controller::processUserException()
 	 */
 	public function processUserException(UserException $exception, $values = []) {
 		return $this->getRoute()->processUserException($exception, $values);

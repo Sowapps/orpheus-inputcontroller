@@ -5,12 +5,12 @@
 
 namespace Orpheus\InputController\HTTPController;
 
-use Orpheus\InputController\Controller;
 use Orpheus\Exception\UserException;
+use Orpheus\InputController\Controller;
 
 /**
  * The HTTPController class
- * 
+ *
  * @author Florent Hazard <contact@sowapps.com>
  *
  */
@@ -20,30 +20,31 @@ abstract class HTTPController extends Controller {
 	
 	/**
 	 * Render the given $layout with $values
-	 * 
+	 *
 	 * @param string $layout
 	 * @param array $values
 	 * @return HTMLHTTPResponse
 	 */
-	public function renderHTML($layout, $values=array()) {
+	public function renderHTML($layout, $values = []) {
 		return $this->render(new HTMLHTTPResponse(), $layout, $values);
 	}
 	
 	/**
-	 * 
+	 *
 	 * {@inheritDoc}
-	 * @see \Orpheus\InputController\Controller::processUserException()
 	 * @param UserException $exception
 	 * @param array $values
+	 * @see Controller::processUserException()
 	 */
-	public function processUserException(UserException $exception, $values=array()) {
+	public function processUserException(UserException $exception, $values = []) {
+		$this->fillValues($values);
 		return $this->getRoute()->processUserException($exception, $values);
 	}
 	
 	/**
 	 * Get the HTTP request
 	 *
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	public function getRequest() {
 		return $this->request;

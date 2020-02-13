@@ -5,10 +5,10 @@
 
 namespace Orpheus\Controller;
 
+use Orpheus\Exception\NotFoundException;
 use Orpheus\InputController\HTTPController\HTTPController;
 use Orpheus\InputController\HTTPController\HTTPRequest;
 use Orpheus\InputController\HTTPController\LocalFileHTTPResponse;
-use Orpheus\Exception\NotFoundException;
 
 /**
  * The RedirectController class
@@ -21,9 +21,9 @@ class ResourceController extends HTTPController {
 	/**
 	 * @param HTTPRequest $request The input HTTP request
 	 * @return LocalFileHTTPResponse The output HTTP response
-	 * @see HTTPController::run()
+	 * @throws NotFoundException
 	 */
-	public function run(HTTPRequest $request) {
+	public function run($request) {
 		
 		$options = $request->getRoute()->getOptions();
 		if( empty($options['package']) ) {
@@ -31,17 +31,16 @@ class ResourceController extends HTTPController {
 		}
 		
 		return new LocalFileHTTPResponse($this->resolveResource($request->getPathValue('resource'), $options['package']));
-		
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param string $path
 	 * @return string The absolute path to resource
 	 */
 	public function resolveResource($webPath, $package) {
-		return VENDORPATH.$package.'/res/'.$webPath;
+		return VENDORPATH . $package . '/res/' . $webPath;
 	}
-
+	
 	
 }
