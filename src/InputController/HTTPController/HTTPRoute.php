@@ -142,7 +142,7 @@ class HTTPRoute extends ControllerRoute {
 	 *
 	 * @param HTTPRequest $request
 	 */
-	public function prepare(InputRequest $request) {
+	public function prepare($request) {
 		$routeOptions = $this->getOptions();
 		if( !isset($routeOptions['session']) || $routeOptions['session'] ) {
 			startSession();

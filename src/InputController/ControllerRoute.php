@@ -12,7 +12,6 @@ use Orpheus\Core\Route;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\NotFoundException;
 use Orpheus\Exception\UserException;
-use Orpheus\InputController\HTTPController\HTTPRequest;
 
 /**
  * The ControllerRoute class
@@ -156,7 +155,7 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Prepare environment for this route
 	 *
-	 * @param HTTPRequest $request
+	 * @param InputRequest $request
 	 */
 	public function prepare($request) {
 	
@@ -441,7 +440,7 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * @return Controller
 	 */
-	public function getController(): Controller {
+	public function getController() {
 		return $this->controller;
 	}
 	
