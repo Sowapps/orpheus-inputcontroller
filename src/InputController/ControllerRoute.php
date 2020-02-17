@@ -12,6 +12,7 @@ use Orpheus\Core\Route;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\NotFoundException;
 use Orpheus\Exception\UserException;
+use Orpheus\InputController\HTTPController\HTTPRequest;
 
 /**
  * The ControllerRoute class
@@ -65,6 +66,13 @@ abstract class ControllerRoute extends Route {
 	 * @var string The controller class
 	 */
 	protected $controllerClass;
+	
+	/**
+	 * The running controller
+	 *
+	 * @var Controller The controller
+	 */
+	protected $controller;
 	
 	/**
 	 * Non-processed options in route configuration
@@ -137,8 +145,8 @@ abstract class ControllerRoute extends Route {
 			if( !$this->isAccessible() ) {
 				throw new ForbiddenException('This route is not accessible in this context');
 			}
-			$controller = $this->instanciateController();
-			$result = $controller->process($request);
+			$this->controller = $this->instanciateController();
+			$result = $this->controller->process($request);
 			return $result;
 		} catch( Exception $exception ) {
 			return $this->processException($exception);
@@ -148,9 +156,9 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Prepare environment for this route
 	 *
-	 * @param InputRequest $request
+	 * @param HTTPRequest $request
 	 */
-	public function prepare(InputRequest $request) {
+	public function prepare($request) {
 	
 	}
 	
@@ -430,5 +438,11 @@ abstract class ControllerRoute extends Route {
 		return InputRequest::getMainRequest()->getRouteName();
 	}
 	
+	/**
+	 * @return Controller
+	 */
+	public function getController(): Controller {
+		return $this->controller;
+	}
 	
 }
