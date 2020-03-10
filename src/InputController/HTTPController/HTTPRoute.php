@@ -233,7 +233,7 @@ class HTTPRoute extends ControllerRoute {
 			} elseif( !empty($config['render']) ) {
 				$config['controller'] = 'Orpheus\\Controller\\StaticPageController';
 			} else {
-				throw new \Exception('Missing a valid `controller` in configuration of route "' . $name . '"');
+				throw new Exception('Missing a valid `controller` in configuration of route "' . $name . '"');
 			}
 		}
 		if( !isset($config['restrictTo']) ) {

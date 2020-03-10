@@ -239,11 +239,28 @@ class HTTPRequest extends InputRequest {
 	 * Set the host domain
 	 *
 	 * @param string $domain
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return $this
 	 */
 	protected function setDomain($domain) {
 		$this->domain = $domain;
 		return $this;
+	}
+	
+	/**
+	 * Get the header Content-Length
+	 *
+	 * @return int
+	 */
+	public function getHeaderContentLength() {
+		return isset($this->headers['Content-Length']) ? (int) $this->headers['Content-Length'] : null;
+	}
+	
+	public function getConfigPostMaxSize() {
+		return convertHumanSizeToByte(ini_get('post_max_size'));
+	}
+	
+	public function isPostSiteOverLimit() {
+		return $this->getHeaderContentLength() > $this->getConfigPostMaxSize();
 	}
 	
 	/**
@@ -464,19 +481,16 @@ class HTTPRequest extends InputRequest {
 		// Get input
 		$input = null;
 		if( $inputType === 'application/json' ) {
-			// 		if( isset($_SERVER['CONTENT_TYPE']) && strpos(, 'application/json')!==false ) {
 			if( $method === HTTPRoute::METHOD_PUT || $method === HTTPRoute::METHOD_POST ) {
 				$input = json_decode(file_get_contents('php://input'), true);
 			}
 			if( !$input ) {
 				$input = [];
 			}
-		} else {
-			if( $method === HTTPRoute::METHOD_PUT ) {
-				parse_str(file_get_contents("php://input"), $input);
-			} elseif( isset($_POST) ) {
-				$input = $_POST;
-			}
+		} elseif( $method === HTTPRoute::METHOD_PUT ) {
+			parse_str(file_get_contents("php://input"), $input);
+		} elseif( isset($_POST) ) {
+			$input = $_POST;
 		}
 		$request = new static($method, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_GET);
 		$request->setContent($input, $inputType)
@@ -493,7 +507,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @param string $content
 	 * @param string $contentType
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	protected function setContent($content, $contentType) {
 		return $this->setInput($content)->setInputType($contentType);
@@ -511,7 +525,7 @@ class HTTPRequest extends InputRequest {
 	/**
 	 * Get the main http request or null if not a HTTP request
 	 *
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	public static function getMainHTTPRequest() {
 		return static::$mainRequest instanceof HTTPRequest ? static::$mainRequest : null;

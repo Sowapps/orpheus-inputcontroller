@@ -43,7 +43,8 @@ class JSONHTTPResponse extends HTTPResponse {
 		$json = json_encode($this->data);
 		if( $json !== false ) {
 			// Success
-			return $json;
+			echo $json;
+			return;
 		}
 		// Error
 		switch( json_last_error() ) {
