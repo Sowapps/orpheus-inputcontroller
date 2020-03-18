@@ -74,7 +74,7 @@ class LocalFileHTTPResponse extends HTTPResponse {
 			throw new NotFoundException('notFoundLocalFile');
 		}
 		$this->localFilePath = $filePath;
-		$this->fileName = $filePath ?: basename($filePath);
+		$this->fileName = $fileName ?: basename($filePath);
 		$this->download = $download;
 		$this->cacheMaxAge = $cacheMaxAge;
 	}

@@ -43,7 +43,7 @@ class CLIResponse extends OutputResponse {
 			$code = 0;
 		}
 		$this->setCode($code);
-		$this->setBody($body);
+		$this->setBody($body . "\n");
 	}
 	
 	/**
