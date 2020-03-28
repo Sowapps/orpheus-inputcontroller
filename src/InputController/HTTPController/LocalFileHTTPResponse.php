@@ -43,27 +43,6 @@ class LocalFileHTTPResponse extends HTTPResponse {
 	protected $localFilePath;
 	
 	/**
-	 * The file name shared to the client
-	 *
-	 * @var string
-	 */
-	protected $fileName;
-	
-	/**
-	 * Is the file downloaded ? Or displayed ?
-	 *
-	 * @var bool
-	 */
-	protected $download;
-	
-	/**
-	 * Client cache max age in seconds
-	 *
-	 * @var int
-	 */
-	protected $cacheMaxAge;
-	
-	/**
 	 * Constructor
 	 *
 	 * @param string $filePath
@@ -73,16 +52,16 @@ class LocalFileHTTPResponse extends HTTPResponse {
 		if( !is_file($filePath) || !is_readable($filePath) ) {
 			throw new NotFoundException('notFoundLocalFile');
 		}
+		parent::__construct(null, null, $download, $fileName ?: basename($filePath));
 		$this->localFilePath = $filePath;
-		$this->fileName = $fileName ?: basename($filePath);
-		$this->download = $download;
-		$this->cacheMaxAge = $cacheMaxAge;
+		$this->setCacheMaxAge($cacheMaxAge);
 	}
 	
-	/**
-	 * @return bool
-	 */
-	public function run() {
+	public function process() {
+		$this->setContentType(static::getMimetypeFromLocalFilePath($this->localFilePath));
+		$this->setContentLength(filesize($this->localFilePath));
+		$this->setLastModifiedDate(filemtime($this->localFilePath));
+		
 		// Close to unlock session
 		if( session_status() === PHP_SESSION_ACTIVE ) {
 			session_write_close();
@@ -92,20 +71,11 @@ class LocalFileHTTPResponse extends HTTPResponse {
 			ob_end_clean();
 		}
 		
-		// Send headers
-		if( !headers_sent() ) {
-			header('Content-Type: ' . static::getMimetypeFromLocalFilePath($this->localFilePath));
-			header('Content-length: ' . filesize($this->localFilePath));
-			header('Content-Disposition: ' . $this->getContentDisposition() . '; filename="' . $this->fileName . '"');
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($this->localFilePath)) . ' GMT');
-			if( $this->cacheMaxAge ) {
-				header('Cache-Control: private, max-age=' . $this->cacheMaxAge . ', must-revalidate');
-			}
-			header('Pragma: public');
-		}
-		// Render file
+		parent::process();
+	}
+	
+	public function run() {
 		readfile($this->localFilePath);
-		return true;
 	}
 	
 	/**
@@ -133,22 +103,13 @@ class LocalFileHTTPResponse extends HTTPResponse {
 	}
 	
 	/**
-	 * Get content disposition header value
-	 *
-	 * @return string
-	 */
-	protected function getContentDisposition() {
-		return $this->download ? 'attachment' : 'inline';
-	}
-	
-	/**
 	 * Generate HTMLResponse from Exception
 	 *
 	 * @param Exception $exception
 	 * @param string $action
 	 * @return void
 	 */
-	public static function generateFromException(\Exception $exception, $action = 'Handling the request') {
+	public static function generateFromException(Exception $exception, $action = 'Handling the request') {
 		return HTMLHTTPResponse::generateFromException($exception, $action);
 	}
 	
@@ -171,54 +132,6 @@ class LocalFileHTTPResponse extends HTTPResponse {
 	 */
 	protected static function setExtensionMimetype($extension, $mimetype) {
 		static::$extensionMimeTypes[$extension] = $mimetype;
-	}
-	
-	/**
-	 * @return string
-	 */
-	public function getFileName() {
-		return $this->fileName;
-	}
-	
-	/**
-	 * @param string $fileName
-	 * @return static
-	 */
-	public function setFileName(string $fileName) {
-		$this->fileName = $fileName;
-		return $this;
-	}
-	
-	/**
-	 * @return bool
-	 */
-	public function isDownload() {
-		return $this->download;
-	}
-	
-	/**
-	 * @param bool $download
-	 * @return static
-	 */
-	public function setDownload(bool $download) {
-		$this->download = $download;
-		return $this;
-	}
-	
-	/**
-	 * @return int
-	 */
-	public function getCacheMaxAge() {
-		return $this->cacheMaxAge;
-	}
-	
-	/**
-	 * @param int $cacheMaxAge
-	 * @return static
-	 */
-	public function setCacheMaxAge(int $cacheMaxAge) {
-		$this->cacheMaxAge = $cacheMaxAge;
-		return $this;
 	}
 	
 }

@@ -256,7 +256,7 @@ class HTTPRequest extends InputRequest {
 	}
 	
 	public function getConfigPostMaxSize() {
-		return convertHumanSizeToByte(ini_get('post_max_size'));
+		return parseHumanSize(ini_get('post_max_size'));
 	}
 	
 	public function isPostSiteOverLimit() {

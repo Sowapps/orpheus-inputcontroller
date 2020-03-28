@@ -17,8 +17,6 @@ use Orpheus\Exception\UserReportsException;
  */
 class JSONHTTPResponse extends HTTPResponse {
 	
-	protected $contentType = 'application/json';
-	
 	/**
 	 * The data of the JSON response
 	 *
@@ -31,7 +29,8 @@ class JSONHTTPResponse extends HTTPResponse {
 	 *
 	 * @param array $data
 	 */
-	public function __construct($data = null) {
+	public function __construct($data = null, $download = false, $fileName = null) {
+		parent::__construct(null, 'application/json', $download, $fileName);
 		$this->setData($data);
 	}
 	

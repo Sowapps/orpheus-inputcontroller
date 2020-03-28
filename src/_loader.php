@@ -5,6 +5,7 @@
 
 use Orpheus\Core\RequestHandler;
 use Orpheus\Core\Route;
+use Orpheus\InputController\HTTPController\HTTPRequest;
 use Orpheus\InputController\HTTPController\HTTPRoute;
 use Orpheus\InputController\InputRequest;
 
@@ -77,8 +78,8 @@ function get_current_route() {
  * @return string
  */
 function get_current_link() {
-	$request = InputRequest::getMainRequest();
-	return $request->getRoute()->getLink();
+	$request = HTTPRequest::getMainRequest();
+	return $request->getRoute()->getLink((array) $request->getPathValues());
 }
 
 RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HTTPController\HTTPRequest');

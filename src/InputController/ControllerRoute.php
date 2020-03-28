@@ -116,7 +116,7 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Test if the route matches the given $request
 	 *
-	 * @param \Orpheus\InputController\InputRequest $request
+	 * @param InputRequest $request
 	 * @param array $values
 	 * @param boolean $alternative True if we are looking for an alternative route, because we did not find any primary one
 	 */
@@ -125,11 +125,11 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Run the $request by processing the matching controller
 	 *
-	 * @param \Orpheus\InputController\InputRequest $request
-	 * @return \Orpheus\InputController\OutputResponse
+	 * @param InputRequest $request
+	 * @return OutputResponse
 	 * @throws ForbiddenException
 	 * @throws NotFoundException
-	 * @uses \Orpheus\InputController\InputRequest::processRoute()
+	 * @uses InputRequest::processRoute()
 	 */
 	public function run(InputRequest $request) {
 		try {
@@ -144,7 +144,7 @@ abstract class ControllerRoute extends Route {
 			if( !$this->isAccessible() ) {
 				throw new ForbiddenException('This route is not accessible in this context');
 			}
-			$this->controller = $this->instanciateController();
+			$this->controller = $this->instantiateController();
 			$result = $this->controller->process($request);
 			return $result;
 		} catch( Exception $exception ) {
@@ -164,7 +164,7 @@ abstract class ControllerRoute extends Route {
 	/**
 	 *
 	 * {@inheritDoc}
-	 * @see \Orpheus\Core\Route::isAccessible()
+	 * @see Route::isAccessible()
 	 */
 	public function isAccessible() {
 		if( !CHECK_MODULE_ACCESS ) {
@@ -186,9 +186,9 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Instanciate the controller and return it
 	 *
-	 * @return \Orpheus\InputController\Controller
+	 * @return Controller
 	 */
-	public function instanciateController() {
+	public function instantiateController() {
 		$class = $this->controllerClass;
 		/* @var Controller $controller */
 		$controller = new $class();
@@ -202,8 +202,8 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Process the given $exception with the default response
 	 *
-	 * @param \Orpheus\Exception\UserException $exception
-	 * @return \Orpheus\InputController\OutputResponse
+	 * @param UserException $exception
+	 * @return OutputResponse
 	 */
 	public function processException(Exception $exception) {
 		// This exception is fatal, this is an Orpheus page
@@ -214,9 +214,9 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Process the given $exception with the default response
 	 *
-	 * @param \Orpheus\Exception\UserException $exception
+	 * @param UserException $exception
 	 * @param array $values
-	 * @return \Orpheus\InputController\OutputResponse
+	 * @return OutputResponse
 	 */
 	public function processUserException(UserException $exception, $values = []) {
 		// This exception is a user one, we use an app page
@@ -263,10 +263,10 @@ abstract class ControllerRoute extends Route {
 	/**
 	 *
 	 * {@inheritDoc}
-	 * @see \Orpheus\Core\Route::getLink()
+	 * @see Route::getLink()
 	 */
-	public function getLink() {
-		return $this->formatURL();
+	public function getLink($values = []) {
+		return $this->formatURL($values);
 	}
 	
 	/**
@@ -280,7 +280,7 @@ abstract class ControllerRoute extends Route {
 	 * Get all registered routes
 	 * Routes are commonly stored in the configuration
 	 *
-	 * @return \Orpheus\InputController\ControllerRoute[]
+	 * @return ControllerRoute[]
 	 */
 	public static function getRoutes() {
 		static::initialize();

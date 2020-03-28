@@ -7,6 +7,7 @@ namespace Orpheus\InputController;
 
 use Orpheus\Core\Route;
 use Orpheus\Exception\NotFoundException;
+use Orpheus\InputController\HTTPController\HTTPRoute;
 
 /**
  * The InputRequest class
@@ -28,18 +29,21 @@ abstract class InputRequest {
 	 * @var string
 	 */
 	protected $path;
+	
 	/**
 	 * The input parameters (inline parameters)
 	 *
 	 * @var array
 	 */
 	protected $parameters;
+	
 	/**
 	 * The input (like stdin)
 	 *
 	 * @var array
 	 */
 	protected $input;
+	
 	/**
 	 * The found route for this request
 	 *
