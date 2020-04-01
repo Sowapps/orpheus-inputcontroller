@@ -29,7 +29,7 @@ class StaticPageController extends HTTPController {
 		if( empty($options['render']) ) {
 			throw new Exception('The StaticPageController requires a render option, add it to your routes configuration.');
 		}
-		return HTMLHTTPResponse::render($options['render']);
+		return $this->renderHTML($options['render']);
 	}
 	
 }
