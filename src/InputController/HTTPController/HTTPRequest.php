@@ -456,7 +456,7 @@ class HTTPRequest extends InputRequest {
 	 * @return HTTPController
 	 */
 	public static function getDefaultController() {
-		$class = IniConfig::get('default_controller', 'Orpheus\Controller\EmptyDefaultController');
+		$class = IniConfig::get('default_http_controller', 'Orpheus\Controller\EmptyDefaultHttpController');
 		return new $class();
 	}
 	
@@ -470,13 +470,13 @@ class HTTPRequest extends InputRequest {
 			static::$mainRequest = static::generateFromEnvironment();
 			$response = static::$mainRequest->process();
 		} catch( Exception $e ) {
-			$response = static::getDefaultController()->processUserException($e);
+			$response = static::getDefaultController()->processException($e);
 		}
 		try {
 			$response->process();
 		} catch( Exception $e ) {
 			// An exception may occur when processing response, we want to process it the same way
-			$response = static::getDefaultController()->processUserException($e);
+			$response = static::getDefaultController()->processException($e);
 			$response->process();
 		}
 		die();

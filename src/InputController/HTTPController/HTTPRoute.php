@@ -1,7 +1,4 @@
 <?php
-/**
- * HTTPRoute
- */
 
 namespace Orpheus\InputController\HTTPController;
 
@@ -192,7 +189,7 @@ class HTTPRoute extends ControllerRoute {
 	 * @param HTTPRequest $request
 	 * @param array $values
 	 * @param boolean $alternative
-	 * @see \Orpheus\InputController\ControllerRoute::isMatchingRequest()
+	 * @see ControllerRoute::isMatchingRequest()
 	 */
 	public function isMatchingRequest(InputRequest $request, &$values = [], $alternative = false) {
 		// Method match && Path match (variables included)

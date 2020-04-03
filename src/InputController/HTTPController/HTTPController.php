@@ -5,6 +5,7 @@
 
 namespace Orpheus\InputController\HTTPController;
 
+use Exception;
 use Orpheus\Exception\UserException;
 use Orpheus\InputController\Controller;
 
@@ -39,6 +40,15 @@ abstract class HTTPController extends Controller {
 	public function processUserException(UserException $exception, $values = []) {
 		$this->fillValues($values);
 		return $this->getRoute()->processUserException($exception, $values);
+	}
+	
+	/**
+	 * @param Exception $exception
+	 * @param array $values
+	 * @return HTTPResponse
+	 */
+	public function processException(Exception $exception, $values = []) {
+		return HTTPResponse::generateFromException($exception);
 	}
 	
 	/**

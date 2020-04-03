@@ -6,6 +6,7 @@
 namespace Orpheus\InputController\CLIController;
 
 use Exception;
+use Orpheus\Config\IniConfig;
 use Orpheus\InputController\InputRequest;
 
 /**
@@ -122,6 +123,14 @@ class CLIRequest extends InputRequest {
 	}
 	
 	/**
+	 * @return CLIController
+	 */
+	public static function getDefaultController() {
+		$class = IniConfig::get('default_cli_controller', 'Orpheus\Controller\EmptyDefaultCliController');
+		return new $class();
+	}
+	
+	/**
 	 * Handle the current request as a CLIRequest one
 	 * This method ends the script
 	 */
@@ -131,7 +140,7 @@ class CLIRequest extends InputRequest {
 			static::$mainRequest = static::generateFromEnvironment();
 			$response = static::$mainRequest->process();
 		} catch( Exception $e ) {
-			$response = CLIResponse::generateFromException($e);
+			$response = static::getDefaultController()->processException($e);
 		}
 		$response->process();
 		exit($response->getCode());

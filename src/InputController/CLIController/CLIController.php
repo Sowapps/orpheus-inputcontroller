@@ -5,6 +5,7 @@
 
 namespace Orpheus\InputController\CLIController;
 
+use Exception;
 use Orpheus\Exception\UserException;
 use Orpheus\InputController\Controller;
 
@@ -53,6 +54,15 @@ abstract class CLIController extends Controller {
 	 */
 	public function processUserException(UserException $exception, $values = []) {
 		return $this->getRoute()->processUserException($exception, $values);
+	}
+	
+	/**
+	 * @param Exception $exception
+	 * @param array $values
+	 * @return CLIResponse
+	 */
+	public function processException(Exception $exception, $values = []) {
+		return CLIResponse::generateFromException($exception);
 	}
 	
 	/**

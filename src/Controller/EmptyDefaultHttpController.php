@@ -2,6 +2,7 @@
 
 namespace Orpheus\Controller;
 
+use Orpheus\Exception\UserException;
 use Orpheus\InputController\HTTPController\HTMLHTTPResponse;
 use Orpheus\InputController\HTTPController\HTTPController;
 use Orpheus\InputController\HTTPController\HTTPRequest;
@@ -11,7 +12,7 @@ use Orpheus\InputController\HTTPController\HTTPRequest;
  *
  * @package Orpheus\Controller
  */
-class EmptyDefaultController extends HTTPController {
+class EmptyDefaultHttpController extends HTTPController {
 	
 	/**
 	 * Run the controller
@@ -22,6 +23,14 @@ class EmptyDefaultController extends HTTPController {
 	 */
 	public function run($request) {
 		return new HTMLHTTPResponse('An error occurred');
+	}
+	
+	/**
+	 * @param UserException $exception
+	 * @param array $values
+	 */
+	public function processUserException(UserException $exception, $values = []) {
+		return HTMLHTTPResponse::generateFromUserException($exception);
 	}
 	
 }
