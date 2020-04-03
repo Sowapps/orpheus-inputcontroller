@@ -6,30 +6,30 @@
 namespace Orpheus\Controller;
 
 use Exception;
-use Orpheus\Exception\ForbiddenException;
 use Orpheus\Cache\APCache;
+use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\NotFoundException;
+use Orpheus\InputController\ControllerRoute;
+use Orpheus\InputController\HTTPController\HTMLHTTPResponse;
 use Orpheus\InputController\HTTPController\HTTPController;
 use Orpheus\InputController\HTTPController\HTTPRequest;
-use Orpheus\InputController\HTTPController\HTMLHTTPResponse;
-use Orpheus\InputController\ControllerRoute;
 
 /**
  * The DelayedPageController class
- * 
+ *
  * @author Florent Hazard <contact@sowapps.com>
  *
  */
 class DelayedPageController extends HTTPController {
-
+	
 	/**
 	 * Run the controller
-	 * 
+	 *
 	 * @param HTTPRequest $request The input HTTP request
 	 * @return HTMLHTTPResponse The output HTTP response
 	 * @see HTTPController::run()
 	 */
-	public function run(HTTPRequest $request) {
+	public function run($request) {
 		if( !DEV_VERSION ) {
 			throw new ForbiddenException("You're not allowed to access to this content.");
 		}
@@ -38,7 +38,7 @@ class DelayedPageController extends HTTPController {
 		$content = null;
 		if( !$cache->get($content) ) {
 			$cache->clear();
-			throw new NotFoundException('The delayed page "'.$pathValues->page.'" was not found');
+			throw new NotFoundException('The delayed page "' . $pathValues->page . '" was not found');
 		}
 		return new HTMLHTTPResponse($content);
 	}

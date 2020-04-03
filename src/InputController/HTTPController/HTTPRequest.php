@@ -6,6 +6,7 @@
 namespace Orpheus\InputController\HTTPController;
 
 use Exception;
+use Orpheus\Config\IniConfig;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 use stdClass;
@@ -133,7 +134,7 @@ class HTTPRequest extends InputRequest {
 	 * Get all available routes
 	 *
 	 * @return HTTPRoute[]
-	 * @see \Orpheus\InputController\InputRequest::getRoutes()
+	 * @see InputRequest::getRoutes()
 	 */
 	public function getRoutes() {
 		return HTTPRoute::getRoutes();
@@ -144,7 +145,7 @@ class HTTPRequest extends InputRequest {
 	 * {@inheritDoc}
 	 * @param ControllerRoute $route
 	 * @return RedirectHTTPResponse
-	 * @see \Orpheus\InputController\InputRequest::redirect()
+	 * @see InputRequest::redirect()
 	 */
 	public function redirect(ControllerRoute $route) {
 		return new RedirectHTTPResponse(u($route->getName()));
@@ -163,7 +164,7 @@ class HTTPRequest extends InputRequest {
 	 * Set the method
 	 *
 	 * @param string $method
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	protected function setMethod($method) {
 		$this->method = $method;
@@ -219,7 +220,7 @@ class HTTPRequest extends InputRequest {
 	 * Set the scheme
 	 *
 	 * @param string $scheme
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	protected function setScheme($scheme) {
 		$this->scheme = $scheme;
@@ -255,10 +256,22 @@ class HTTPRequest extends InputRequest {
 		return isset($this->headers['Content-Length']) ? (int) $this->headers['Content-Length'] : null;
 	}
 	
+	/**
+	 * Get php config for max post size
+	 *
+	 * @return int
+	 * @throws Exception
+	 */
 	public function getConfigPostMaxSize() {
 		return parseHumanSize(ini_get('post_max_size'));
 	}
 	
+	/**
+	 * Test incoming request is over php max post size
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
 	public function isPostSiteOverLimit() {
 		return $this->getHeaderContentLength() > $this->getConfigPostMaxSize();
 	}
@@ -276,7 +289,7 @@ class HTTPRequest extends InputRequest {
 	 * Set the headers
 	 *
 	 * @param array $headers
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	protected function setHeaders($headers) {
 		$this->headers = $headers;
@@ -296,7 +309,7 @@ class HTTPRequest extends InputRequest {
 	 * Set the input type
 	 *
 	 * @param string $inputType
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	protected function setInputType($inputType) {
 		$this->inputType = $inputType;;
@@ -316,7 +329,7 @@ class HTTPRequest extends InputRequest {
 	 * Set the cookies
 	 *
 	 * @param array $cookies
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	protected function setCookies($cookies) {
 		$this->cookies = $cookies;
@@ -336,7 +349,7 @@ class HTTPRequest extends InputRequest {
 	 * Set the uploaded files
 	 *
 	 * @param array $files
-	 * @return \Orpheus\InputController\HTTPController\HTTPRequest
+	 * @return HTTPRequest
 	 */
 	protected function setFiles($files) {
 		$this->files = $files;
@@ -440,6 +453,14 @@ class HTTPRequest extends InputRequest {
 	}
 	
 	/**
+	 * @return HTTPController
+	 */
+	public static function getDefaultController() {
+		$class = IniConfig::get('default_controller', 'Orpheus\Controller\EmptyDefaultController');
+		return new $class();
+	}
+	
+	/**
 	 * Handle the current request as a HTTPRequest one
 	 * This method ends the script
 	 */
@@ -449,13 +470,13 @@ class HTTPRequest extends InputRequest {
 			static::$mainRequest = static::generateFromEnvironment();
 			$response = static::$mainRequest->process();
 		} catch( Exception $e ) {
-			$response = HTMLHTTPResponse::generateFromException($e);
+			$response = static::getDefaultController()->processUserException($e);
 		}
 		try {
 			$response->process();
 		} catch( Exception $e ) {
 			// An exception may occur when processing response, we want to process it the same way
-			$response = HTMLHTTPResponse::generateFromException($e);
+			$response = static::getDefaultController()->processUserException($e);
 			$response->process();
 		}
 		die();
