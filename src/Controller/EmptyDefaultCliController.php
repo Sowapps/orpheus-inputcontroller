@@ -2,7 +2,6 @@
 
 namespace Orpheus\Controller;
 
-use Orpheus\Exception\UserException;
 use Orpheus\InputController\CLIController\CLIController;
 use Orpheus\InputController\CLIController\CLIResponse;
 use Orpheus\InputController\HTTPController\HTMLHTTPResponse;
@@ -25,15 +24,6 @@ class EmptyDefaultCliController extends CLIController {
 	 */
 	public function run($request) {
 		return new CLIResponse();
-	}
-	
-	/**
-	 * @param UserException $exception
-	 * @param array $values
-	 * @see Controller::processUserException()
-	 */
-	public function processUserException(UserException $exception, $values = []) {
-		return CLIResponse::generateFromUserException($exception);
 	}
 	
 }

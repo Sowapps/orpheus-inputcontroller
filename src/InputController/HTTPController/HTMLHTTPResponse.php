@@ -66,7 +66,7 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 * @param string $action
 	 * @return HTMLHTTPResponse
 	 */
-	public static function generateFromException(Exception $exception, $action = 'Handling the request') {
+	public static function generateFromException(Exception $exception, $action = null) {
 		if( Config::get('forbidden_to_home', true) && $exception instanceof ForbiddenException ) {
 			return new RedirectHTTPResponse(u(DEFAULT_ROUTE));
 		}
@@ -74,9 +74,7 @@ class HTMLHTTPResponse extends HTTPResponse {
 		if( $code < 100 ) {
 			$code = HTTP_INTERNAL_SERVER_ERROR;
 		}
-		$response = new static(convertExceptionAsHTMLPage($exception, $code, $action));
-		$response->setCode($code);
-		return $response;
+		return static::generateDebugResponse($exception, $code, $action);
 	}
 	
 	/**
@@ -84,23 +82,25 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 *
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return HTMLHTTPResponse
+	 * @return static
 	 */
-	public static function generateFromUserException(UserException $exception, $values = []) {
+	public static function generateFromUserException(UserException $exception) {
+		reportError($exception);
 		$code = $exception->getCode();
 		if( !$code ) {
 			$code = HTTP_BAD_REQUEST;
 		}
-		reportError($exception);
-		$defaultLayout = 'user_error';
-		$layout = $defaultLayout . '_' . $code;
-		if( !HTMLRendering::getCurrent()->existsLayoutPath($layout) ) {
-			$layout = $defaultLayout;
-		}
-		$values['titleRoute'] = $layout;
-		$values['Content'] = '';
-		$values['exception'] = $exception;
-		$response = static::render($layout, $values);
+		return static::generateDebugResponse($exception, $code, null);
+	}
+	
+	/**
+	 * @param Exception $exception
+	 * @param int $code
+	 * @param string|null $action
+	 * @return static
+	 */
+	public static function generateDebugResponse(Exception $exception, $code, $action) {
+		$response = new static(convertExceptionAsHTMLPage($exception, $code, $action));
 		$response->setCode($code);
 		return $response;
 	}

@@ -55,20 +55,20 @@ abstract class OutputResponse {
 	 *
 	 * @param Exception $exception
 	 * @param string $action
-	 * @return \Orpheus\InputController\OutputResponse
+	 * @return static
 	 */
 	public static function generateFromException(Exception $exception, $action=null) {
 		return new static();
 	}
-
+	
 	/**
 	 * Generate OutputResponse from UserException
 	 *
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return \Orpheus\InputController\OutputResponse
+	 * @return static
 	 */
-	public static function generateFromUserException(UserException $exception, $values=array()) {
+	public static function generateFromUserException(UserException $exception) {
 		return new static();
 	}
 	

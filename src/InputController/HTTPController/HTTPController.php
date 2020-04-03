@@ -31,15 +31,12 @@ abstract class HTTPController extends Controller {
 	}
 	
 	/**
-	 *
-	 * {@inheritDoc}
 	 * @param UserException $exception
 	 * @param array $values
-	 * @see Controller::processUserException()
+	 * @return HTMLHTTPResponse
 	 */
 	public function processUserException(UserException $exception, $values = []) {
-		$this->fillValues($values);
-		return $this->getRoute()->processUserException($exception, $values);
+		return HTMLHTTPResponse::generateFromUserException($exception);
 	}
 	
 	/**
@@ -48,7 +45,7 @@ abstract class HTTPController extends Controller {
 	 * @return HTTPResponse
 	 */
 	public function processException(Exception $exception, $values = []) {
-		return HTTPResponse::generateFromException($exception);
+		return HTMLHTTPResponse::generateFromException($exception);
 	}
 	
 	/**

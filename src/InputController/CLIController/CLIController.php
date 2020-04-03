@@ -53,7 +53,7 @@ abstract class CLIController extends Controller {
 	 * @see Controller::processUserException()
 	 */
 	public function processUserException(UserException $exception, $values = []) {
-		return $this->getRoute()->processUserException($exception, $values);
+		return CLIResponse::generateFromUserException($exception);
 	}
 	
 	/**

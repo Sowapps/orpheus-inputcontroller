@@ -212,19 +212,6 @@ abstract class ControllerRoute extends Route {
 	}
 	
 	/**
-	 * Process the given $exception with the default response
-	 *
-	 * @param UserException $exception
-	 * @param array $values
-	 * @return OutputResponse
-	 */
-	public function processUserException(UserException $exception, $values = []) {
-		// This exception is a user one, we use an app page
-		$response = $this->defaultResponse;
-		return $response::generateFromUserException($exception, $values);
-	}
-	
-	/**
 	 * Get the name
 	 *
 	 * @return string
