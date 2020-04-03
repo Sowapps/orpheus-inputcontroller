@@ -1,2 +1,3 @@
-# orpheus-inputcontroller
-Input Controller Library for Orpheus, Apply MVC to you application
+# Orpheus Input Controller Library
+
+Apply MVC to you application
