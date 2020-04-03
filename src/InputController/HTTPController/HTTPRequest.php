@@ -19,6 +19,9 @@ use stdClass;
  */
 class HTTPRequest extends InputRequest {
 	
+	/** @var HTTPController */
+	protected static $defaultController;
+	
 	/**
 	 * The used method for this request
 	 *
@@ -248,6 +251,16 @@ class HTTPRequest extends InputRequest {
 	}
 	
 	/**
+	 * Test incoming request is over php max post size
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function isPostSiteOverLimit() {
+		return $this->getHeaderContentLength() > $this->getConfigPostMaxSize();
+	}
+	
+	/**
 	 * Get the header Content-Length
 	 *
 	 * @return int
@@ -264,16 +277,6 @@ class HTTPRequest extends InputRequest {
 	 */
 	public function getConfigPostMaxSize() {
 		return parseHumanSize(ini_get('post_max_size'));
-	}
-	
-	/**
-	 * Test incoming request is over php max post size
-	 *
-	 * @return bool
-	 * @throws Exception
-	 */
-	public function isPostSiteOverLimit() {
-		return $this->getHeaderContentLength() > $this->getConfigPostMaxSize();
 	}
 	
 	/**
@@ -453,14 +456,6 @@ class HTTPRequest extends InputRequest {
 	}
 	
 	/**
-	 * @return HTTPController
-	 */
-	public static function getDefaultController() {
-		$class = IniConfig::get('default_http_controller', 'Orpheus\Controller\EmptyDefaultHttpController');
-		return new $class();
-	}
-	
-	/**
 	 * Handle the current request as a HTTPRequest one
 	 * This method ends the script
 	 */
@@ -532,6 +527,17 @@ class HTTPRequest extends InputRequest {
 	 */
 	protected function setContent($content, $contentType) {
 		return $this->setInput($content)->setInputType($contentType);
+	}
+	
+	/**
+	 * @return HTTPController
+	 */
+	public static function getDefaultController() {
+		if( !static::$defaultController ) {
+			$class = IniConfig::get('default_http_controller', 'Orpheus\Controller\EmptyDefaultHttpController');
+			static::$defaultController = new $class();
+		}
+		return static::$defaultController;
 	}
 	
 	/**

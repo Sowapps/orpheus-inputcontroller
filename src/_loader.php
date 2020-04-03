@@ -79,7 +79,10 @@ function get_current_route() {
  */
 function get_current_link() {
 	$request = HTTPRequest::getMainRequest();
-	return $request->getRoute()->getLink((array) $request->getPathValues());
+	if( $request && $request->getRoute() ) {
+		return $request->getRoute()->getLink((array) $request->getPathValues());
+	}
+	return sprintf('%s://%s%s', $_SERVER['REQUEST_SCHEME'], $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']);
 }
 
 // Polyfill for some FPM systems

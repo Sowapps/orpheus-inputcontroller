@@ -153,7 +153,7 @@ abstract class InputRequest {
 	 * Set the path
 	 *
 	 * @param string $path
-	 * @return \Orpheus\InputController\InputRequest
+	 * @return InputRequest
 	 */
 	protected function setPath($path) {
 		$this->path = $path;
@@ -194,7 +194,7 @@ abstract class InputRequest {
 	 * Set the parameters
 	 *
 	 * @param array
-	 * @return \Orpheus\InputController\InputRequest
+	 * @return InputRequest
 	 */
 	protected function setParameters(array $parameters) {
 		$this->parameters = $parameters;
@@ -223,7 +223,7 @@ abstract class InputRequest {
 	 * Set the input
 	 *
 	 * @param array
-	 * @return \Orpheus\InputController\InputRequest
+	 * @return InputRequest
 	 */
 	protected function setInput(array $input) {
 		$this->input = $input;
@@ -272,8 +272,8 @@ abstract class InputRequest {
 	/**
 	 * Set the route to this request
 	 *
-	 * @param \Orpheus\InputController\ControllerRoute $route
-	 * @return \Orpheus\InputController\InputRequest
+	 * @param ControllerRoute $route
+	 * @return InputRequest
 	 */
 	public function setRoute($route) {
 		$this->route = $route;
@@ -283,7 +283,7 @@ abstract class InputRequest {
 	/**
 	 * Get the main input request
 	 *
-	 * @return \Orpheus\InputController\InputRequest
+	 * @return InputRequest
 	 */
 	public static function getMainRequest() {
 		return static::$mainRequest;
@@ -295,6 +295,8 @@ abstract class InputRequest {
 	 * @return Controller
 	 */
 	public function getController() {
-		return $this->getRoute()->getController();
+		return $this->getRoute() ? $this->getRoute()->getController() : static::getDefaultController();
 	}
+	
+	public abstract static function getDefaultController();
 }
