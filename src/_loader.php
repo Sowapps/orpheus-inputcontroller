@@ -82,6 +82,19 @@ function get_current_link() {
 	return $request->getRoute()->getLink((array) $request->getPathValues());
 }
 
+// Polyfill for some FPM systems
+if( !function_exists('getallheaders') ) {
+	function getallheaders() {
+		$headers = [];
+		foreach( $_SERVER as $name => $value ) {
+			if( substr($name, 0, 5) === 'HTTP_' ) {
+				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+			}
+		}
+		return $headers;
+	}
+}
+
 RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HTTPController\HTTPRequest');
 RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\CLIController\CLIRequest');
 
