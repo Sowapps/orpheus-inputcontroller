@@ -45,6 +45,7 @@ abstract class HTTPController extends Controller {
 	 * @return HTTPResponse
 	 */
 	public function processException(Exception $exception, $values = []) {
+		log_error($exception, 'Processing response', false);
 		return HTMLHTTPResponse::generateFromException($exception);
 	}
 	
