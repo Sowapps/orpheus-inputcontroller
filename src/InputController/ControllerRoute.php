@@ -184,18 +184,17 @@ abstract class ControllerRoute extends Route {
 	}
 	
 	/**
-	 * Instanciate the controller and return it
+	 * Instantiate the controller and return it
 	 *
 	 * @return Controller
 	 */
 	public function instantiateController() {
 		$class = $this->controllerClass;
 		/* @var Controller $controller */
-		$controller = new $class();
+		$controller = new $class($this, $this->getOptions());
 		if( !($controller instanceof Controller) ) {
 			throw new NotFoundException('The controller "' . $this->controllerClass . '" is not a valid controller, the class must inherit from "' . get_class() . '"');
 		}
-		$controller->setRoute($this);
 		return $controller;
 	}
 	

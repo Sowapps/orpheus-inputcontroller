@@ -46,6 +46,17 @@ abstract class Controller {
 	protected $catchControllerOuput = false;
 	
 	/**
+	 * Controller constructor
+	 *
+	 * @param ControllerRoute $route
+	 * @param array $options
+	 */
+	public function __construct(ControllerRoute $route, array $options) {
+		$this->route = $route;
+		$this->options = $options;
+	}
+	
+	/**
 	 * Get this controller as string
 	 *
 	 * @return string
@@ -229,6 +240,18 @@ abstract class Controller {
 	 * @return Controller
 	 */
 	public function setOption($key, $value) {
+		$this->options[$key] = $value;
+		return $this;
+	}
+	
+	/**
+	 * Set an option by $key
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 * @return Controller
+	 */
+	public function setOptions($options) {
 		$this->options[$key] = $value;
 		return $this;
 	}
