@@ -127,7 +127,7 @@ class CLIRequest extends InputRequest {
 	 */
 	public static function getDefaultController() {
 		$class = IniConfig::get('default_cli_controller', 'Orpheus\Controller\EmptyDefaultCliController');
-		return new $class();
+		return new $class(null, []);
 	}
 	
 	/**

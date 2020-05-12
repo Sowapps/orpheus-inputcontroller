@@ -8,6 +8,7 @@ namespace Orpheus\InputController\HTTPController;
 use Exception;
 use Orpheus\Exception\NotFoundException;
 use Orpheus\Exception\UserException;
+use Throwable;
 
 /**
  * The LocalFileHTTPResponse class
@@ -109,7 +110,7 @@ class LocalFileHTTPResponse extends HTTPResponse {
 	 * @param string $action
 	 * @return void
 	 */
-	public static function generateFromException(Exception $exception, $action = 'Handling the request') {
+	public static function generateFromException(Throwable $exception, $action = 'Handling the request') {
 		return HTMLHTTPResponse::generateFromException($exception, $action);
 	}
 	

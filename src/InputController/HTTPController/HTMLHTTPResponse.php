@@ -10,6 +10,7 @@ use Orpheus\Config\Config;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\UserException;
 use Orpheus\Rendering\HTMLRendering;
+use Throwable;
 
 /**
  * The HTMLHTTPResponse class
@@ -66,7 +67,7 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 * @param string $action
 	 * @return HTMLHTTPResponse
 	 */
-	public static function generateFromException(Exception $exception, $action = null) {
+	public static function generateFromException(Throwable $exception, $action = null) {
 		if( Config::get('forbidden_to_home', true) && $exception instanceof ForbiddenException ) {
 			return new RedirectHTTPResponse(u(DEFAULT_ROUTE));
 		}
@@ -74,35 +75,64 @@ class HTMLHTTPResponse extends HTTPResponse {
 		if( $code < 100 ) {
 			$code = HTTP_INTERNAL_SERVER_ERROR;
 		}
-		return static::generateDebugResponse($exception, $code, $action);
-	}
-	
-	/**
-	 * Generate HTMLResponse from UserException
-	 *
-	 * @param UserException $exception
-	 * @param array $values
-	 * @return static
-	 */
-	public static function generateFromUserException(UserException $exception) {
-		reportError($exception);
-		$code = $exception->getCode();
-		if( !$code ) {
-			$code = HTTP_BAD_REQUEST;
-		}
-		return static::generateDebugResponse($exception, $code, null);
+		return static::generateExceptionHtmlResponse($exception, $code, $action, null);
 	}
 	
 	/**
 	 * @param Exception $exception
 	 * @param int $code
 	 * @param string|null $action
+	 * @param string|null $type
 	 * @return static
+	 * @throws Exception
 	 */
-	public static function generateDebugResponse(Exception $exception, $code, $action) {
-		$response = new static(convertExceptionAsHTMLPage($exception, $code, $action));
-		$response->setCode($code);
-		return $response;
+	protected static function generateExceptionHtmlResponse(Throwable $exception, $code, $action, $type = null) {
+		if( DEV_VERSION ) {
+			$response = new static(convertExceptionAsHTMLPage($exception, $code, $action));
+			$response->setCode($code);
+			return $response;
+		}
+		$rendering = HTMLRendering::getCurrent();
+		
+		// Test layouts' availability to get the more specific one
+		$values = [
+			'{type}' => $type,
+			'{code}' => $code,
+		];
+		// Type's layouts
+		$layouts = $type ? ['error/error-{type}-{code}', 'error/error-{type}'] : [];
+		// Global ones
+		$layouts = array_merge($layouts, ['error/error-{code}', 'error/error']);
+		$layout = null;
+		foreach( $layouts as &$testLayout ) {
+			$testLayout = strtr($testLayout, $values);
+			if( $rendering->existsLayoutPath($testLayout) ) {
+				$layout = $testLayout;
+				break;
+			}
+		}
+		if( !$layout ) {
+			// Fatal error, no way to display user friendly error and we don't want to display debug error on prod.
+			$actionText = $action ?: 'controller';
+			$typeText = $type ?: 'classic';
+			$layoutList = implode(', ', $layouts);
+			return new static(<<<EOF
+A fatal error occurred.<br />
+Message: {$exception->getMessage()}<br />
+Type: {$typeText}<br />
+Action: {$actionText}<br />
+<br />
+No error template was found to display a friendly error.<br />
+We looked for templates: {$layoutList}<br />
+EOF
+			);
+		}
+		return static::render($layout, [
+			'exception' => $exception,
+			'code'      => $code,
+			'type'      => $type,
+			'action'    => $action,
+		]);
 	}
 	
 	/**
@@ -131,6 +161,22 @@ class HTMLHTTPResponse extends HTTPResponse {
 		$this->layout = $layout;
 		$this->values = $values;
 		return null;
+	}
+	
+	/**
+	 * Generate HTMLResponse from UserException
+	 *
+	 * @param UserException $exception
+	 * @param array $values
+	 * @return static
+	 */
+	public static function generateFromUserException(UserException $exception) {
+		reportError($exception);
+		$code = $exception->getCode();
+		if( !$code ) {
+			$code = HTTP_BAD_REQUEST;
+		}
+		return static::generateExceptionHtmlResponse($exception, $code, null, 'user');
 	}
 	
 }

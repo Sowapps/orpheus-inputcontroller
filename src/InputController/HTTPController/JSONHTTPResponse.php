@@ -8,6 +8,7 @@ namespace Orpheus\InputController\HTTPController;
 use Exception;
 use Orpheus\Exception\UserException;
 use Orpheus\Exception\UserReportsException;
+use Throwable;
 
 /**
  * The JSONHTTPResponse class
@@ -105,7 +106,7 @@ class JSONHTTPResponse extends HTTPResponse {
 	 * @param string $action
 	 * @return JSONHTTPResponse
 	 */
-	public static function generateFromException(Exception $exception, $action = null) {
+	public static function generateFromException(Throwable $exception, $action = null) {
 		$code = $exception->getCode();
 		if( $code < 100 ) {
 			$code = HTTP_INTERNAL_SERVER_ERROR;

@@ -10,6 +10,7 @@ use Orpheus\Config\IniConfig;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 use stdClass;
+use Throwable;
 
 /**
  * The HTTPRequest class
@@ -460,19 +461,28 @@ class HTTPRequest extends InputRequest {
 	 * This method ends the script
 	 */
 	public static function handleCurrentRequest() {
+		
 		try {
-			HTTPRoute::initialize();
-			static::$mainRequest = static::generateFromEnvironment();
-			$response = static::$mainRequest->process();
-		} catch( Exception $e ) {
-			$response = static::getDefaultController()->processException($e);
-		}
-		try {
-			$response->process();
-		} catch( Exception $e ) {
-			// An exception may occur when processing response, we want to process it the same way
-			$response = static::getDefaultController()->processException($e);
-			$response->process();
+			$responseException = null;
+			// Process request & controller
+			try {
+				HTTPRoute::initialize();
+				static::$mainRequest = static::generateFromEnvironment();
+				$response = static::$mainRequest->process();
+			} catch( Throwable $e ) {
+				$response = static::getDefaultController()->processException($e);
+			}
+			// Process response
+			try {
+				$response->process();
+			} catch( Throwable $e ) {
+				// An exception may occur when processing response, we want to process it the same way
+				$responseException = $e;
+				$response = static::getDefaultController()->processException($e);
+				$response->process();
+			}
+		} catch( Throwable $e ) {
+			static::showFallbackError($e, $responseException);
 		}
 		die();
 	}
@@ -535,9 +545,20 @@ class HTTPRequest extends InputRequest {
 	public static function getDefaultController() {
 		if( !static::$defaultController ) {
 			$class = IniConfig::get('default_http_controller', 'Orpheus\Controller\EmptyDefaultHttpController');
-			static::$defaultController = new $class();
+			static::$defaultController = new $class(null, []);
 		}
 		return static::$defaultController;
+	}
+	
+	public static function showFallbackError(Throwable $exception, ?Throwable $responseException) {
+		if( DEV_VERSION ) {
+			convertExceptionAsHTMLPage($exception, 500, null);
+		}
+		echo <<<EOF
+A fatal error occurred displaying an error.<br />
+Message: {$exception->getMessage()}<br />
+Code: {$exception->getCode()}<br />
+EOF;
 	}
 	
 	/**

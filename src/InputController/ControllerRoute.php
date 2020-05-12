@@ -12,6 +12,7 @@ use Orpheus\Core\Route;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\NotFoundException;
 use Orpheus\Exception\UserException;
+use Throwable;
 
 /**
  * The ControllerRoute class
@@ -204,7 +205,7 @@ abstract class ControllerRoute extends Route {
 	 * @param UserException $exception
 	 * @return OutputResponse
 	 */
-	public function processException(Exception $exception) {
+	public function processException(Throwable $exception) {
 		// This exception is fatal, this is an Orpheus page
 		$response = $this->defaultResponse;
 		return $response::generateFromException($exception);

@@ -8,6 +8,7 @@ namespace Orpheus\InputController\HTTPController;
 use Exception;
 use Orpheus\Exception\UserException;
 use Orpheus\InputController\Controller;
+use Throwable;
 
 /**
  * The HTTPController class
@@ -44,7 +45,7 @@ abstract class HTTPController extends Controller {
 	 * @param array $values
 	 * @return HTTPResponse
 	 */
-	public function processException(Exception $exception, $values = []) {
+	public function processException(Throwable $exception, $values = []) {
 		log_error($exception, 'Processing response', false);
 		return HTMLHTTPResponse::generateFromException($exception);
 	}

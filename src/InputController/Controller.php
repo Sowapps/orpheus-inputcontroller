@@ -51,7 +51,7 @@ abstract class Controller {
 	 * @param ControllerRoute $route
 	 * @param array $options
 	 */
-	public function __construct(ControllerRoute $route, array $options) {
+	public function __construct(?ControllerRoute $route, array $options) {
 		$this->route = $route;
 		$this->options = $options;
 	}
