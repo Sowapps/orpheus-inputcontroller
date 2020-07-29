@@ -9,6 +9,7 @@ namespace Orpheus\InputController\CLIController;
 use Exception;
 use Orpheus\Exception\UserException;
 use Orpheus\InputController\OutputResponse;
+use Throwable;
 
 /**
  * The CLIResponse class
@@ -132,7 +133,7 @@ class CLIResponse extends OutputResponse {
 	 * @param string $action
 	 * @return static
 	 */
-	public static function generateFromException(\Exception $exception, $action = 'Handling the request') {
+	public static function generateFromException(Throwable $exception, $action = 'Handling the request') {
 		return new static(1, convertExceptionAsText($exception, 0, $action));
 	}
 }
