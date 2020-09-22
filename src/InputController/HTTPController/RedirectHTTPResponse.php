@@ -5,9 +5,11 @@
 
 namespace Orpheus\InputController\HTTPController;
 
+use Exception;
+
 /**
  * The RedirectHTTPResponse class
- * 
+ *
  * @author Florent Hazard <contact@sowapps.com>
  *
  */
@@ -15,34 +17,29 @@ class RedirectHTTPResponse extends HTTPResponse {
 	
 	/**
 	 * The destination URI to redirect client
-	 * 
+	 *
 	 * @var string
 	 */
-	protected $destinationURI;
+	protected $destinationUri;
 	
 	/**
 	 * Constructor
-	 * 
-	 * @param string $destinationURI
+	 *
+	 * @param string $destination
+	 * @param bool $permanent
+	 * @throws Exception
 	 */
-	public function __construct($destinationURI) {
-		$this->setCode(HTTP_MOVED_TEMPORARILY);
-		if( exists_route($destinationURI) ) {
-			$destinationURI	= u($destinationURI);
+	public function __construct($destination, $permanent = true) {
+		parent::__construct();
+		if( $permanent ) {
+			$this->setPermanent();
+		} else {
+			$this->setTemporarily();
 		}
-		$this->setDestinationURI($destinationURI);
-	}
-	
-	/**
-	 * 
-	 * {@inheritDoc}
-	 * @see \Orpheus\InputController\HTTPController\HTTPResponse::run()
-	 */
-	public function run() {
-		
-		header('Location: '.$this->destinationURI);
-// 			header('HTTP/1.1 301 Moved Permanently', true, 301);
-		
+		if( exists_route($destination) ) {
+			$destination = u($destination);
+		}
+		$this->setDestinationUri($destination);
 	}
 	
 	/**
@@ -53,22 +50,38 @@ class RedirectHTTPResponse extends HTTPResponse {
 	}
 	
 	/**
+	 * Set this redirection temporarily
+	 */
+	public function setTemporarily() {
+		$this->setCode(HTTP_MOVED_TEMPORARILY);
+	}
+	
+	/**
+	 *
+	 * {@inheritDoc}
+	 * @see HTTPResponse::run()
+	 */
+	public function run() {
+		header('Location: ' . $this->destinationUri);
+	}
+	
+	/**
 	 * Get the destination URI
-	 * 
+	 *
 	 * @return string
 	 */
-	public function getDestinationURI() {
-		return $this->destinationURI;
+	public function getDestinationUri() {
+		return $this->destinationUri;
 	}
 	
 	/**
 	 * Set the destination URI
-	 * 
-	 * @param string $destinationURI
-	 * @return \Orpheus\InputController\HTTPController\RedirectHTTPResponse
+	 *
+	 * @param string $destinationUri
+	 * @return RedirectHTTPResponse
 	 */
-	public function setDestinationURI($destinationURI) {
-		$this->destinationURI = $destinationURI;
+	public function setDestinationUri($destinationUri) {
+		$this->destinationUri = $destinationUri;
 		return $this;
 	}
 	
