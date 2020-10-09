@@ -29,7 +29,7 @@ class RedirectHTTPResponse extends HTTPResponse {
 	 * @param bool $permanent
 	 * @throws Exception
 	 */
-	public function __construct($destination, $permanent = true) {
+	public function __construct($destination, $permanent = false) {
 		parent::__construct();
 		if( $permanent ) {
 			$this->setPermanent();

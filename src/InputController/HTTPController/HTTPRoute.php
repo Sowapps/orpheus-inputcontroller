@@ -135,18 +135,6 @@ class HTTPRoute extends ControllerRoute {
 	}
 	
 	/**
-	 * Prepare environment for this route
-	 *
-	 * @param HTTPRequest $request
-	 */
-	public function prepare($request) {
-		$routeOptions = $this->getOptions();
-		if( !isset($routeOptions['session']) || $routeOptions['session'] ) {
-			startSession();
-		}
-	}
-	
-	/**
 	 * Format the current route to get an URL from path
 	 *
 	 * @param string[] $values
@@ -257,12 +245,12 @@ class HTTPRoute extends ControllerRoute {
 	 * @param string $name
 	 * @param string $path
 	 * @param string $controller
-	 * @param string|array $methods
-	 * @param array $restrictTo
+	 * @param string|array|null $methods
+	 * @param array|null $restrictTo
 	 * @param string $defaultResponse
 	 * @param array $options
 	 */
-	public static function register($name, $path, $controller, $methods = null, $restrictTo = null, $defaultResponse, $options = []) {
+	public static function register($name, $path, $controller, $methods, $restrictTo, $defaultResponse, $options = []) {
 		if( $methods && !is_array($methods) ) {
 			$methods = [$methods];
 		}

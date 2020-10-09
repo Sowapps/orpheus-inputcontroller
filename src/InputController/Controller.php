@@ -66,6 +66,14 @@ abstract class Controller {
 	}
 	
 	/**
+	 * Prepare environment for this route
+	 *
+	 * @param InputRequest $request
+	 */
+	public function prepare($request) {
+	}
+	
+	/**
 	 * Process the $request
 	 *
 	 * @param InputRequest $request

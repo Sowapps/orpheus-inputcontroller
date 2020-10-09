@@ -58,4 +58,18 @@ abstract class HTTPController extends Controller {
 	public function getRequest() {
 		return $this->request;
 	}
+	
+	/**
+	 * Prepare environment for this request
+	 *
+	 * @param HTTPRequest $request
+	 * @throws UserException
+	 */
+	public function prepare($request) {
+		parent::prepare($request);
+		$routeOptions = $this->getRoute()->getOptions();
+		if( !isset($routeOptions['session']) || $routeOptions['session'] ) {
+			startSession();
+		}
+	}
 }

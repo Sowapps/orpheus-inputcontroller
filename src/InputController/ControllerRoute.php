@@ -138,28 +138,20 @@ abstract class ControllerRoute extends Route {
 				throw new NotFoundException('The controller "' . $this->controllerClass . '" was not found');
 			}
 			$request->setRoute($this);
+			// Controller should be available now, we could need it to prepare request
+			$this->controller = $this->instantiateController();
 			
 			//Wow, we made it to handle session, ok ?
-			$this->prepare($request);
+			$this->controller->prepare($request);
 			
 			if( !$this->isAccessible() ) {
 				throw new ForbiddenException('This route is not accessible in this context');
 			}
-			$this->controller = $this->instantiateController();
 			$result = $this->controller->process($request);
 			return $result;
 		} catch( Exception $exception ) {
 			return $this->processException($exception);
 		}
-	}
-	
-	/**
-	 * Prepare environment for this route
-	 *
-	 * @param InputRequest $request
-	 */
-	public function prepare($request) {
-	
 	}
 	
 	/**
