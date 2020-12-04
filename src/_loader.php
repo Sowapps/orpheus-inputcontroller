@@ -20,13 +20,12 @@ if( !defined('ORPHEUSPATH') ) {
  * @param string $routeName
  * @param array $values
  * @return string
- * @throws Exception
  */
 function u($routeName, $values = []) {
-	/* @var $route HTTPRoute */
+	/* @var HTTPRoute $route */
 	$route = HTTPRoute::getRoute($routeName);
 	if( !$route ) {
-		throw new Exception('Unable to find route ' . $routeName);
+		throw new RuntimeException('Unable to find route ' . $routeName);
 	}
 	return $route->formatURL($values);
 }

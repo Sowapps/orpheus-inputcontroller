@@ -158,7 +158,7 @@ class HTTPRoute extends ControllerRoute {
 			},
 			$this->path
 		);
-		return SITEROOT . (isset($path[0]) && $path[0] === '/' ? substr($path, 1) : $path);
+		return WEB_ROOT . '/' . (isset($path[0]) && $path[0] === '/' ? substr($path, 1) : $path);
 	}
 	
 	/**
