@@ -190,11 +190,13 @@ class HTTPRoute extends ControllerRoute {
 			$regex .= str_last($regex) === '/' ? '?' : '/?';
 		}
 		$matches = null;
-		if( preg_match('#^' . $regex . '$#i', $request->getPath(), $matches) ) {
+		if( preg_match('#^' . $regex . '$#i', urldecode($request->getPath()), $matches) ) {
 			unset($matches[0]);
 			$values = array_combine($this->pathVariables, $matches);
+			
 			return true;
 		}
+		
 		return false;
 	}
 	
