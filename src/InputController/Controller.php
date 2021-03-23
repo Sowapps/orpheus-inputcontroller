@@ -205,16 +205,16 @@ abstract class Controller {
 	 * @param array $values
 	 */
 	public function fillValues(&$values = []) {
-		$values['Controller'] = $this;
-		$values['Request'] = $this->getRequest();
-		$values['Route'] = $this->getRoute();
+		$values['controller'] = $this;
+		$values['request'] = $this->getRequest();
+		$values['route'] = $this->getRoute();
 	}
 	
 	/**
 	 * Get parameter values of this controller
 	 * Use it to generate routes (as for menus) with path parameters & you can get the current context
 	 *
-	 * @param array $values
+	 * @return array
 	 */
 	public function getValues() {
 		return [];

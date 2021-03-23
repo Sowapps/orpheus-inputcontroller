@@ -37,7 +37,9 @@ abstract class HTTPController extends Controller {
 	 * @return HTMLHTTPResponse
 	 */
 	public function processUserException(UserException $exception, $values = []) {
-		return HTMLHTTPResponse::generateFromUserException($exception);
+		$this->fillValues($values);
+		
+		return HTMLHTTPResponse::generateFromUserException($exception, $values);
 	}
 	
 	/**
@@ -47,7 +49,9 @@ abstract class HTTPController extends Controller {
 	 */
 	public function processException(Throwable $exception, $values = []) {
 		log_error($exception, 'Processing response', false);
-		return HTMLHTTPResponse::generateFromException($exception);
+		$this->fillValues($values);
+		
+		return HTMLHTTPResponse::generateFromException($exception, $values);
 	}
 	
 	/**

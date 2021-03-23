@@ -5,7 +5,6 @@
 
 namespace Orpheus\InputController;
 
-use Exception;
 use Orpheus\Exception\UserException;
 use Throwable;
 
@@ -54,11 +53,11 @@ abstract class OutputResponse {
 	/**
 	 * Generate OutputResponse from Exception
 	 *
-	 * @param Exception $exception
-	 * @param string $action
+	 * @param Throwable $exception
+	 * @param array $values
 	 * @return static
 	 */
-	public static function generateFromException(Throwable $exception, $action = null) {
+	public static function generateFromException(Throwable $exception, array $values = []) {
 		return new static();
 	}
 	
@@ -69,7 +68,7 @@ abstract class OutputResponse {
 	 * @param array $values
 	 * @return static
 	 */
-	public static function generateFromUserException(UserException $exception) {
+	public static function generateFromUserException(UserException $exception, array $values = []) {
 		return new static();
 	}
 	

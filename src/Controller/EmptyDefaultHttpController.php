@@ -95,17 +95,19 @@ We looked for templates: {$layoutList}<br />
 EOF
 			);
 			$response->setCode($code);
+			
 			return $response;
 		}
 		
 		$values['titleRoute'] = $layout;
-		$values['Content'] = '';
+		$values['content'] = '';
 		$values['exception'] = $exception;
 		$values['code'] = $code;
 		$values['type'] = $type;
 		
 		$response = $this->renderHTML($layout, $values);
 		$response->setCode($code);
+		
 		return $response;
 	}
 	

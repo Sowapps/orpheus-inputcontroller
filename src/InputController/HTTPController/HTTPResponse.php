@@ -7,7 +7,10 @@ namespace Orpheus\InputController\HTTPController;
 
 
 use DateTime;
+use Exception;
+use Orpheus\Exception\UserException;
 use Orpheus\InputController\OutputResponse;
+use Throwable;
 
 /**
  * The HTTPResponse class
@@ -287,7 +290,30 @@ class HTTPResponse extends OutputResponse {
 	 */
 	public function setCode($code) {
 		$this->code = (int) $code;
+		
 		return $this;
+	}
+	
+	/**
+	 * Generate HTMLResponse from Exception
+	 *
+	 * @param Exception $exception
+	 * @param array $values
+	 * @return void
+	 */
+	public static function generateFromException(Throwable $exception, array $values = []) {
+		return HTMLHTTPResponse::generateFromException($exception, $values);
+	}
+	
+	/**
+	 * Generate HTMLResponse from UserException
+	 *
+	 * @param UserException $exception
+	 * @param array $values
+	 * @return HTMLHTTPResponse
+	 */
+	public static function generateFromUserException(UserException $exception, array $values = []) {
+		return HTMLHTTPResponse::generateFromUserException($exception, $values);
 	}
 	
 }
