@@ -6,8 +6,8 @@
 namespace Orpheus\InputController;
 
 use Orpheus\Core\Route;
+use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\NotFoundException;
-use Orpheus\InputController\HTTPController\HTTPRoute;
 
 /**
  * The InputRequest class
@@ -70,7 +70,7 @@ abstract class InputRequest {
 	 * @return OutputResponse
 	 * @throws NotFoundException
 	 */
-	public function process() {
+	public function process(): OutputResponse {
 		$route = $this->findFirstMatchingRoute();
 		if( !$route ) {
 			// Not found, look for an alternative (with /)
@@ -86,6 +86,7 @@ abstract class InputRequest {
 				$route = null;
 			}
 		}
+		
 		return $this->processRoute($route);
 	}
 	
@@ -95,23 +96,23 @@ abstract class InputRequest {
 	 * @param boolean $alternative
 	 * @return Route
 	 */
-	public function findFirstMatchingRoute($alternative = false) {
+	public function findFirstMatchingRoute($alternative = false): ?ControllerRoute {
 		/* @var ControllerRoute $route */
 		foreach( $this->getRoutes() as $route ) {
-			/* @var $route HTTPRoute */
 			if( $route->isMatchingRequest($this, $alternative) ) {
 				return $route;
 			}
 		}
+		
 		return null;
 	}
 	
 	/**
 	 * Get all available routes
 	 *
-	 * @return array
+	 * @return ControllerRoute[]
 	 */
-	public abstract function getRoutes();
+	public abstract function getRoutes(): array;
 	
 	/**
 	 * Redirect response to $route
@@ -131,12 +132,14 @@ abstract class InputRequest {
 	 * @param ControllerRoute $route
 	 * @return OutputResponse
 	 * @throws NotFoundException
+	 * @throws ForbiddenException
 	 */
-	public function processRoute($route) {
+	public function processRoute($route): OutputResponse {
 		if( !$route ) {
 			throw new NotFoundException('No route matches the current request ' . $this);
 		}
 		$this->setRoute($route);
+		
 		return $this->route->run($this);
 	}
 	
@@ -145,7 +148,7 @@ abstract class InputRequest {
 	 *
 	 * @return string
 	 */
-	public function getPath() {
+	public function getPath(): string {
 		return $this->path;
 	}
 	
@@ -155,8 +158,9 @@ abstract class InputRequest {
 	 * @param string $path
 	 * @return InputRequest
 	 */
-	protected function setPath($path) {
+	protected function setPath(string $path): InputRequest {
 		$this->path = $path;
+		
 		return $this;
 	}
 	
@@ -166,7 +170,7 @@ abstract class InputRequest {
 	 * @param string $key
 	 * @return boolean
 	 */
-	public function hasParameter($key) {
+	public function hasParameter(string $key): bool {
 		return $this->getParameter($key, null) !== null;
 	}
 	
@@ -177,7 +181,7 @@ abstract class InputRequest {
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function getParameter($key, $default = null) {
+	public function getParameter(string $key, $default = null) {
 		return apath_get($this->parameters, $key, $default);
 	}
 	
@@ -186,7 +190,7 @@ abstract class InputRequest {
 	 *
 	 * @return array
 	 */
-	public function getParameters() {
+	public function getParameters(): array {
 		return $this->parameters;
 	}
 	
@@ -196,8 +200,9 @@ abstract class InputRequest {
 	 * @param array
 	 * @return InputRequest
 	 */
-	protected function setParameters(array $parameters) {
+	protected function setParameters(array $parameters): InputRequest {
 		$this->parameters = $parameters;
+		
 		return $this;
 	}
 	
@@ -206,7 +211,7 @@ abstract class InputRequest {
 	 *
 	 * @return boolean
 	 */
-	public function hasInput() {
+	public function hasInput(): bool {
 		return !!$this->input;
 	}
 	
@@ -215,7 +220,7 @@ abstract class InputRequest {
 	 *
 	 * @return array
 	 */
-	public function getInput() {
+	public function getInput(): array {
 		return $this->input;
 	}
 	
@@ -225,8 +230,9 @@ abstract class InputRequest {
 	 * @param array
 	 * @return InputRequest
 	 */
-	protected function setInput(array $input) {
+	protected function setInput(array $input): InputRequest {
 		$this->input = $input;
+		
 		return $this;
 	}
 	
@@ -236,7 +242,7 @@ abstract class InputRequest {
 	 * @param string $key
 	 * @return boolean
 	 */
-	public function hasInputValue($key) {
+	public function hasInputValue(string $key): bool {
 		return $this->getInputValue($key, null) !== null;
 	}
 	
@@ -247,7 +253,7 @@ abstract class InputRequest {
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function getInputValue($key, $default = null) {
+	public function getInputValue(string $key, $default = null) {
 		return apath_get($this->input, $key, $default);
 	}
 	
@@ -256,7 +262,7 @@ abstract class InputRequest {
 	 *
 	 * @return string
 	 */
-	public function getRouteName() {
+	public function getRouteName(): string {
 		return $this->route->getName();
 	}
 	
@@ -265,7 +271,7 @@ abstract class InputRequest {
 	 *
 	 * @return ControllerRoute
 	 */
-	public function getRoute() {
+	public function getRoute(): ControllerRoute {
 		return $this->route;
 	}
 	
@@ -275,18 +281,10 @@ abstract class InputRequest {
 	 * @param ControllerRoute $route
 	 * @return InputRequest
 	 */
-	public function setRoute($route) {
+	public function setRoute(ControllerRoute $route): InputRequest {
 		$this->route = $route;
+		
 		return $this;
-	}
-	
-	/**
-	 * Get the main input request
-	 *
-	 * @return InputRequest
-	 */
-	public static function getMainRequest() {
-		return static::$mainRequest;
 	}
 	
 	/**
@@ -294,9 +292,19 @@ abstract class InputRequest {
 	 *
 	 * @return Controller
 	 */
-	public function getController() {
+	public function getController(): Controller {
 		return $this->getRoute() ? $this->getRoute()->getController() : static::getDefaultController();
 	}
 	
+	/**
+	 * Get the main input request
+	 *
+	 * @return InputRequest
+	 */
+	public static function getMainRequest(): InputRequest {
+		return static::$mainRequest;
+	}
+	
 	public abstract static function getDefaultController();
+	
 }

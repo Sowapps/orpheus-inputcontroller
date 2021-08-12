@@ -13,9 +13,71 @@ use Orpheus\InputController\InputRequest;
  * The CLIRequest class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
 class CLIRequest extends InputRequest {
+	
+	// Inspired from Symfony\Component\Console\Formatter\OutputFormatterInterface\OutputInterface
+	public const VERBOSITY_QUIET = 16;
+	public const VERBOSITY_NORMAL = 32;
+	public const VERBOSITY_VERBOSE = 64;
+	public const VERBOSITY_VERY_VERBOSE = 128;
+	public const VERBOSITY_DEBUG = 256;
+	
+	protected int $verbosity = self::VERBOSITY_NORMAL;
+	protected bool $dryRun = false;
+	
+	public function __construct($path, $parameters, $input) {
+		parent::__construct($path, $parameters, $input);
+		
+		$this->setDryRun(!empty($parameters['dry-run']));
+		
+		if( isset($parameters['v']) ) {
+			$this->verbosity = pow(2, 5 + intval($parameters['v']));
+		}
+	}
+	
+	public function isVerbose(): bool {
+		return $this->verbosity >= self::VERBOSITY_VERBOSE;
+	}
+	
+	public function isVeryVerbose(): bool {
+		return $this->verbosity >= self::VERBOSITY_VERY_VERBOSE;
+	}
+	
+	public function isDebugVerbose(): bool {
+		return $this->verbosity >= self::VERBOSITY_DEBUG;
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isDryRun(): bool {
+		return $this->dryRun;
+	}
+	
+	/**
+	 * @param bool $dryRun
+	 */
+	public function setDryRun(bool $dryRun): void {
+		$this->dryRun = $dryRun;
+		if( $dryRun ) {
+			$this->verbosity = self::VERBOSITY_DEBUG;
+		}
+	}
+	
+	/**
+	 * @return int
+	 */
+	public function getVerbosity(): int {
+		return $this->verbosity;
+	}
+	
+	/**
+	 * @param int $verbosity
+	 */
+	public function setVerbosity(int $verbosity): void {
+		$this->verbosity = $verbosity;
+	}
 	
 	/**
 	 * Get this request as string
@@ -31,7 +93,7 @@ class CLIRequest extends InputRequest {
 	 *
 	 * @return string
 	 */
-	public function getURL() {
+	public function getUrl(): string {
 		return $this->route->formatURL($this->parameters);
 	}
 	
@@ -41,7 +103,7 @@ class CLIRequest extends InputRequest {
 	 * @return CLIRoute[]
 	 * @see \Orpheus\InputController\InputRequest::getRoutes()
 	 */
-	public function getRoutes() {
+	public function getRoutes(): array {
 		return CLIRoute::getRoutes();
 	}
 	
@@ -50,7 +112,7 @@ class CLIRequest extends InputRequest {
 	 *
 	 * @return array
 	 */
-	public function getAllData() {
+	public function getAllData(): array {
 		return $this->getInput();
 	}
 	
@@ -60,7 +122,7 @@ class CLIRequest extends InputRequest {
 	 * @param string $key
 	 * @return mixed
 	 */
-	public function getArrayData($key) {
+	public function getArrayData(string $key) {
 		return $this->getInputValue($key, []);
 	}
 	
@@ -70,7 +132,7 @@ class CLIRequest extends InputRequest {
 	 * @param string $key
 	 * @return boolean
 	 */
-	public function hasArrayData($key = null) {
+	public function hasArrayData(?string $key = null): bool {
 		return is_array($this->getData($key));
 	}
 	
@@ -81,7 +143,7 @@ class CLIRequest extends InputRequest {
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function getData($key, $default = null) {
+	public function getData(string $key, $default = null) {
 		return $this->getInputValue($key, $default);
 	}
 	
@@ -91,7 +153,7 @@ class CLIRequest extends InputRequest {
 	 * @param string $key
 	 * @return boolean
 	 */
-	public function hasData($key = null) {
+	public function hasData(?string $key = null): bool {
 		return $key ? $this->hasInputValue($key) : $this->hasInput();
 	}
 	
@@ -102,12 +164,13 @@ class CLIRequest extends InputRequest {
 	 * @param string $value The value as ouput parameter
 	 * @return boolean
 	 */
-	public function hasDataKey($path = null, &$value = null) {
+	public function hasDataKey(?string $path = null, &$value = null): bool {
 		$v = $this->getData($path);
 		if( !$v || !is_array($v) ) {
 			return false;
 		}
 		$value = key($v);
+		
 		return true;
 	}
 	
@@ -117,16 +180,18 @@ class CLIRequest extends InputRequest {
 	 * @param string $content
 	 * @param string $contentType
 	 * @return \Orpheus\InputController\CLIController\CLIRequest
+	 * @deprecated Function is wrongly implemented
 	 */
-	protected function setContent($content) {
+	protected function setContent(string $content): CLIRequest {
 		return $this->setInput($content);
 	}
 	
 	/**
 	 * @return CLIController
 	 */
-	public static function getDefaultController() {
+	public static function getDefaultController(): CLIController {
 		$class = IniConfig::get('default_cli_controller', 'Orpheus\Controller\EmptyDefaultCliController');
+		
 		return new $class(null, []);
 	}
 	
@@ -151,7 +216,7 @@ class CLIRequest extends InputRequest {
 	 *
 	 * @return CLIRequest
 	 */
-	public static function generateFromEnvironment() {
+	public static function generateFromEnvironment(): CLIRequest {
 		global $argc, $argv;
 		
 		$stdin = defined('STDIN') ? STDIN : fopen('php://stdin', 'r');
@@ -165,7 +230,17 @@ class CLIRequest extends InputRequest {
 		$parameters = static::parseArguments(array_slice($argv, 2));
 		
 		$request = new static($path, $parameters, $input);
+		
 		return $request;
+	}
+	
+	/**
+	 * Get the name of the route class associated to a CLIRequest
+	 *
+	 * @return string
+	 */
+	public static function getRouteClass(): string {
+		return '\Orpheus\InputController\CLIController\CLIRoute';
 	}
 	
 	/**
@@ -174,7 +249,7 @@ class CLIRequest extends InputRequest {
 	 * @param array $args
 	 * @return array
 	 */
-	protected static function parseArguments(array $args) {
+	protected static function parseArguments(array $args): array {
 		$parameters = [];
 		$pendingOption = null;
 		
@@ -194,7 +269,7 @@ class CLIRequest extends InputRequest {
 					$name = $matches[1];
 					$parameters[$name] = false;
 				} else {
-					// true is a default value but ware are not sure this is the expected value
+					// true is a default value, but we are not sure if this is the expected value
 					$parameters[$name] = true;
 					$pendingOption = $name;
 				}
@@ -207,7 +282,13 @@ class CLIRequest extends InputRequest {
 					if( $name === '!' ) {
 						$defaultValue = false;
 					} else {
-						$parameters[$name] = $defaultValue;
+						if( empty($parameters[$name]) || !$defaultValue ) {
+							// Undefined, null or false, we set new value
+							$parameters[$name] = $defaultValue;
+						} else {
+							// Increment the current value when repeating short argument
+							$parameters[$name] = $parameters[$name] + 1;
+						}
 						// If default value is false, we are not expecting another value
 						$pendingOption = $defaultValue ? $name : null;
 						// Reset default value to true
@@ -234,12 +315,4 @@ class CLIRequest extends InputRequest {
 		return $parameters;
 	}
 	
-	/**
-	 * Get the name of the route class associated to a CLIRequest
-	 *
-	 * @return string
-	 */
-	public static function getRouteClass() {
-		return '\Orpheus\InputController\CLIController\CLIRoute';
-	}
 }

@@ -107,7 +107,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return string
 	 */
-	public function getURL() {
+	public function getURL(): string {
 		return $this->scheme . '://' . $this->domain . $this->path . ($this->parameters ? '?' . http_build_query($this->parameters) : '');
 	}
 	
@@ -115,22 +115,23 @@ class HTTPRequest extends InputRequest {
 	 * Find a matching route according to the request
 	 *
 	 * @param boolean $alternative Is this looking for an alternative route ?
-	 * @return Route
+	 * @return HTTPRoute|null
 	 */
-	public function findFirstMatchingRoute($alternative = false) {
-		/* @var ControllerRoute $route */
+	public function findFirstMatchingRoute($alternative = false): ?ControllerRoute {
+		/* @var HTTPRoute $route */
 		foreach( $this->getRoutes() as $methodRoutes ) {
 			if( !isset($methodRoutes[$this->method]) ) {
 				continue;
 			}
-			/* @var $route HTTPRoute */
 			$route = $methodRoutes[$this->method];
 			$values = null;
 			if( $route->isMatchingRequest($this, $values, $alternative) ) {
 				$this->pathValues = (object) $values;
+				
 				return $route;
 			}
 		}
+		
 		return null;
 	}
 	
@@ -140,7 +141,7 @@ class HTTPRequest extends InputRequest {
 	 * @return HTTPRoute[]
 	 * @see InputRequest::getRoutes()
 	 */
-	public function getRoutes() {
+	public function getRoutes(): array {
 		return HTTPRoute::getRoutes();
 	}
 	
@@ -151,7 +152,7 @@ class HTTPRequest extends InputRequest {
 	 * @return RedirectHTTPResponse
 	 * @see InputRequest::redirect()
 	 */
-	public function redirect(ControllerRoute $route) {
+	public function redirect(ControllerRoute $route): RedirectHTTPResponse {
 		return new RedirectHTTPResponse(u($route->getName()));
 	}
 	
@@ -160,7 +161,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return string
 	 */
-	public function getMethod() {
+	public function getMethod(): string {
 		return $this->method;
 	}
 	
@@ -170,8 +171,9 @@ class HTTPRequest extends InputRequest {
 	 * @param string $method
 	 * @return HTTPRequest
 	 */
-	protected function setMethod($method) {
+	protected function setMethod($method): HTTPRequest {
 		$this->method = $method;
+		
 		return $this;
 	}
 	
@@ -180,7 +182,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return boolean
 	 */
-	public function isGET() {
+	public function isGET(): bool {
 		return $this->method === HTTPRoute::METHOD_GET;
 	}
 	
@@ -189,7 +191,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return boolean
 	 */
-	public function isPOST() {
+	public function isPOST(): bool {
 		return $this->method === HTTPRoute::METHOD_POST;
 	}
 	
@@ -198,7 +200,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return boolean
 	 */
-	public function isPUT() {
+	public function isPUT(): bool {
 		return $this->method === HTTPRoute::METHOD_PUT;
 	}
 	
@@ -207,7 +209,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return boolean
 	 */
-	public function isDELETE() {
+	public function isDELETE(): bool {
 		return $this->method === HTTPRoute::METHOD_DELETE;
 	}
 	
@@ -216,7 +218,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return string
 	 */
-	public function getScheme() {
+	public function getScheme(): string {
 		return $this->scheme;
 	}
 	
@@ -226,8 +228,9 @@ class HTTPRequest extends InputRequest {
 	 * @param string $scheme
 	 * @return HTTPRequest
 	 */
-	protected function setScheme($scheme) {
+	protected function setScheme($scheme): HTTPRequest {
 		$this->scheme = $scheme;
+		
 		return $this;
 	}
 	
@@ -236,7 +239,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return string
 	 */
-	public function getDomain() {
+	public function getDomain(): string {
 		return $this->domain;
 	}
 	
@@ -246,8 +249,9 @@ class HTTPRequest extends InputRequest {
 	 * @param string $domain
 	 * @return $this
 	 */
-	protected function setDomain($domain) {
+	protected function setDomain($domain): HTTPRequest {
 		$this->domain = $domain;
+		
 		return $this;
 	}
 	
@@ -257,7 +261,7 @@ class HTTPRequest extends InputRequest {
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function isPostSiteOverLimit() {
+	public function isPostSiteOverLimit(): bool {
 		return $this->getHeaderContentLength() > $this->getConfigPostMaxSize();
 	}
 	
@@ -266,7 +270,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return int
 	 */
-	public function getHeaderContentLength() {
+	public function getHeaderContentLength(): ?int {
 		return isset($this->headers['Content-Length']) ? (int) $this->headers['Content-Length'] : null;
 	}
 	
@@ -276,7 +280,7 @@ class HTTPRequest extends InputRequest {
 	 * @return int
 	 * @throws Exception
 	 */
-	public function getConfigPostMaxSize() {
+	public function getConfigPostMaxSize(): int {
 		return parseHumanSize(ini_get('post_max_size'));
 	}
 	
@@ -285,7 +289,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return array
 	 */
-	public function getHeaders() {
+	public function getHeaders(): array {
 		return $this->headers;
 	}
 	
@@ -295,8 +299,9 @@ class HTTPRequest extends InputRequest {
 	 * @param array $headers
 	 * @return HTTPRequest
 	 */
-	protected function setHeaders($headers) {
+	protected function setHeaders($headers): HTTPRequest {
 		$this->headers = $headers;
+		
 		return $this;
 	}
 	
@@ -305,7 +310,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return string
 	 */
-	public function getInputType() {
+	public function getInputType(): string {
 		return $this->inputType;
 	}
 	
@@ -315,8 +320,9 @@ class HTTPRequest extends InputRequest {
 	 * @param string $inputType
 	 * @return HTTPRequest
 	 */
-	protected function setInputType($inputType) {
+	protected function setInputType($inputType): HTTPRequest {
 		$this->inputType = $inputType;;
+		
 		return $this;
 	}
 	
@@ -325,7 +331,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return array
 	 */
-	public function getCookies() {
+	public function getCookies(): array {
 		return $this->cookies;
 	}
 	
@@ -335,8 +341,9 @@ class HTTPRequest extends InputRequest {
 	 * @param array $cookies
 	 * @return HTTPRequest
 	 */
-	protected function setCookies($cookies) {
+	protected function setCookies($cookies): HTTPRequest {
 		$this->cookies = $cookies;
+		
 		return $this;
 	}
 	
@@ -345,7 +352,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return array
 	 */
-	public function getFiles() {
+	public function getFiles(): array {
 		return $this->files;
 	}
 	
@@ -355,8 +362,9 @@ class HTTPRequest extends InputRequest {
 	 * @param array $files
 	 * @return HTTPRequest
 	 */
-	protected function setFiles($files) {
+	protected function setFiles($files): HTTPRequest {
 		$this->files = $files;
+		
 		return $this;
 	}
 	
@@ -365,7 +373,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return array
 	 */
-	public function getAllData() {
+	public function getAllData(): array {
 		return $this->getInput();
 	}
 	
@@ -385,7 +393,7 @@ class HTTPRequest extends InputRequest {
 	 * @param string $key
 	 * @return boolean
 	 */
-	public function hasArrayData($key = null) {
+	public function hasArrayData($key = null): bool {
 		return is_array($this->getData($key));
 	}
 	
@@ -406,7 +414,7 @@ class HTTPRequest extends InputRequest {
 	 * @param string $key
 	 * @return boolean
 	 */
-	public function hasData($key = null) {
+	public function hasData($key = null): bool {
 		return $key ? $this->hasInputValue($key) : $this->hasInput();
 	}
 	
@@ -417,12 +425,13 @@ class HTTPRequest extends InputRequest {
 	 * @param string $value The value as ouput parameter
 	 * @return boolean
 	 */
-	public function hasDataKey($path = null, &$value = null) {
+	public function hasDataKey($path = null, &$value = null): bool {
 		$v = $this->getData($path);
 		if( !$v || !is_array($v) ) {
 			return false;
 		}
 		$value = key($v);
+		
 		return true;
 	}
 	
@@ -431,7 +440,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return stdClass
 	 */
-	public function getPathValues() {
+	public function getPathValues(): stdClass {
 		return $this->pathValues;
 	}
 	
@@ -442,7 +451,7 @@ class HTTPRequest extends InputRequest {
 	 * @param mixed $default
 	 * @return string The path value for $key
 	 */
-	public function getPathValue($key, $default = null) {
+	public function getPathValue($key, $default = null): string {
 		return $this->hasPathValue($key) ? $this->pathValues->$key : $default;
 	}
 	
@@ -452,8 +461,19 @@ class HTTPRequest extends InputRequest {
 	 * @param string $key
 	 * @return boolean True if it has the $key value in path
 	 */
-	public function hasPathValue($key) {
+	public function hasPathValue($key): bool {
 		return isset($this->pathValues->$key);
+	}
+	
+	/**
+	 * Set the content (input & input type)
+	 *
+	 * @param string $content
+	 * @param string $contentType
+	 * @return HTTPRequest
+	 */
+	protected function setContent($content, $contentType): HTTPRequest {
+		return $this->setInput($content)->setInputType($contentType);
 	}
 	
 	/**
@@ -492,7 +512,7 @@ class HTTPRequest extends InputRequest {
 	 *
 	 * @return HTTPRequest
 	 */
-	public static function generateFromEnvironment() {
+	public static function generateFromEnvironment(): HTTPRequest {
 		
 		// Get Content type
 		$method = $_SERVER['REQUEST_METHOD'];
@@ -525,28 +545,19 @@ class HTTPRequest extends InputRequest {
 			->setHeaders(getallheaders())
 			->setCookies($_COOKIE)
 			->setFiles($_FILES);
+		
 		return $request;
-	}
-	
-	/**
-	 * Set the content (input & input type)
-	 *
-	 * @param string $content
-	 * @param string $contentType
-	 * @return HTTPRequest
-	 */
-	protected function setContent($content, $contentType) {
-		return $this->setInput($content)->setInputType($contentType);
 	}
 	
 	/**
 	 * @return HTTPController
 	 */
-	public static function getDefaultController() {
+	public static function getDefaultController(): HTTPController {
 		if( !static::$defaultController ) {
 			$class = IniConfig::get('default_http_controller', 'Orpheus\Controller\EmptyDefaultHttpController');
 			static::$defaultController = new $class(null, []);
 		}
+		
 		return static::$defaultController;
 	}
 	
@@ -566,7 +577,7 @@ EOF;
 	 *
 	 * @return string
 	 */
-	public static function getRouteClass() {
+	public static function getRouteClass(): string {
 		return '\Orpheus\InputController\HTTPController\HTTPRoute';
 	}
 	
@@ -575,7 +586,8 @@ EOF;
 	 *
 	 * @return HTTPRequest
 	 */
-	public static function getMainHTTPRequest() {
+	public static function getMainHTTPRequest(): ?HTTPRequest {
 		return static::$mainRequest instanceof HTTPRequest ? static::$mainRequest : null;
 	}
+	
 }
