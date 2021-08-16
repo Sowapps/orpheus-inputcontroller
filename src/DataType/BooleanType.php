@@ -9,7 +9,6 @@ namespace Orpheus\DataType;
  * The TypeValidator class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
 class BooleanType extends AbstractType {
 	
@@ -47,7 +46,7 @@ class BooleanType extends AbstractType {
 		return boolval($value);
 	}
 	
-	public function isFalsable() {
+	public function isFalsable(): bool {
 		return true;
 	}
 }

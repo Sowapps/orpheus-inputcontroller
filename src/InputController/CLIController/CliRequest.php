@@ -14,7 +14,7 @@ use Orpheus\InputController\InputRequest;
  *
  * @author Florent Hazard <contact@sowapps.com>
  */
-class CLIRequest extends InputRequest {
+class CliRequest extends InputRequest {
 	
 	// Inspired from Symfony\Component\Console\Formatter\OutputFormatterInterface\OutputInterface
 	public const VERBOSITY_QUIET = 16;
@@ -24,6 +24,7 @@ class CLIRequest extends InputRequest {
 	public const VERBOSITY_DEBUG = 256;
 	
 	protected int $verbosity = self::VERBOSITY_NORMAL;
+	
 	protected bool $dryRun = false;
 	
 	public function __construct($path, $parameters, $input) {
@@ -100,11 +101,11 @@ class CLIRequest extends InputRequest {
 	/**
 	 * Get all available routes
 	 *
-	 * @return CLIRoute[]
+	 * @return CliRoute[]
 	 * @see \Orpheus\InputController\InputRequest::getRoutes()
 	 */
 	public function getRoutes(): array {
-		return CLIRoute::getRoutes();
+		return CliRoute::getRoutes();
 	}
 	
 	/**
@@ -179,17 +180,17 @@ class CLIRequest extends InputRequest {
 	 *
 	 * @param string $content
 	 * @param string $contentType
-	 * @return \Orpheus\InputController\CLIController\CLIRequest
+	 * @return \Orpheus\InputController\CLIController\CliRequest
 	 * @deprecated Function is wrongly implemented
 	 */
-	protected function setContent(string $content): CLIRequest {
+	protected function setContent(string $content): CliRequest {
 		return $this->setInput($content);
 	}
 	
 	/**
-	 * @return CLIController
+	 * @return CliController
 	 */
-	public static function getDefaultController(): CLIController {
+	public static function getDefaultController(): CliController {
 		$class = IniConfig::get('default_cli_controller', 'Orpheus\Controller\EmptyDefaultCliController');
 		
 		return new $class(null, []);
@@ -201,7 +202,7 @@ class CLIRequest extends InputRequest {
 	 */
 	public static function handleCurrentRequest() {
 		try {
-			CLIRoute::initialize();
+			CliRoute::initialize();
 			static::$mainRequest = static::generateFromEnvironment();
 			$response = static::$mainRequest->process();
 		} catch( Exception $e ) {
@@ -214,9 +215,9 @@ class CLIRequest extends InputRequest {
 	/**
 	 * Generate CLIRequest from environment
 	 *
-	 * @return CLIRequest
+	 * @return CliRequest
 	 */
-	public static function generateFromEnvironment(): CLIRequest {
+	public static function generateFromEnvironment(): CliRequest {
 		global $argc, $argv;
 		
 		$stdin = defined('STDIN') ? STDIN : fopen('php://stdin', 'r');
@@ -240,7 +241,7 @@ class CLIRequest extends InputRequest {
 	 * @return string
 	 */
 	public static function getRouteClass(): string {
-		return '\Orpheus\InputController\CLIController\CLIRoute';
+		return '\Orpheus\InputController\CLIController\CliRoute';
 	}
 	
 	/**

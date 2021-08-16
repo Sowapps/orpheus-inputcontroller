@@ -1,7 +1,4 @@
 <?php
-/**
- * Controller
- */
 
 namespace Orpheus\InputController;
 
@@ -11,7 +8,6 @@ use Orpheus\Exception\UserException;
  * The Controller class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
 abstract class Controller {
 	
@@ -20,35 +16,35 @@ abstract class Controller {
 	 *
 	 * @var InputRequest
 	 */
-	protected $request;
+	protected InputRequest $request;
 	
 	/**
 	 * The route calling this controller
 	 * A controller could be called without any route and any request
 	 * This variable comes to get the route without any request
 	 *
-	 * @var ControllerRoute
+	 * @var ControllerRoute|null
 	 */
-	protected $route;
+	protected ?ControllerRoute $route;
 	
 	/**
 	 * Running options for this controller
 	 *
 	 * @var array
 	 */
-	protected $options = [];
+	protected array $options = [];
 	
 	/**
 	 * Catch controller output when running it
 	 *
 	 * @var boolean
 	 */
-	protected $catchControllerOuput = false;
+	protected bool $catchControllerOutput = false;
 	
 	/**
 	 * Controller constructor
 	 *
-	 * @param ControllerRoute $route
+	 * @param ControllerRoute|null $route
 	 * @param array $options
 	 */
 	public function __construct(?ControllerRoute $route, array $options) {
@@ -86,14 +82,13 @@ abstract class Controller {
 	 * preRun() and postRun() are not declared in this class because PHP does not handle inheritance of parameters
 	 * if preRun() is declared getting a InputRequest, we could not declare a preRun() using a HTTPRequest
 	 */
-	public function process(InputRequest $request) {
+	public function process(InputRequest $request): ?OutputResponse {
 		// run, preRun and postRun take parameter depending on Controller, request may be of a child class of InputRequest
 		$this->request = $request;
 		
-		if( $this->catchControllerOuput ) {
+		if( $this->catchControllerOutput ) {
 			ob_start();
 		}
-		$result = null;
 		try {
 			// Could prevent Run & PostRun
 			// We recommend that PreRun only return Redirects and Exceptions
@@ -108,9 +103,9 @@ abstract class Controller {
 			} catch( UserException $e ) {
 				$result = $this->processUserException($e);
 			}
-			$this->postRun($request, $result);
+			$result = $this->postRun($request, $result);
 		}
-		if( $this->catchControllerOuput ) {
+		if( $this->catchControllerOutput ) {
 			$result->setControllerOutput(ob_get_clean());
 		}
 		
@@ -144,7 +139,7 @@ abstract class Controller {
 	 * @param InputRequest $request
 	 * @return OutputResponse|null
 	 */
-	public abstract function run($request);
+	public abstract function run($request): OutputResponse;
 	
 	/**
 	 * After running the controller
@@ -161,8 +156,9 @@ abstract class Controller {
 	 *
 	 * @return string
 	 */
-	public function getRouteName() {
+	public function getRouteName(): ?string {
 		$route = $this->getRoute();
+		
 		return $route ? $route->getName() : null;
 	}
 	
@@ -171,8 +167,8 @@ abstract class Controller {
 	 *
 	 * @return ControllerRoute
 	 */
-	public function getRoute() {
-		return $this->route ? $this->route : ($this->request ? $this->request->getRoute() : null);
+	public function getRoute(): ?ControllerRoute {
+		return $this->route ?: ($this->request ? $this->request->getRoute() : null);
 	}
 	
 	/**
@@ -180,8 +176,9 @@ abstract class Controller {
 	 *
 	 * @param ControllerRoute
 	 */
-	public function setRoute($route) {
+	public function setRoute(ControllerRoute $route): Controller {
 		$this->route = $route;
+		
 		return $this;
 	}
 	
@@ -196,6 +193,7 @@ abstract class Controller {
 	public function render($response, $layout, $values = []) {
 		$this->fillValues($values);
 		$response->collectFrom($layout, $values);
+		
 		return $response;
 	}
 	
@@ -216,7 +214,7 @@ abstract class Controller {
 	 *
 	 * @return array
 	 */
-	public function getValues() {
+	public function getValues(): array {
 		return [];
 	}
 	
@@ -225,7 +223,7 @@ abstract class Controller {
 	 *
 	 * @return InputRequest
 	 */
-	public function getRequest() {
+	public function getRequest(): InputRequest {
 		return $this->request;
 	}
 	
@@ -236,7 +234,7 @@ abstract class Controller {
 	 * @param mixed $default
 	 * @return string|mixed
 	 */
-	public function getOption($key, $default = null) {
+	public function getOption(string $key, $default = null) {
 		return array_key_exists($key, $this->options) ? $this->options[$key] : $default;
 	}
 	
@@ -247,20 +245,21 @@ abstract class Controller {
 	 * @param mixed $value
 	 * @return Controller
 	 */
-	public function setOption($key, $value) {
+	public function setOption(string $key, $value): Controller {
 		$this->options[$key] = $value;
+		
 		return $this;
 	}
 	
 	/**
 	 * Set an option by $key
 	 *
-	 * @param string $key
-	 * @param mixed $value
+	 * @param array $options
 	 * @return Controller
 	 */
-	public function setOptions($options) {
-		$this->options[$key] = $value;
+	public function setOptions(array $options): Controller {
+		$this->options = $options;
+		
 		return $this;
 	}
 	

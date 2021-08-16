@@ -5,31 +5,31 @@
 namespace Orpheus\Controller;
 
 use Exception;
-use Orpheus\InputController\HTTPController\HTMLHTTPResponse;
-use Orpheus\InputController\HTTPController\HTTPController;
-use Orpheus\InputController\HTTPController\HTTPRequest;
+use Orpheus\InputController\HttpController\HtmlHttpResponse;
+use Orpheus\InputController\HttpController\HttpController;
+use Orpheus\InputController\HttpController\HttpRequest;
 
 /**
  * The StaticPageController class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class StaticPageController extends HTTPController {
+class StaticPageController extends HttpController {
 	
 	/**
 	 * Run the controller
 	 *
-	 * @param HTTPRequest $request The input HTTP request
-	 * @return HTMLHTTPResponse The output HTTP response
+	 * @param HttpRequest $request The input HTTP request
+	 * @return HtmlHttpResponse The output HTTP response
 	 * @throws Exception
 	 */
-	public function run($request) {
+	public function run($request): HttpResponse {
 		$options = $request->getRoute()->getOptions();
 		if( empty($options['render']) ) {
 			throw new Exception('The StaticPageController requires a render option, add it to your routes configuration.');
 		}
-		return $this->renderHTML($options['render']);
+		
+		return $this->renderHtml($options['render']);
 	}
 	
 }

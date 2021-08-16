@@ -1,9 +1,6 @@
 <?php
-/**
- * JSONHTTPResponse
- */
 
-namespace Orpheus\InputController\HTTPController;
+namespace Orpheus\InputController\HttpController;
 
 use Exception;
 use Orpheus\Exception\UserException;
@@ -11,12 +8,11 @@ use Orpheus\Exception\UserReportsException;
 use Throwable;
 
 /**
- * The JSONHTTPResponse class
+ * The JsonHttpResponse class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class JSONHTTPResponse extends HTTPResponse {
+class JsonHttpResponse extends HttpResponse {
 	
 	/**
 	 * The data of the JSON response
@@ -78,7 +74,7 @@ class JSONHTTPResponse extends HTTPResponse {
 	 * Set the data
 	 *
 	 * @param mixed $data
-	 * @return JSONHTTPResponse
+	 * @return JsonHttpResponse
 	 */
 	public function setData($data) {
 		$this->data = $data;
@@ -89,8 +85,8 @@ class JSONHTTPResponse extends HTTPResponse {
 	 * Get a response with the given $data
 	 *
 	 * @param mixed $data
-	 * @return JSONHTTPResponse
-	 * @see JSONHTTPResponse::render()
+	 * @return JsonHttpResponse
+	 * @see JsonHttpResponse::render()
 	 */
 	public static function returnData($data) {
 		// Return success with data
@@ -104,7 +100,7 @@ class JSONHTTPResponse extends HTTPResponse {
 	 *
 	 * @param Exception $exception
 	 * @param string $action
-	 * @return JSONHTTPResponse
+	 * @return JsonHttpResponse
 	 */
 	public static function generateFromException(Throwable $exception, $action = null) {
 		$code = $exception->getCode();
@@ -129,8 +125,8 @@ class JSONHTTPResponse extends HTTPResponse {
 	 * @param mixed $other
 	 * @param string $domain
 	 * @param string $description
-	 * @return JSONHTTPResponse
-	 * @see JSONHTTPResponse::returnData()
+	 * @return JsonHttpResponse
+	 * @see JsonHttpResponse::returnData()
 	 *
 	 * We recommend to use returnData() to return data, that is more RESTful and to use this method only for errors
 	 */
@@ -147,7 +143,7 @@ class JSONHTTPResponse extends HTTPResponse {
 	 * @param mixed $other
 	 * @param string $domain
 	 * @param string $description
-	 * @see HTTPResponse::collectFrom()
+	 * @see HttpResponse::collectFrom()
 	 */
 	public function collectFrom($textCode, $other = null, $domain = 'global', $description = null) {
 		// For errors only
@@ -163,7 +159,7 @@ class JSONHTTPResponse extends HTTPResponse {
 	 *
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return JSONHTTPResponse
+	 * @return JsonHttpResponse
 	 */
 	public static function generateFromUserException(UserException $exception, $values = []) {
 		$code = $exception->getCode();

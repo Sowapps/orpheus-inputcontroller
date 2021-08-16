@@ -14,9 +14,9 @@ use Throwable;
  * The CLIController class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
+ * @method getRequest() CLIRequest
  */
-abstract class CLIController extends Controller {
+abstract class CliController extends Controller {
 	
 	/**
 	 * Print text line
@@ -39,10 +39,11 @@ abstract class CLIController extends Controller {
 	/**
 	 * Request a input line to user
 	 */
-	public function requestInputLine($text = null, $return = true) {
+	public function requestInputLine($text = null, $return = true): string {
 		if( $text ) {
 			echo $text . ($return ? "\n" : ' ');
 		}
+		
 		return trim(fgets(STDIN));
 	}
 	
@@ -54,24 +55,15 @@ abstract class CLIController extends Controller {
 	 * @see Controller::processUserException()
 	 */
 	public function processUserException(UserException $exception, $values = []) {
-		return CLIResponse::generateFromUserException($exception);
+		return CliResponse::generateFromUserException($exception);
 	}
 	
 	/**
 	 * @param Exception $exception
 	 * @param array $values
-	 * @return CLIResponse
+	 * @return CliResponse
 	 */
 	public function processException(Throwable $exception, $values = []) {
-		return CLIResponse::generateFromException($exception);
-	}
-	
-	/**
-	 * Get the CLI request
-	 *
-	 * @return CLIRequest
-	 */
-	public function getRequest() {
-		return $this->request;
+		return CliResponse::generateFromException($exception);
 	}
 }

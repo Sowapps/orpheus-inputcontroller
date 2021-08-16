@@ -5,8 +5,8 @@
 
 use Orpheus\Core\RequestHandler;
 use Orpheus\Core\Route;
-use Orpheus\InputController\HTTPController\HTTPRequest;
-use Orpheus\InputController\HTTPController\HTTPRoute;
+use Orpheus\InputController\HttpController\HttpRequest;
+use Orpheus\InputController\HttpController\HttpRoute;
 use Orpheus\InputController\InputRequest;
 
 if( !defined('ORPHEUSPATH') ) {
@@ -22,11 +22,12 @@ if( !defined('ORPHEUSPATH') ) {
  * @return string
  */
 function u($routeName, $values = []) {
-	/* @var HTTPRoute $route */
-	$route = HTTPRoute::getRoute($routeName);
+	/* @var HttpRoute $route */
+	$route = HttpRoute::getRoute($routeName);
 	if( !$route ) {
 		throw new RuntimeException('Unable to find route ' . $routeName);
 	}
+	
 	return $route->formatURL($values);
 }
 
@@ -48,7 +49,7 @@ function _u($route, $values = []) {
  * @return boolean
  */
 function exists_route($routeName) {
-	return !!HTTPRoute::getRoute($routeName);
+	return !!HttpRoute::getRoute($routeName);
 }
 
 /**
@@ -77,7 +78,7 @@ function get_current_route() {
  * @return string
  */
 function get_current_link() {
-	$request = HTTPRequest::getMainRequest();
+	$request = HttpRequest::getMainRequest();
 	if( $request && $request->getRoute() ) {
 		return $request->getRoute()->getLink((array) $request->getPathValues());
 	}
@@ -93,11 +94,12 @@ if( !function_exists('getallheaders') ) {
 				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
 			}
 		}
+		
 		return $headers;
 	}
 }
 
-RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HTTPController\HTTPRequest');
-RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\CLIController\CLIRequest');
+RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HTTPController\HttpRequest');
+RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\CLIController\CliRequest');
 
-Route::suggestResolver('Orpheus\InputController\HTTPController\HTTPRoute');
+Route::suggestResolver('Orpheus\InputController\HTTPController\HttpRoute');

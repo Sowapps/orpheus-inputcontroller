@@ -1,9 +1,6 @@
 <?php
-/**
- * HTTPController
- */
 
-namespace Orpheus\InputController\HTTPController;
+namespace Orpheus\InputController\HttpController;
 
 use Exception;
 use Orpheus\Exception\UserException;
@@ -11,62 +8,62 @@ use Orpheus\InputController\Controller;
 use Throwable;
 
 /**
- * The HTTPController class
+ * The HttpController class
  *
+ * @method HttpResponse run($request)
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-abstract class HTTPController extends Controller {
+abstract class HttpController extends Controller {
 	
-	protected $catchControllerOuput = true;
+	protected bool $catchControllerOutput = true;
 	
 	/**
 	 * Render the given $layout with $values
 	 *
 	 * @param string $layout
 	 * @param array $values
-	 * @return HTMLHTTPResponse
+	 * @return HtmlHttpResponse
 	 */
-	public function renderHTML($layout, $values = []) {
-		return $this->render(new HTMLHTTPResponse(), $layout, $values);
+	public function renderHtml($layout, $values = []): HtmlHttpResponse {
+		return $this->render(new HtmlHttpResponse(), $layout, $values);
 	}
 	
 	/**
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return HTMLHTTPResponse
+	 * @return HtmlHttpResponse
 	 */
-	public function processUserException(UserException $exception, $values = []) {
+	public function processUserException(UserException $exception, $values = []): HttpResponse {
 		$this->fillValues($values);
 		
-		return HTMLHTTPResponse::generateFromUserException($exception, $values);
+		return HtmlHttpResponse::generateFromUserException($exception, $values);
 	}
 	
 	/**
 	 * @param Exception $exception
 	 * @param array $values
-	 * @return HTTPResponse
+	 * @return HttpResponse
 	 */
-	public function processException(Throwable $exception, $values = []) {
+	public function processException(Throwable $exception, $values = []): HttpResponse {
 		log_error($exception, 'Processing response', false);
 		$this->fillValues($values);
 		
-		return HTMLHTTPResponse::generateFromException($exception, $values);
+		return HtmlHttpResponse::generateFromException($exception, $values);
 	}
 	
 	/**
 	 * Get the HTTP request
 	 *
-	 * @return HTTPRequest
+	 * @return HttpRequest
 	 */
-	public function getRequest() {
+	public function getRequest(): HttpRequest {
 		return $this->request;
 	}
 	
 	/**
 	 * Prepare environment for this request
 	 *
-	 * @param HTTPRequest $request
+	 * @param HttpRequest $request
 	 * @throws UserException
 	 */
 	public function prepare($request) {

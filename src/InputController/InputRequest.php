@@ -1,7 +1,4 @@
 <?php
-/**
- * InputRequest
- */
 
 namespace Orpheus\InputController;
 
@@ -13,7 +10,6 @@ use Orpheus\Exception\NotFoundException;
  * The InputRequest class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
 abstract class InputRequest {
 	

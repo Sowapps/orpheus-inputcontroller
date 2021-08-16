@@ -9,7 +9,6 @@ namespace Orpheus\DataType;
  * The TypeValidator class
  * 
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
 class FileType extends AbstractType {
 	
@@ -17,7 +16,7 @@ class FileType extends AbstractType {
 		parent::__construct('file');
 	}
 	
-	public function check($value) {
+	public function check($value): bool {
 		return is_readable($value);
 	}
 }

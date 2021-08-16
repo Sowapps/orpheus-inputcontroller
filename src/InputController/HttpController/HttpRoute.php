@@ -1,6 +1,6 @@
 <?php
 
-namespace Orpheus\InputController\HTTPController;
+namespace Orpheus\InputController\HttpController;
 
 use Exception;
 use Orpheus;
@@ -8,12 +8,11 @@ use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 
 /**
- * The HTTPRoute class
+ * The HttpRoute class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class HTTPRoute extends ControllerRoute {
+class HttpRoute extends ControllerRoute {
 	
 	const METHOD_GET = 'GET';
 	const METHOD_POST = 'POST';
@@ -32,7 +31,7 @@ class HTTPRoute extends ControllerRoute {
 	 *
 	 * @var array
 	 */
-	protected static $routes = [];
+	protected static array $routes = [];
 	
 	/**
 	 * Registered response class for output option
@@ -99,7 +98,6 @@ class HTTPRoute extends ControllerRoute {
 		$this->pathRegex = preg_replace_callback(
 			'#\{([^\}]+)\}#sm',
 			function ($matches) use (&$variables) {
-				// 				debug('$matches', $matches);
 				$regex = $var = null;
 				static::extractVariable(str_replace('\.', '.', $matches[1]), $var, $regex);
 				$variables[] = $var;
@@ -174,7 +172,7 @@ class HTTPRoute extends ControllerRoute {
 	 * Test current route is matching request
 	 *
 	 * {@inheritDoc}
-	 * @param HTTPRequest $request
+	 * @param HttpRequest $request
 	 * @param array $values
 	 * @param boolean $alternative
 	 * @see ControllerRoute::isMatchingRequest()
@@ -212,7 +210,7 @@ class HTTPRoute extends ControllerRoute {
 			throw new Exception('Missing a valid `path` in configuration of route "' . $name . '"');
 		}
 		if( empty($config['response']) ) {
-			$config['response'] = !empty($config['output']) ? static::getOutputResponse($config['output']) : 'Orpheus\InputController\HTTPController\HTMLHTTPResponse';
+			$config['response'] = !empty($config['output']) ? static::getOutputResponse($config['output']) : 'Orpheus\InputController\HTTPController\HtmlHttpResponse';
 		}
 		if( empty($config['controller']) ) {
 			if( !empty($config['redirect']) ) {
@@ -289,9 +287,9 @@ class HTTPRoute extends ControllerRoute {
 	 *
 	 * @param string $route
 	 * @param string $method
-	 * @return HTTPRoute
+	 * @return HttpRoute
 	 */
-	public static function getRoute($route, $method = null) {
+	public static function getRoute(string $route, ?string $method = null): ?HttpRoute {
 		$routes = static::getRoutes();
 		if( $method ) {
 			return isset($routes[$route][$method]) ? $routes[$route][$method] : null;
@@ -301,6 +299,7 @@ class HTTPRoute extends ControllerRoute {
 				return $routes[$route][$method];
 			}
 		}
+		
 		return null;
 	}
 	
@@ -318,10 +317,10 @@ class HTTPRoute extends ControllerRoute {
 //http://fr.php.net/manual/fr/regexp.reference.escape.php
 //http://fr.php.net/manual/fr/regexp.reference.character-classes.php
 // Case Insensitive
-HTTPRoute::setTypeRegex('int', '\d+');
-HTTPRoute::setTypeRegex('id', '[1-9]\d*');
-HTTPRoute::setTypeRegex('slug', '[a-z0-9\-_]+');
+HttpRoute::setTypeRegex('int', '\d+');
+HttpRoute::setTypeRegex('id', '[1-9]\d*');
+HttpRoute::setTypeRegex('slug', '[a-z0-9\-_]+');
 
-HTTPRoute::setOutputResponse('html', 'Orpheus\InputController\HTTPController\HTMLHTTPResponse');
-HTTPRoute::setOutputResponse('json', 'Orpheus\InputController\HTTPController\JSONHTTPResponse');
+HttpRoute::setOutputResponse('html', 'Orpheus\InputController\HTTPController\HtmlHttpResponse');
+HttpRoute::setOutputResponse('json', 'Orpheus\InputController\HTTPController\JsonHttpResponse');
 

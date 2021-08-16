@@ -6,6 +6,7 @@
 namespace Orpheus\InputController\CLIController;
 
 use Exception;
+use Orpheus\Core\Route;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 
@@ -13,22 +14,21 @@ use Orpheus\InputController\InputRequest;
  * The CLIRoute class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  * TODO: Process options
  */
-class CLIRoute extends ControllerRoute {
+class CliRoute extends ControllerRoute {
 	
 	/**
 	 * Registered routes
 	 *
 	 * @var array
 	 */
-	protected static $routes = [];
+	protected static array $routes = [];
 	
 	/**
 	 * Available parameters by short name
 	 *
-	 * @var CLIArgument[]
+	 * @var CliArgument[]
 	 */
 	// 	protected $parametersBySN = array();
 	/**
@@ -48,7 +48,7 @@ class CLIRoute extends ControllerRoute {
 	 * @param array $options
 	 */
 	protected function __construct($name, $path, $controller, $parameters, $options) {
-		parent::__construct($name, $path, $controller, null, 'Orpheus\InputController\CLIController\CLIResponse', $options);
+		parent::__construct($name, $path, $controller, null, 'Orpheus\InputController\CLIController\CliResponse', $options);
 		// 		$this->parameters = $parameters;
 		// TODO : Process options
 		// 		foreach( $parameters as $arg ) {
@@ -99,7 +99,7 @@ class CLIRoute extends ControllerRoute {
 	 * Test current route is matching request
 	 *
 	 * {@inheritDoc}
-	 * @param CLIRequest $request
+	 * @param CliRequest $request
 	 * @param array $values
 	 * @param boolean $alternative
 	 * @see \Orpheus\InputController\ControllerRoute::isMatchingRequest()
@@ -162,16 +162,11 @@ class CLIRoute extends ControllerRoute {
 	 * Get the route object for the $route name
 	 *
 	 * @param string $route
-	 * @param string $method
-	 * @return CLIRoute
+	 * @return CliRoute
 	 */
-	public static function getRoute($route) {
+	public static function getRoute(string $route): Route {
 		return static::$routes[$route];
 	}
-	
-	// 	public function getParametersBySN() {
-	// 		return $this->parametersBySN;
-	// 	}
 	
 }
 

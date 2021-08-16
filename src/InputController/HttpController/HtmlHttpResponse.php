@@ -1,9 +1,6 @@
 <?php
-/**
- * HTMLHTTPResponse
- */
 
-namespace Orpheus\InputController\HTTPController;
+namespace Orpheus\InputController\HttpController;
 
 use Exception;
 use Orpheus\Config\Config;
@@ -13,12 +10,11 @@ use Orpheus\Rendering\HTMLRendering;
 use Throwable;
 
 /**
- * The HTMLHTTPResponse class
+ * The HtmlHttpResponse class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class HTMLHTTPResponse extends HTTPResponse {
+class HtmlHttpResponse extends HttpResponse {
 	
 	/**
 	 * The layout to use ot generate HTML
@@ -46,7 +42,7 @@ class HTMLHTTPResponse extends HTTPResponse {
 	/**
 	 *
 	 * {@inheritDoc}
-	 * @see HTTPResponse::run()
+	 * @see HttpResponse::run()
 	 */
 	public function run() {
 		if( parent::run() ) {
@@ -66,11 +62,11 @@ class HTMLHTTPResponse extends HTTPResponse {
 	 *
 	 * @param Exception $exception
 	 * @param array $values
-	 * @return HTMLHTTPResponse
+	 * @return HtmlHttpResponse
 	 */
 	public static function generateFromException(Throwable $exception, array $values = []) {
 		if( Config::get('forbidden_to_home', true) && $exception instanceof ForbiddenException ) {
-			return new RedirectHTTPResponse(u(DEFAULT_ROUTE));
+			return new RedirectHttpResponse(u(DEFAULT_ROUTE));
 		}
 		$code = $exception->getCode();
 		if( $code < 100 ) {
@@ -159,8 +155,8 @@ EOF
 	 *
 	 * @param string $layout
 	 * @param array $values
-	 * @return HTMLHTTPResponse
-	 * @see HTMLHTTPResponse::run()
+	 * @return HtmlHttpResponse
+	 * @see HtmlHttpResponse::run()
 	 */
 	public static function render($layout, $values = []) {
 		$response = new static();
@@ -174,7 +170,7 @@ EOF
 	 * @param string $layout
 	 * @param array $values
 	 * @return NULL
-	 * @see HTTPResponse::collectFrom()
+	 * @see HttpResponse::collectFrom()
 	 */
 	public function collectFrom($layout, $values = []) {
 		$this->layout = $layout;

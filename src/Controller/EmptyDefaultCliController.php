@@ -2,28 +2,28 @@
 
 namespace Orpheus\Controller;
 
-use Orpheus\InputController\CLIController\CLIController;
-use Orpheus\InputController\CLIController\CLIResponse;
-use Orpheus\InputController\HTTPController\HTMLHTTPResponse;
-use Orpheus\InputController\HTTPController\HTTPController;
-use Orpheus\InputController\HTTPController\HTTPRequest;
+use Orpheus\InputController\CLIController\CliController;
+use Orpheus\InputController\CLIController\CliResponse;
+use Orpheus\InputController\HttpController\HtmlHttpResponse;
+use Orpheus\InputController\HttpController\HttpController;
+use Orpheus\InputController\HttpController\HttpRequest;
 
 /**
  * Class EmptyDefaultCliController
  *
  * @package Orpheus\Controller
  */
-class EmptyDefaultCliController extends CLIController {
+class EmptyDefaultCliController extends CliController {
 	
 	/**
 	 * Run the controller
 	 *
-	 * @param HTTPRequest $request The input HTTP request
-	 * @return HTMLHTTPResponse The output HTTP response
-	 * @see HTTPController::run()
+	 * @param HttpRequest $request The input HTTP request
+	 * @return HtmlHttpResponse The output HTTP response
+	 * @see HttpController::run()
 	 */
-	public function run($request) {
-		return new CLIResponse();
+	public function run($request): CliResponse {
+		return new CliResponse();
 	}
 	
 }

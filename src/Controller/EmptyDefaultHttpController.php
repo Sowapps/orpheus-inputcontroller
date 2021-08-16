@@ -4,9 +4,9 @@ namespace Orpheus\Controller;
 
 use Exception;
 use Orpheus\Exception\UserException;
-use Orpheus\InputController\HTTPController\HTMLHTTPResponse;
-use Orpheus\InputController\HTTPController\HTTPController;
-use Orpheus\InputController\HTTPController\HTTPRequest;
+use Orpheus\InputController\HttpController\HtmlHttpResponse;
+use Orpheus\InputController\HttpController\HttpController;
+use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\Rendering\HTMLRendering;
 use Throwable;
 
@@ -15,52 +15,57 @@ use Throwable;
  *
  * @package Orpheus\Controller
  */
-class EmptyDefaultHttpController extends HTTPController {
+class EmptyDefaultHttpController extends HttpController {
 	
 	/**
 	 * Run the controller
 	 *
-	 * @param HTTPRequest $request The input HTTP request
-	 * @return HTMLHTTPResponse The output HTTP response
-	 * @see HTTPController::run()
+	 * @param HttpRequest $request The input HTTP request
+	 * @return HtmlHttpResponse The output HTTP response
+	 * @see HttpController::run()
 	 */
-	public function run($request) {
-		return new HTMLHTTPResponse('An error occurred');
+	public function run($request): HtmlHttpResponse {
+		return new HtmlHttpResponse('An error occurred');
 	}
 	
 	/**
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return HTMLHTTPResponse
+	 * @return HtmlHttpResponse
 	 */
-	public function processUserException(UserException $exception, $values = []) {
+	public function processUserException(UserException $exception, $values = []): HtmlHttpResponse {
 		if( !DEV_VERSION ) {
 			$code = $exception->getCode();
 			if( !$code ) {
 				$code = HTTP_BAD_REQUEST;
 			}
+			
 			return $this->renderGentlyException($exception, $code, $values, 'user');
 		}
+		
 		return parent::processUserException($exception, $values);
 	}
 	
 	/**
 	 * @param Exception $exception
 	 * @param array $values
-	 * @return HTMLHTTPResponse
+	 * @return HtmlHttpResponse
 	 */
-	public function processException(Throwable $exception, $values = []) {
+	public function processException(Throwable $exception, $values = []): HtmlHttpResponse {
 		if( !DEV_VERSION ) {
 			$code = $exception->getCode();
 			if( $code < 100 ) {
 				$code = HTTP_INTERNAL_SERVER_ERROR;
 			}
+			log_error($exception, 'Processing response', false);
+			
 			return $this->renderGentlyException($exception, $code, $values, null);
 		}
+		
 		return parent::processException($exception, $values);
 	}
 	
-	public function renderGentlyException(Throwable $exception, $code, $values, $type) {
+	public function renderGentlyException(Throwable $exception, $code, $values, $type): HtmlHttpResponse {
 		$rendering = HTMLRendering::getCurrent();
 		
 		// Test layouts' availability to get the more specific one
@@ -85,7 +90,7 @@ class EmptyDefaultHttpController extends HTTPController {
 			// Fatal error, no way to display user friendly error and we don't want to display debug error on prod.
 			$typeText = $type ?: 'exception';
 			$layoutList = implode(', ', $layouts);
-			$response = new HTMLHTTPResponse(<<<EOF
+			$response = new HtmlHttpResponse(<<<EOF
 A fatal error occurred.<br />
 Message: {$exception->getMessage()}<br />
 Type: {$typeText}<br />
@@ -105,7 +110,7 @@ EOF
 		$values['code'] = $code;
 		$values['type'] = $type;
 		
-		$response = $this->renderHTML($layout, $values);
+		$response = $this->renderHtml($layout, $values);
 		$response->setCode($code);
 		
 		return $response;

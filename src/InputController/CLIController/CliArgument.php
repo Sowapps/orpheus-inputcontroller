@@ -6,23 +6,22 @@
 namespace Orpheus\InputController\CLIController;
 
 use Orpheus\DataType\AbstractType;
-use Orpheus\DataType\StringType;
-use Orpheus\DataType\IntegerType;
-use Orpheus\DataType\FileType;
 use Orpheus\DataType\BooleanType;
+use Orpheus\DataType\FileType;
+use Orpheus\DataType\IntegerType;
+use Orpheus\DataType\StringType;
 use Orpheus\Exception\UserException;
 
 /**
  * The CLIArgument class
- * 
- * @author Florent Hazard <contact@sowapps.com>
  *
+ * @author Florent Hazard <contact@sowapps.com>
  */
-class CLIArgument {
+class CliArgument {
 	
 	/**
 	 * The long name
-	 * 
+	 *
 	 * @var string
 	 */
 	protected $longName;
@@ -82,7 +81,7 @@ class CLIArgument {
 			$required = true;
 			$config = substr($config, 1);
 		}
-		list($shortName, $type) = explodeList(':', $config, 2);
+		[$shortName, $type] = explodeList(':', $config, 2);
 		return new static($name, $shortName, $type, $required);
 	}
 	
@@ -185,9 +184,9 @@ class CLIArgument {
 	
 	/**
 	 * Set the required state
-	 * 
+	 *
 	 * @param boolean $required
-	 * @return \Orpheus\InputController\CLIController\CLIArgument
+	 * @return \Orpheus\InputController\CLIController\CliArgument
 	 */
 	public function setRequired($required) {
 		$this->required = $required;
@@ -222,12 +221,13 @@ class CLIArgument {
 	 */
 	public static function validateParameter($type, $value) {
 		$validator = static::getValidatorByType($type);
+		
 		return $validator->validate($value);
 	}
 	
 }
 
-CLIArgument::registerTypeValidator(new StringType());
-CLIArgument::registerTypeValidator(new IntegerType());
-CLIArgument::registerTypeValidator(new BooleanType());
-CLIArgument::registerTypeValidator(new FileType());
+CliArgument::registerTypeValidator(new StringType());
+CliArgument::registerTypeValidator(new IntegerType());
+CliArgument::registerTypeValidator(new BooleanType());
+CliArgument::registerTypeValidator(new FileType());

@@ -9,7 +9,6 @@ namespace Orpheus\DataType;
  * The TypeValidator class
  * 
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
 class IntegerType extends AbstractType {
 	

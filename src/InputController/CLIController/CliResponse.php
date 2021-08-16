@@ -15,9 +15,8 @@ use Throwable;
  * The CLIResponse class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class CLIResponse extends OutputResponse {
+class CliResponse extends OutputResponse {
 	
 	/**
 	 * The returned response code
@@ -77,7 +76,7 @@ class CLIResponse extends OutputResponse {
 	 * Set the body
 	 *
 	 * @param string $body
-	 * @return \Orpheus\InputController\CLIController\CLIResponse
+	 * @return \Orpheus\InputController\CLIController\CliResponse
 	 */
 	public function setBody($body) {
 		$this->body = $body;
@@ -108,7 +107,7 @@ class CLIResponse extends OutputResponse {
 	 * Set the code
 	 *
 	 * @param int
-	 * @return \Orpheus\InputController\CLIController\CLIResponse
+	 * @return \Orpheus\InputController\CLIController\CliResponse
 	 */
 	public function setCode($code) {
 		$this->code = (int) $code;

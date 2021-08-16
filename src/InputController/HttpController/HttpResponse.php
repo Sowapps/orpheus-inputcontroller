@@ -1,9 +1,6 @@
 <?php
-/**
- * HTTPResponse
- */
 
-namespace Orpheus\InputController\HTTPController;
+namespace Orpheus\InputController\HttpController;
 
 
 use DateTime;
@@ -13,12 +10,11 @@ use Orpheus\InputController\OutputResponse;
 use Throwable;
 
 /**
- * The HTTPResponse class
+ * The HttpResponse class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class HTTPResponse extends OutputResponse {
+class HttpResponse extends OutputResponse {
 	
 	/**
 	 * @var string The content type to send to client
@@ -255,7 +251,7 @@ class HTTPResponse extends OutputResponse {
 	 * Set the body
 	 *
 	 * @param string $body
-	 * @return HTMLHTTPResponse
+	 * @return HtmlHttpResponse
 	 */
 	public function setBody($body) {
 		$this->body = $body;
@@ -286,7 +282,7 @@ class HTTPResponse extends OutputResponse {
 	 * Set the code
 	 *
 	 * @param int
-	 * @return HTTPResponse
+	 * @return HttpResponse
 	 */
 	public function setCode($code) {
 		$this->code = (int) $code;
@@ -302,7 +298,7 @@ class HTTPResponse extends OutputResponse {
 	 * @return void
 	 */
 	public static function generateFromException(Throwable $exception, array $values = []) {
-		return HTMLHTTPResponse::generateFromException($exception, $values);
+		return HtmlHttpResponse::generateFromException($exception, $values);
 	}
 	
 	/**
@@ -310,10 +306,10 @@ class HTTPResponse extends OutputResponse {
 	 *
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return HTMLHTTPResponse
+	 * @return HtmlHttpResponse
 	 */
 	public static function generateFromUserException(UserException $exception, array $values = []) {
-		return HTMLHTTPResponse::generateFromUserException($exception, $values);
+		return HtmlHttpResponse::generateFromUserException($exception, $values);
 	}
 	
 }

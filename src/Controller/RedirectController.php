@@ -7,26 +7,25 @@ namespace Orpheus\Controller;
 
 use Exception;
 use Orpheus\Config\AppConfig;
-use Orpheus\InputController\HTTPController\HTTPController;
-use Orpheus\InputController\HTTPController\HTTPRequest;
-use Orpheus\InputController\HTTPController\RedirectHTTPResponse;
+use Orpheus\InputController\HttpController\HttpController;
+use Orpheus\InputController\HttpController\HttpRequest;
+use Orpheus\InputController\HttpController\RedirectHttpResponse;
 
 /**
  * The RedirectController class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class RedirectController extends HTTPController {
+class RedirectController extends HttpController {
 	
 	/**
 	 * Run the controller
 	 *
-	 * @param HTTPRequest $request The input HTTP request
-	 * @return RedirectHTTPResponse The output HTTP response
+	 * @param HttpRequest $request The input HTTP request
+	 * @return RedirectHttpResponse The output HTTP response
 	 * @throws Exception
 	 */
-	public function run($request) {
+	public function run($request): HttpResponse {
 		$options = $request->getRoute()->getOptions();
 		if( !empty($options['url_config']) ) {
 			$url = AppConfig::instance()->get($options['url_config']);
@@ -38,7 +37,8 @@ class RedirectController extends HTTPController {
 		} else {
 			$url = u($options['redirect'], (array) $request->getPathValues());
 		}
-		return new RedirectHTTPResponse($url);
+		
+		return new RedirectHttpResponse($url);
 	}
 
 }

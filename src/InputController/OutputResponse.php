@@ -1,7 +1,4 @@
 <?php
-/**
- * OutputResponse
- */
 
 namespace Orpheus\InputController;
 
@@ -12,7 +9,6 @@ use Throwable;
  * The OutputResponse class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
 abstract class OutputResponse {
 	

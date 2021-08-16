@@ -1,19 +1,15 @@
 <?php
-/**
- * RedirectHTTPResponse
- */
 
-namespace Orpheus\InputController\HTTPController;
+namespace Orpheus\InputController\HttpController;
 
 use Exception;
 
 /**
- * The RedirectHTTPResponse class
+ * The RedirectHttpResponse class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class RedirectHTTPResponse extends HTTPResponse {
+class RedirectHttpResponse extends HttpResponse {
 	
 	/**
 	 * The destination URI to redirect client
@@ -59,7 +55,7 @@ class RedirectHTTPResponse extends HTTPResponse {
 	/**
 	 *
 	 * {@inheritDoc}
-	 * @see HTTPResponse::run()
+	 * @see HttpResponse::run()
 	 */
 	public function run() {
 		header('Location: ' . $this->destinationUri);
@@ -78,7 +74,7 @@ class RedirectHTTPResponse extends HTTPResponse {
 	 * Set the destination URI
 	 *
 	 * @param string $destinationUri
-	 * @return RedirectHTTPResponse
+	 * @return RedirectHttpResponse
 	 */
 	public function setDestinationUri($destinationUri) {
 		$this->destinationUri = $destinationUri;

@@ -1,19 +1,15 @@
 <?php
-/**
- * LocalFileHTTPResponse
- */
 
-namespace Orpheus\InputController\HTTPController;
+namespace Orpheus\InputController\HttpController;
 
 use Orpheus\Exception\NotFoundException;
 
 /**
- * The LocalFileHTTPResponse class
+ * The LocalFileHttpResponse class
  *
  * @author Florent Hazard <contact@sowapps.com>
- *
  */
-class LocalFileHTTPResponse extends HTTPResponse {
+class LocalFileHttpResponse extends HttpResponse {
 	
 	/**
 	 * Default mimetype
