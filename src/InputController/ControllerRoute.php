@@ -113,30 +113,28 @@ abstract class ControllerRoute extends Route {
 	 * @param array $values
 	 * @param boolean $alternative True if we are looking for an alternative route, because we did not find any primary one
 	 */
-	public abstract function isMatchingRequest(InputRequest $request, &$values = [], $alternative = false);
+	public abstract function isMatchingRequest(InputRequest $request, array &$values = [], $alternative = false);
 	
 	/**
 	 * Run the $request by processing the matching controller
 	 *
 	 * @param InputRequest $request
 	 * @return OutputResponse
-	 * @throws ForbiddenException
-	 * @throws NotFoundException
+	 * @throws Exception
 	 * @uses InputRequest::processRoute()
 	 */
 	public function run(InputRequest $request): OutputResponse {
 		if( !$this->controllerClass || !class_exists($this->controllerClass, true) ) {
 			throw new NotFoundException('The controller "' . $this->controllerClass . '" was not found');
 		}
-		$request->setRoute($this);
 		// Controller should be available now, we could need it to prepare request
 		$this->controller = $this->instantiateController();
 		
-		//Wow, we made it to handle session, ok ?
+		// Wow, we made it to handle session, ok ?
 		$this->controller->prepare($request);
 		
 		if( !$this->isAccessible() ) {
-			throw new ForbiddenException('This route is not accessible in this context');
+			throw new ForbiddenException('This route is not available by this context');
 		}
 		$result = $this->controller->process($request);
 		
@@ -170,13 +168,14 @@ abstract class ControllerRoute extends Route {
 	 *
 	 * @return Controller
 	 */
-	public function instantiateController() {
+	public function instantiateController(): Controller {
 		$class = $this->controllerClass;
 		/* @var Controller $controller */
 		$controller = new $class($this, $this->getOptions());
 		if( !($controller instanceof Controller) ) {
 			throw new NotFoundException('The controller "' . $this->controllerClass . '" is not a valid controller, the class must inherit from "' . get_class() . '"');
 		}
+		
 		return $controller;
 	}
 	

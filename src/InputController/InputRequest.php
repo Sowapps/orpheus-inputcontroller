@@ -2,8 +2,7 @@
 
 namespace Orpheus\InputController;
 
-use Orpheus\Core\Route;
-use Orpheus\Exception\ForbiddenException;
+use Exception;
 use Orpheus\Exception\NotFoundException;
 
 /**
@@ -36,7 +35,7 @@ abstract class InputRequest {
 	/**
 	 * The input (like stdin)
 	 *
-	 * @var array
+	 * @var array|string|null
 	 */
 	protected $input;
 	
@@ -45,7 +44,7 @@ abstract class InputRequest {
 	 *
 	 * @var ControllerRoute $route
 	 */
-	protected $route;
+	protected ControllerRoute $route;
 	
 	/**
 	 * Constructor
@@ -64,7 +63,7 @@ abstract class InputRequest {
 	 * Process the request by finding a route and processing it
 	 *
 	 * @return OutputResponse
-	 * @throws NotFoundException
+	 * @throws Exception
 	 */
 	public function process(): OutputResponse {
 		$route = $this->findFirstMatchingRoute();
@@ -90,12 +89,12 @@ abstract class InputRequest {
 	 * Find a matching route according to the request
 	 *
 	 * @param boolean $alternative
-	 * @return Route
+	 * @return ControllerRoute|null
 	 */
 	public function findFirstMatchingRoute($alternative = false): ?ControllerRoute {
-		/* @var ControllerRoute $route */
 		foreach( $this->getRoutes() as $route ) {
-			if( $route->isMatchingRequest($this, $alternative) ) {
+			$values = [];
+			if( $route->isMatchingRequest($this, $values, $alternative) ) {
 				return $route;
 			}
 		}
@@ -127,8 +126,7 @@ abstract class InputRequest {
 	 *
 	 * @param ControllerRoute $route
 	 * @return OutputResponse
-	 * @throws NotFoundException
-	 * @throws ForbiddenException
+	 * @throws Exception
 	 */
 	public function processRoute($route): OutputResponse {
 		if( !$route ) {
@@ -223,10 +221,10 @@ abstract class InputRequest {
 	/**
 	 * Set the input
 	 *
-	 * @param array
+	 * @param mixed
 	 * @return InputRequest
 	 */
-	protected function setInput(array $input): InputRequest {
+	protected function setInput($input): InputRequest {
 		$this->input = $input;
 		
 		return $this;

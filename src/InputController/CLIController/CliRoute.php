@@ -34,9 +34,9 @@ class CliRoute extends ControllerRoute {
 	/**
 	 * Available parameters
 	 *
-	 * @var string[]
+	 * @var CliArgument[]
 	 */
-	protected $parameters = [];
+	//	protected $parameters = [];
 	
 	/**
 	 * Constructor
@@ -66,11 +66,12 @@ class CliRoute extends ControllerRoute {
 	 * @return string
 	 * @throws Exception
 	 */
-	public function formatURL($values = []) {
+	public function formatURL($values = []): string {
 		$params = '';
 		if( $values ) {
 			$params = implode(' ', $values);
 		}
+		
 		return static::getRootCommand() . ' ' . $this->getPath() . $params;
 	}
 	
@@ -78,13 +79,13 @@ class CliRoute extends ControllerRoute {
 		return 'php -f app/console/run.php';
 	}
 	
-	public function getUsageCommand() {
-		$params = '';
-		foreach( $this->parameters as $arg ) {
-			$params .= ' ' . $arg->getUsageCommand();
-		}
-		return static::getRootCommand() . ' ' . $this->getPath() . $params;
-	}
+	//	public function getUsageCommand(): string {
+	//		$params = '';
+	//		foreach( $this->parameters as $arg ) {
+	//			$params .= ' ' . $arg->getUsageCommand();
+	//		}
+	//		return static::getRootCommand() . ' ' . $this->getPath() . $params;
+	//	}
 	
 	/**
 	 * Get route as string
@@ -104,14 +105,14 @@ class CliRoute extends ControllerRoute {
 	 * @param boolean $alternative
 	 * @see \Orpheus\InputController\ControllerRoute::isMatchingRequest()
 	 */
-	public function isMatchingRequest(InputRequest $request, &$values = [], $alternative = false) {
+	public function isMatchingRequest(InputRequest $request, array &$values = [], $alternative = false): bool {
 		// CLI does not use alternative
 		return $request->getPath() === $this->getPath();
 	}
 	
-	public function getParameters() {
-		return $this->parameters;
-	}
+	//	public function getParameters() {
+	//		return $this->parameters;
+	//	}
 	
 	/**
 	 * Register route by $name from config
@@ -122,7 +123,7 @@ class CliRoute extends ControllerRoute {
 	 */
 	public static function registerConfig($name, array $config) {
 		if( empty($config['path']) ) {
-			throw new \Exception('Missing a valid "path" in configuration of route "' . $name . '"');
+			throw new Exception('Missing a valid "path" in configuration of route "' . $name . '"');
 		}
 		
 		// 		$parameters = array();
@@ -161,11 +162,11 @@ class CliRoute extends ControllerRoute {
 	/**
 	 * Get the route object for the $route name
 	 *
-	 * @param string $route
+	 * @param string $name
 	 * @return CliRoute
 	 */
-	public static function getRoute(string $route): Route {
-		return static::$routes[$route];
+	public static function getRoute(string $name): Route {
+		return static::$routes[$name];
 	}
 	
 }

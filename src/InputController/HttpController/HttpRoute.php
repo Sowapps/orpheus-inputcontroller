@@ -139,7 +139,7 @@ class HttpRoute extends ControllerRoute {
 	 * @return string
 	 * @throws Exception
 	 */
-	public function formatURL($values = []) {
+	public function formatURL($values = []): string {
 		$path = preg_replace_callback(
 			'#\{([^\}]+)\}#sm',
 			function ($matches) use ($values) {
@@ -177,7 +177,7 @@ class HttpRoute extends ControllerRoute {
 	 * @param boolean $alternative
 	 * @see ControllerRoute::isMatchingRequest()
 	 */
-	public function isMatchingRequest(InputRequest $request, &$values = [], $alternative = false) {
+	public function isMatchingRequest(InputRequest $request, array &$values = [], $alternative = false): bool {
 		// Method match && Path match (variables included)
 		if( $this->method !== $request->getMethod() ) {
 			return false;
@@ -285,18 +285,18 @@ class HttpRoute extends ControllerRoute {
 	/**
 	 * Get the route object for the $route name
 	 *
-	 * @param string $route
-	 * @param string $method
+	 * @param string $name
 	 * @return HttpRoute
 	 */
-	public static function getRoute(string $route, ?string $method = null): ?HttpRoute {
+	public static function getRoute(string $name): ?HttpRoute {
+		//	public static function getRoute(string $route, ?string $method = null): ?HttpRoute {
 		$routes = static::getRoutes();
-		if( $method ) {
-			return isset($routes[$route][$method]) ? $routes[$route][$method] : null;
-		}
+		//		if( $method ) {
+		//			return isset($routes[$route][$method]) ? $routes[$route][$method] : null;
+		//		}
 		foreach( static::getKnownMethods() as $method ) {
-			if( isset($routes[$route][$method]) ) {
-				return $routes[$route][$method];
+			if( isset($routes[$name][$method]) ) {
+				return $routes[$name][$method];
 			}
 		}
 		

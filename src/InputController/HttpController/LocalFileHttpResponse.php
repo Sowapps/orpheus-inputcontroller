@@ -9,101 +9,53 @@ use Orpheus\Exception\NotFoundException;
  *
  * @author Florent Hazard <contact@sowapps.com>
  */
-class LocalFileHttpResponse extends HttpResponse {
-	
-	/**
-	 * Default mimetype
-	 *
-	 * @var string
-	 */
-	const DEFAULT_MIMETYPE = 'text/plain';
-	
-	/**
-	 * Registered mimetype for extension
-	 *
-	 * @var array
-	 */
-	protected static $extensionMimeTypes = [
-		'css' => 'text/css',
-		'js'  => 'application/javascript',
-		'pdf' => 'application/pdf',
-	];
+class LocalFileHttpResponse extends FileHttpResponse {
 	
 	/**
 	 * The path to the local file
 	 *
 	 * @var string
 	 */
-	protected $localFilePath;
+	protected string $localFilePath;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param string $filePath
+	 * @param string|null $fileName
+	 * @param bool $download
+	 * @param int $cacheMaxAge
 	 */
-	public function __construct($filePath, $fileName = null, $download = true, $cacheMaxAge = 0) {
+	public function __construct(string $filePath, ?string $fileName = null, bool $download = true, int $cacheMaxAge = 0) {
 		// If is directory or not readable (imply not found)
 		if( !is_file($filePath) || !is_readable($filePath) ) {
 			throw new NotFoundException('notFoundLocalFile');
 		}
-		parent::__construct(null, null, $download, $fileName ?: basename($filePath));
+		parent::__construct(null, $fileName ?: basename($filePath), $download, $cacheMaxAge);
 		$this->localFilePath = $filePath;
-		$this->setCacheMaxAge($cacheMaxAge);
 	}
 	
-	public function process() {
-		$this->setContentType(static::getMimetypeFromLocalFilePath($this->localFilePath));
-		$this->setContentLength(filesize($this->localFilePath));
-		$this->setLastModifiedDate(filemtime($this->localFilePath));
-		
-		// Close to unlock session
-		if( session_status() === PHP_SESSION_ACTIVE ) {
-			session_write_close();
-		}
-		// Clean all output buffers to not send it
-		while( ob_get_level() ) {
-			ob_end_clean();
+	public function getMimeType(): string {
+		$mimetype = getMimeType($this->localFilePath);
+		if( $mimetype !== 'text/plain' ) {
+			return $mimetype;
 		}
 		
-		parent::process();
+		return static::getMimetypeFromExtension(pathinfo($this->localFilePath, PATHINFO_EXTENSION));
+	}
+	
+	public function getSize(): int {
+		return filesize($this->localFilePath);
 	}
 	
 	public function run() {
 		readfile($this->localFilePath);
 	}
 	
-	/**
-	 * Get mimetype from local file path
-	 *
-	 * @param string $filePath
-	 * @return string
-	 */
-	protected static function getMimetypeFromLocalFilePath($filePath) {
-		$mimetype = getMimeType($filePath);
-		if( $mimetype !== 'text/plain' ) {
-			return $mimetype;
-		}
-		return static::getMimetypeFromExtension(pathinfo($filePath, PATHINFO_EXTENSION));
-	}
-	
-	/**
-	 * Get mimetype from extension
-	 *
-	 * @param string $extension
-	 * @return string
-	 */
-	protected static function getMimetypeFromExtension($extension) {
-		return isset(static::$extensionMimeTypes[$extension]) ? static::$extensionMimeTypes[$extension] : self::DEFAULT_MIMETYPE;
-	}
-	
-	/**
-	 * Set extension's mimetype
-	 *
-	 * @param string $extension
-	 * @param string $mimetype
-	 */
-	protected static function setExtensionMimetype($extension, $mimetype) {
-		static::$extensionMimeTypes[$extension] = $mimetype;
+	public function process() {
+		$this->setLastModifiedDate(filemtime($this->localFilePath));
+		
+		parent::process();
 	}
 	
 }

@@ -6,7 +6,6 @@ use Exception;
 use Orpheus\Config\IniConfig;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
-use stdClass;
 use Throwable;
 
 /**
@@ -24,42 +23,42 @@ class HttpRequest extends InputRequest {
 	 *
 	 * @var string
 	 */
-	protected $method;
+	protected string $method;
 	
 	/**
 	 * The scheme used to access this route
 	 *
 	 * @var string
 	 */
-	protected $scheme;
+	protected string $scheme;
 	
 	/**
 	 * The request host domain name
 	 *
 	 * @var string
 	 */
-	protected $domain;
+	protected string $domain;
 	
 	/**
 	 * The headers sent to this route
 	 *
 	 * @var array
 	 */
-	protected $headers;
+	protected array $headers = [];
 	
 	/**
 	 * The cookies sent to this route
 	 *
 	 * @var array
 	 */
-	protected $cookies;
+	protected array $cookies = [];
 	
 	/**
 	 * The uploaded files sent to this route
 	 *
 	 * @var array
 	 */
-	protected $files;
+	protected array $files = [];
 	
 	/**
 	 * The input content type
@@ -67,14 +66,14 @@ class HttpRequest extends InputRequest {
 	 * @var string
 	 * @see https://en.wikipedia.org/wiki/Media_type
 	 */
-	protected $inputType;
+	protected string $inputType;
 	
 	/**
 	 * The values in path
 	 *
-	 * @var \stdClass
+	 * @var array
 	 */
-	protected $pathValues;
+	protected array $pathValues;
 	
 	/**
 	 * Constructor
@@ -120,9 +119,9 @@ class HttpRequest extends InputRequest {
 				continue;
 			}
 			$route = $methodRoutes[$this->method];
-			$values = null;
+			$values = [];
 			if( $route->isMatchingRequest($this, $values, $alternative) ) {
-				$this->pathValues = (object) $values;
+				$this->pathValues = $values;
 				
 				return $route;
 			}
@@ -166,7 +165,7 @@ class HttpRequest extends InputRequest {
 	 * @param string $method
 	 * @return HttpRequest
 	 */
-	protected function setMethod($method): HttpRequest {
+	protected function setMethod(string $method): HttpRequest {
 		$this->method = $method;
 		
 		return $this;
@@ -223,7 +222,7 @@ class HttpRequest extends InputRequest {
 	 * @param string $scheme
 	 * @return HttpRequest
 	 */
-	protected function setScheme($scheme): HttpRequest {
+	protected function setScheme(string $scheme): HttpRequest {
 		$this->scheme = $scheme;
 		
 		return $this;
@@ -417,7 +416,7 @@ class HttpRequest extends InputRequest {
 	 * Test if path contains a value and return it as parameter
 	 *
 	 * @param string $path The path to get the value
-	 * @param string $value The value as ouput parameter
+	 * @param string $value The value as output parameter
 	 * @return boolean
 	 */
 	public function hasDataKey($path = null, &$value = null): bool {
@@ -433,9 +432,9 @@ class HttpRequest extends InputRequest {
 	/**
 	 * Get path values
 	 *
-	 * @return stdClass
+	 * @return array
 	 */
-	public function getPathValues(): stdClass {
+	public function getPathValues(): array {
 		return $this->pathValues;
 	}
 	
@@ -447,7 +446,7 @@ class HttpRequest extends InputRequest {
 	 * @return string The path value for $key
 	 */
 	public function getPathValue($key, $default = null): string {
-		return $this->hasPathValue($key) ? $this->pathValues->$key : $default;
+		return $this->pathValues[$key] ?? $default;
 	}
 	
 	/**
@@ -457,7 +456,7 @@ class HttpRequest extends InputRequest {
 	 * @return boolean True if it has the $key value in path
 	 */
 	public function hasPathValue($key): bool {
-		return isset($this->pathValues->$key);
+		return isset($this->pathValues[$key]);
 	}
 	
 	/**
