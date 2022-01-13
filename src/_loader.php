@@ -4,7 +4,6 @@
  */
 
 use Orpheus\Core\RequestHandler;
-use Orpheus\Core\Route;
 use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\InputController\HttpController\HttpRoute;
 use Orpheus\InputController\InputRequest;
@@ -20,8 +19,9 @@ if( !defined('ORPHEUSPATH') ) {
  * @param string $routeName
  * @param array $values
  * @return string
+ * @throws Exception
  */
-function u($routeName, $values = []) {
+function u(string $routeName, array $values = []): string {
 	/* @var HttpRoute $route */
 	$route = HttpRoute::getRoute($routeName);
 	if( !$route ) {
@@ -48,7 +48,7 @@ function _u($route, $values = []) {
  * @param string $routeName
  * @return boolean
  */
-function exists_route($routeName) {
+function exists_route(string $routeName): bool {
 	return !!HttpRoute::getRoute($routeName);
 }
 
@@ -57,8 +57,9 @@ function exists_route($routeName) {
  *
  * @param string
  * @return boolean
+ * @deprecated Not used, there are other ways to do
  */
-function is_current_route($route) {
+function is_current_route(string $route): bool {
 	return get_current_route() === $route;
 }
 
@@ -66,9 +67,11 @@ function is_current_route($route) {
  * Get the route name of the current request
  *
  * @return string
+ * @deprecated Not used, there are other ways to do
  */
-function get_current_route() {
+function get_current_route(): string {
 	$request = InputRequest::getMainRequest();
+	
 	return $request->getRoute()->getName();
 }
 
@@ -77,17 +80,18 @@ function get_current_route() {
  *
  * @return string
  */
-function get_current_link() {
+function get_current_link(): string {
 	$request = HttpRequest::getMainRequest();
 	if( $request && $request->getRoute() ) {
 		return $request->getRoute()->getLink((array) $request->getPathValues());
 	}
+	
 	return sprintf('%s://%s%s', $_SERVER['REQUEST_SCHEME'], $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']);
 }
 
 // Polyfill for some FPM systems
 if( !function_exists('getallheaders') ) {
-	function getallheaders() {
+	function getallheaders(): array {
 		$headers = [];
 		foreach( $_SERVER as $name => $value ) {
 			if( substr($name, 0, 5) === 'HTTP_' ) {
@@ -102,4 +106,4 @@ if( !function_exists('getallheaders') ) {
 RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HTTPController\HttpRequest');
 RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\CLIController\CliRequest');
 
-Route::suggestResolver('Orpheus\InputController\HTTPController\HttpRoute');
+//Route::suggestResolver('Orpheus\InputController\HTTPController\HttpRoute');

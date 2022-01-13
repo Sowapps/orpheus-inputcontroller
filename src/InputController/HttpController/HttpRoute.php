@@ -6,6 +6,7 @@ use Exception;
 use Orpheus;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
+use RuntimeException;
 
 /**
  * The HttpRoute class
@@ -38,14 +39,14 @@ class HttpRoute extends ControllerRoute {
 	 *
 	 * @var array
 	 */
-	protected static $outputResponses = [];
+	protected static array $outputResponses = [];
 	
 	/**
 	 * All known methods
 	 *
 	 * @var array
 	 */
-	protected static $knownMethods = [
+	protected static array $knownMethods = [
 		self::METHOD_GET, self::METHOD_POST, self::METHOD_PUT, self::METHOD_DELETE,
 	];
 	
@@ -54,21 +55,21 @@ class HttpRoute extends ControllerRoute {
 	 *
 	 * @var string
 	 */
-	protected $method;
+	protected string $method;
 	
 	/**
 	 * Path with converted regex
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected $pathRegex;
+	protected ?string $pathRegex = null;
 	
 	/**
 	 * Variables in path
 	 *
 	 * @var string[]
 	 */
-	protected $pathVariables;
+	protected array $pathVariables = [];
 	
 	/**
 	 * Constructor
@@ -146,11 +147,11 @@ class HttpRoute extends ControllerRoute {
 				$var = $regex = null;
 				static::extractVariable($matches[1], $var, $regex);
 				if( !isset($values[$var]) ) {
-					throw new Exception('The variable "' . $var . '" is missing to generate URL for route ' . $this->name);
+					throw new RuntimeException('The variable "' . $var . '" is missing to generate URL for route ' . $this->name);
 				}
 				$value = $values[$var] . '';
 				if( !preg_match('#^' . $regex . '$#', $value) ) {
-					throw new Exception('The given value "' . $value . '" of variable "' . $var . '" is not matching the regex requirements to generate URL for route ' . $this->name);
+					throw new RuntimeException('The given value "' . $value . '" of variable "' . $var . '" is not matching the regex requirements to generate URL for route ' . $this->name);
 				}
 				return $value;
 			},
@@ -308,7 +309,7 @@ class HttpRoute extends ControllerRoute {
 	 *
 	 * @return string[]
 	 */
-	public static function getKnownMethods() {
+	public static function getKnownMethods(): array {
 		return static::$knownMethods;
 	}
 	
