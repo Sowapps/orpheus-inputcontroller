@@ -9,6 +9,7 @@ use Exception;
 use Orpheus\Config\AppConfig;
 use Orpheus\InputController\HttpController\HttpController;
 use Orpheus\InputController\HttpController\HttpRequest;
+use Orpheus\InputController\HttpController\HttpResponse;
 use Orpheus\InputController\HttpController\RedirectHttpResponse;
 
 /**
