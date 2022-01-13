@@ -3,7 +3,7 @@
  * CLIRequest
  */
 
-namespace Orpheus\InputController\CLIController;
+namespace Orpheus\InputController\CliController;
 
 use Exception;
 use Orpheus\Config\IniConfig;
@@ -180,7 +180,7 @@ class CliRequest extends InputRequest {
 	 *
 	 * @param string $content
 	 * @param string $contentType
-	 * @return \Orpheus\InputController\CLIController\CliRequest
+	 * @return \Orpheus\InputController\CliController\CliRequest
 	 * @deprecated Function is wrongly implemented
 	 */
 	protected function setContent(string $content): CliRequest {
@@ -241,7 +241,7 @@ class CliRequest extends InputRequest {
 	 * @return string
 	 */
 	public static function getRouteClass(): string {
-		return '\Orpheus\InputController\CLIController\CliRoute';
+		return '\Orpheus\InputController\CliController\CliRoute';
 	}
 	
 	/**

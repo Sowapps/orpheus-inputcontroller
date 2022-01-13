@@ -2,8 +2,8 @@
 
 namespace Orpheus\Controller;
 
-use Orpheus\InputController\CLIController\CliController;
-use Orpheus\InputController\CLIController\CliResponse;
+use Orpheus\InputController\CliController\CliController;
+use Orpheus\InputController\CliController\CliResponse;
 use Orpheus\InputController\HttpController\HtmlHttpResponse;
 use Orpheus\InputController\HttpController\HttpController;
 use Orpheus\InputController\HttpController\HttpRequest;

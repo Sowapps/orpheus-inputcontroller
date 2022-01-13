@@ -1,9 +1,9 @@
 <?php
 /**
- * CLIRoute
+ * CliRoute
  */
 
-namespace Orpheus\InputController\CLIController;
+namespace Orpheus\InputController\CliController;
 
 use Exception;
 use Orpheus\Core\Route;
@@ -11,7 +11,7 @@ use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 
 /**
- * The CLIRoute class
+ * The CliRoute class
  *
  * @author Florent Hazard <contact@sowapps.com>
  * TODO: Process options
@@ -48,7 +48,7 @@ class CliRoute extends ControllerRoute {
 	 * @param array $options
 	 */
 	protected function __construct($name, $path, $controller, $parameters, $options) {
-		parent::__construct($name, $path, $controller, null, 'Orpheus\InputController\CLIController\CliResponse', $options);
+		parent::__construct($name, $path, $controller, null, 'Orpheus\InputController\CliController\CliResponse', $options);
 		// 		$this->parameters = $parameters;
 		// TODO : Process options
 		// 		foreach( $parameters as $arg ) {
@@ -175,12 +175,12 @@ class CliRoute extends ControllerRoute {
 //http://fr.php.net/manual/fr/regexp.reference.character-classes.php
 // Case Insensitive
 /*
-CLIRoute::addTypeValidator(TypeValidator::make('int', '\d+'));
-CLIRoute::addTypeValidator(TypeValidator::make('boolean', '(?:true|false|[0-1])', function(&$value) {
+CliRoute::addTypeValidator(TypeValidator::make('int', '\d+'));
+CliRoute::addTypeValidator(TypeValidator::make('boolean', '(?:true|false|[0-1])', function(&$value) {
 	$value = boolval($value);
 	return true;
 }));
-CLIRoute::addTypeValidator(TypeValidator::make('file', function($value) {
+CliRoute::addTypeValidator(TypeValidator::make('file', function($value) {
 	return is_readable($value);
 }));
 */

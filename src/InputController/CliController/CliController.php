@@ -1,9 +1,9 @@
 <?php
 /**
- * CLIController
+ * CliController
  */
 
-namespace Orpheus\InputController\CLIController;
+namespace Orpheus\InputController\CliController;
 
 use Exception;
 use Orpheus\Exception\UserException;
@@ -11,7 +11,7 @@ use Orpheus\InputController\Controller;
 use Throwable;
 
 /**
- * The CLIController class
+ * The CliController class
  *
  * @author Florent Hazard <contact@sowapps.com>
  * @method getRequest() CLIRequest

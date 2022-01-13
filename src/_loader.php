@@ -103,7 +103,7 @@ if( !function_exists('getallheaders') ) {
 	}
 }
 
-RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HTTPController\HttpRequest');
-RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\CLIController\CliRequest');
+RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HttpController\HttpRequest');
+RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\CliController\CliRequest');
 
 //Route::suggestResolver('Orpheus\InputController\HTTPController\HttpRoute');

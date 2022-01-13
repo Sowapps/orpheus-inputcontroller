@@ -3,7 +3,7 @@
  * TypeValidator
  */
 
-namespace Orpheus\InputController\CLIController;
+namespace Orpheus\InputController\CliController;
 
 use Orpheus\DataType\AbstractType;
 use Orpheus\DataType\BooleanType;
@@ -186,7 +186,7 @@ class CliArgument {
 	 * Set the required state
 	 *
 	 * @param boolean $required
-	 * @return \Orpheus\InputController\CLIController\CliArgument
+	 * @return \Orpheus\InputController\CliController\CliArgument
 	 */
 	public function setRequired($required) {
 		$this->required = $required;

@@ -3,7 +3,7 @@
  * CLIResponse
  */
 
-namespace Orpheus\InputController\CLIController;
+namespace Orpheus\InputController\CliController;
 
 
 use Exception;
@@ -76,7 +76,7 @@ class CliResponse extends OutputResponse {
 	 * Set the body
 	 *
 	 * @param string $body
-	 * @return \Orpheus\InputController\CLIController\CliResponse
+	 * @return \Orpheus\InputController\CliController\CliResponse
 	 */
 	public function setBody($body) {
 		$this->body = $body;
@@ -107,7 +107,7 @@ class CliResponse extends OutputResponse {
 	 * Set the code
 	 *
 	 * @param int
-	 * @return \Orpheus\InputController\CLIController\CliResponse
+	 * @return \Orpheus\InputController\CliController\CliResponse
 	 */
 	public function setCode($code) {
 		$this->code = (int) $code;
