@@ -80,7 +80,7 @@ abstract class Controller {
 	 * @see  Controller::postRun()
 	 *
 	 * preRun() and postRun() are not declared in this class because PHP does not handle inheritance of parameters
-	 * if preRun() is declared getting a InputRequest, we could not declare a preRun() using a HTTPRequest
+	 * if preRun() is declared getting a InputRequest, we could not declare a preRun() using a HttpRequest
 	 */
 	public function process(InputRequest $request): ?OutputResponse {
 		// run, preRun and postRun take parameter depending on Controller, request may be of a child class of InputRequest

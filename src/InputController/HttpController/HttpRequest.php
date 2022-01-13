@@ -471,7 +471,7 @@ class HttpRequest extends InputRequest {
 	}
 	
 	/**
-	 * Handle the current request as a HTTPRequest one
+	 * Handle the current request as a HttpRequest one
 	 * This method ends the script
 	 */
 	public static function handleCurrentRequest() {
@@ -501,7 +501,7 @@ class HttpRequest extends InputRequest {
 	}
 	
 	/**
-	 * Generate HTTPRequest from environment
+	 * Generate HttpRequest from environment
 	 *
 	 * @return HttpRequest
 	 */
@@ -565,12 +565,12 @@ EOF;
 	}
 	
 	/**
-	 * Get the name of the route class associated to a HTTPRequest
+	 * Get the name of the route class associated to a HttpRequest
 	 *
 	 * @return string
 	 */
 	public static function getRouteClass(): string {
-		return '\Orpheus\InputController\HTTPController\HttpRoute';
+		return HttpRoute::class;
 	}
 	
 	/**
@@ -578,7 +578,7 @@ EOF;
 	 *
 	 * @return HttpRequest
 	 */
-	public static function getMainHTTPRequest(): ?HttpRequest {
+	public static function getMainHttpRequest(): ?HttpRequest {
 		return static::$mainRequest instanceof HttpRequest ? static::$mainRequest : null;
 	}
 	

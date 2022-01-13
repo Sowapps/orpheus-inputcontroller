@@ -211,7 +211,7 @@ class HttpRoute extends ControllerRoute {
 			throw new Exception('Missing a valid `path` in configuration of route "' . $name . '"');
 		}
 		if( empty($config['response']) ) {
-			$config['response'] = !empty($config['output']) ? static::getOutputResponse($config['output']) : 'Orpheus\InputController\HTTPController\HtmlHttpResponse';
+			$config['response'] = !empty($config['output']) ? static::getOutputResponse($config['output']) : 'Orpheus\InputController\HttpController\HtmlHttpResponse';
 		}
 		if( empty($config['controller']) ) {
 			if( !empty($config['redirect']) ) {
@@ -322,6 +322,6 @@ HttpRoute::setTypeRegex('int', '\d+');
 HttpRoute::setTypeRegex('id', '[1-9]\d*');
 HttpRoute::setTypeRegex('slug', '[a-z0-9\-_]+');
 
-HttpRoute::setOutputResponse('html', 'Orpheus\InputController\HTTPController\HtmlHttpResponse');
-HttpRoute::setOutputResponse('json', 'Orpheus\InputController\HTTPController\JsonHttpResponse');
+HttpRoute::setOutputResponse('html', 'Orpheus\InputController\HttpController\HtmlHttpResponse');
+HttpRoute::setOutputResponse('json', 'Orpheus\InputController\HttpController\JsonHttpResponse');
 
