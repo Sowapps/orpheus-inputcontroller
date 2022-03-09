@@ -7,7 +7,7 @@ use Orpheus\Exception\UserException;
 use Orpheus\InputController\HttpController\HtmlHttpResponse;
 use Orpheus\InputController\HttpController\HttpController;
 use Orpheus\InputController\HttpController\HttpRequest;
-use Orpheus\Rendering\HTMLRendering;
+use Orpheus\Rendering\HtmlRendering;
 use Throwable;
 
 /**
@@ -66,7 +66,7 @@ class EmptyDefaultHttpController extends HttpController {
 	}
 	
 	public function renderGentlyException(Throwable $exception, $code, $values, $type): HtmlHttpResponse {
-		$rendering = HTMLRendering::getCurrent();
+		$rendering = HtmlRendering::getCurrent();
 		
 		// Test layouts' availability to get the more specific one
 		$layoutValues = [

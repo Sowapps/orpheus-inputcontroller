@@ -1,4 +1,7 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
 
@@ -6,7 +9,7 @@ use Exception;
 use Orpheus\Config\Config;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\UserException;
-use Orpheus\Rendering\HTMLRendering;
+use Orpheus\Rendering\HtmlRendering;
 use Throwable;
 
 /**
@@ -48,7 +51,7 @@ class HtmlHttpResponse extends HttpResponse {
 		if( parent::run() ) {
 			return;
 		}
-		$rendering = HTMLRendering::getCurrent();
+		$rendering = HtmlRendering::getCurrent();
 		
 		$env = $this->values;
 		$env['CONTROLLER_OUTPUT'] = $this->getControllerOutput();
@@ -108,7 +111,7 @@ class HtmlHttpResponse extends HttpResponse {
 			
 			return $response;
 		}
-		$rendering = HTMLRendering::getCurrent();
+		$rendering = HtmlRendering::getCurrent();
 		
 		// Test layouts' availability to get the more specific one
 		$values = [

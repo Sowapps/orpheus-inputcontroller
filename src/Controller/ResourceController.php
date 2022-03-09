@@ -1,6 +1,6 @@
 <?php
 /**
- * ResourceController
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\Controller;
@@ -8,6 +8,7 @@ namespace Orpheus\Controller;
 use Orpheus\Exception\NotFoundException;
 use Orpheus\InputController\HttpController\HttpController;
 use Orpheus\InputController\HttpController\HttpRequest;
+use Orpheus\InputController\HttpController\HttpResponse;
 use Orpheus\InputController\HttpController\LocalFileHttpResponse;
 
 /**
@@ -33,12 +34,12 @@ class ResourceController extends HttpController {
 	}
 	
 	/**
-	 *
-	 * @param string $path
+	 * @param $webPath
+	 * @param $package
 	 * @return string The absolute path to resource
 	 */
-	public function resolveResource($webPath, $package) {
-		return VENDORPATH . $package . '/res/' . $webPath;
+	public function resolveResource($webPath, $package): string {
+		return VENDOR_PATH . $package . '/res/' . $webPath;
 	}
 	
 	
