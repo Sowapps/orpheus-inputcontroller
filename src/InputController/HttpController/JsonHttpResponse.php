@@ -149,7 +149,7 @@ class JsonHttpResponse extends HttpResponse {
 		// For errors only
 		$this->data = [
 			'code'        => $textCode,
-			'description' => t($description ? $description : $textCode, $domain),
+			'description' => t($description ?: $textCode, $domain),
 			'other'       => $other,
 		];
 	}

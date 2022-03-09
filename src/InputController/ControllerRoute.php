@@ -280,7 +280,8 @@ abstract class ControllerRoute extends Route {
 	 * Load routes from $package or app (if null)
 	 *
 	 * @param array $routes
-	 * @param string $package
+	 * @param string|null $package
+	 * @throws Exception
 	 */
 	protected static function loadRoutes(array &$routes, ?string $package = null) {
 		// TODO: Protect against loop
@@ -290,7 +291,7 @@ abstract class ControllerRoute extends Route {
 		static::populateRoutesFromFile($packageRoutes, 'routes', $package);
 		// Load dev routes
 		if( DEV_VERSION ) {
-			// If there is not file routes_dev, we get an empty array
+			// If there is no routes_dev file, we get an empty array
 			static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package, true);
 		}
 		

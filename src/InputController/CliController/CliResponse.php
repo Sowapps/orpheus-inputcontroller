@@ -132,7 +132,8 @@ class CliResponse extends OutputResponse {
 	 * @param string $action
 	 * @return static
 	 */
-	public static function generateFromException(Throwable $exception, $action = 'Handling the request') {
-		return new static(1, convertExceptionAsText($exception, 0, $action));
+	public static function generateFromException(Throwable $exception) {
+		return new static(1, convertExceptionAsText($exception, 0));
 	}
+	
 }
