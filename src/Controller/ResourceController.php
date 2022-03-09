@@ -24,7 +24,6 @@ class ResourceController extends HttpController {
 	 * @throws NotFoundException
 	 */
 	public function run($request): HttpResponse {
-		
 		$options = $request->getRoute()->getOptions();
 		if( empty($options['package']) ) {
 			throw new NotFoundException('invalidRoutePackage');
