@@ -67,7 +67,7 @@ class HtmlHttpResponse extends HttpResponse {
 	 * @param array $values
 	 * @return HtmlHttpResponse
 	 */
-	public static function generateFromException(Throwable $exception, array $values = []) {
+	public static function generateFromException(Throwable $exception, array $values = []): HttpResponse {
 		if( Config::get('forbidden_to_home', true) && $exception instanceof ForbiddenException ) {
 			return new RedirectHttpResponse(u(DEFAULT_ROUTE));
 		}

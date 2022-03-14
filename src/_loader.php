@@ -19,7 +19,6 @@ if( !defined('ORPHEUS_PATH') ) {
  * @param string $routeName
  * @param array $values
  * @return string
- * @throws Exception
  */
 function u(string $routeName, array $values = []): string {
 	/* @var HttpRoute $route */

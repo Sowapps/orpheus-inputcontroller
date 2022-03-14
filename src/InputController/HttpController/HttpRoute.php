@@ -138,7 +138,6 @@ class HttpRoute extends ControllerRoute {
 	 *
 	 * @param string[] $values
 	 * @return string
-	 * @throws Exception
 	 */
 	public function formatURL($values = []): string {
 		$path = preg_replace_callback(
