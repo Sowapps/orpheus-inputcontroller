@@ -53,7 +53,7 @@ abstract class OutputResponse {
 	 * @param array $values
 	 * @return static
 	 */
-	public static function generateFromException(Throwable $exception, array $values = []) {
+	public static function generateFromException(Throwable $exception, array $values = []): self {
 		return new static();
 	}
 	
@@ -64,7 +64,7 @@ abstract class OutputResponse {
 	 * @param array $values
 	 * @return static
 	 */
-	public static function generateFromUserException(UserException $exception, array $values = []) {
+	public static function generateFromUserException(UserException $exception, array $values = []): self {
 		return new static();
 	}
 	

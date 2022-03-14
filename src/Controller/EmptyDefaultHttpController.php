@@ -7,6 +7,7 @@ use Orpheus\Exception\UserException;
 use Orpheus\InputController\HttpController\HtmlHttpResponse;
 use Orpheus\InputController\HttpController\HttpController;
 use Orpheus\InputController\HttpController\HttpRequest;
+use Orpheus\InputController\HttpController\HttpResponse;
 use Orpheus\Rendering\HtmlRendering;
 use Throwable;
 
@@ -41,9 +42,9 @@ class EmptyDefaultHttpController extends HttpController {
 	/**
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return HtmlHttpResponse
+	 * @return HttpResponse
 	 */
-	public function processUserException(UserException $exception, $values = []): HtmlHttpResponse {
+	public function processUserException(UserException $exception, $values = []): HttpResponse {
 		if( !DEV_VERSION ) {
 			$code = $exception->getCode();
 			if( !$code ) {
@@ -61,7 +62,7 @@ class EmptyDefaultHttpController extends HttpController {
 	 * @param array $values
 	 * @return HtmlHttpResponse
 	 */
-	public function processException(Throwable $exception, $values = []): HtmlHttpResponse {
+	public function processException(Throwable $exception, $values = []): HttpResponse {
 		if( !DEV_VERSION ) {
 			$code = $exception->getCode();
 			if( $code < 100 ) {

@@ -76,7 +76,7 @@ class CliResponse extends OutputResponse {
 	 * Set the body
 	 *
 	 * @param string $body
-	 * @return \Orpheus\InputController\CliController\CliResponse
+	 * @return CliResponse
 	 */
 	public function setBody($body) {
 		$this->body = $body;
@@ -107,7 +107,7 @@ class CliResponse extends OutputResponse {
 	 * Set the code
 	 *
 	 * @param int
-	 * @return \Orpheus\InputController\CliController\CliResponse
+	 * @return CliResponse
 	 */
 	public function setCode($code) {
 		$this->code = (int) $code;
@@ -121,7 +121,7 @@ class CliResponse extends OutputResponse {
 	 * @param array $values
 	 * @return static
 	 */
-	public static function generateFromUserException(UserException $exception, $values = []) {
+	public static function generateFromUserException(UserException $exception, $values = []): CliResponse {
 		return static::generateFromException($exception);
 	}
 	
@@ -132,7 +132,7 @@ class CliResponse extends OutputResponse {
 	 * @param string $action
 	 * @return static
 	 */
-	public static function generateFromException(Throwable $exception) {
+	public static function generateFromException(Throwable $exception): CliResponse {
 		return new static(1, convertExceptionAsText($exception, 0));
 	}
 	

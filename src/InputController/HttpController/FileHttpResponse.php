@@ -93,7 +93,7 @@ class FileHttpResponse extends HttpResponse {
 	 * @return string
 	 */
 	protected static function getMimetypeFromExtension($extension): string {
-		return isset(static::$extensionMimeTypes[$extension]) ? static::$extensionMimeTypes[$extension] : self::DEFAULT_MIMETYPE;
+		return static::$extensionMimeTypes[$extension] ?? self::DEFAULT_MIMETYPE;
 	}
 	
 	/**

@@ -40,6 +40,7 @@ class JsonHttpResponse extends HttpResponse {
 		if( $json !== false ) {
 			// Success
 			echo $json;
+			
 			return;
 		}
 		// Error
@@ -78,6 +79,7 @@ class JsonHttpResponse extends HttpResponse {
 	 */
 	public function setData($data) {
 		$this->data = $data;
+		
 		return $this;
 	}
 	
@@ -92,29 +94,7 @@ class JsonHttpResponse extends HttpResponse {
 		// Return success with data
 		$response = new static();
 		$response->data = $data;
-		return $response;
-	}
-	
-	/**
-	 * Generate HTMLResponse from Exception
-	 *
-	 * @param Exception $exception
-	 * @param string $action
-	 * @return JsonHttpResponse
-	 */
-	public static function generateFromException(Throwable $exception, $action = null) {
-		$code = $exception->getCode();
-		if( $code < 100 ) {
-			$code = HTTP_INTERNAL_SERVER_ERROR;
-		}
-		$other = new \stdClass();
-		$other->code = $exception->getCode();
-		$other->message = $exception->getMessage();
-		$other->file = $exception->getFile();
-		$other->line = $exception->getLine();
-		$other->trace = $exception->getTrace();
-		$response = static::render('exception', $other, 'global', t('fatalErrorOccurred', 'global'));
-		$response->setCode($code);
+		
 		return $response;
 	}
 	
@@ -133,6 +113,7 @@ class JsonHttpResponse extends HttpResponse {
 	public static function render($textCode, $other = null, $domain = 'global', $description = null) {
 		$response = new static();
 		$response->collectFrom($textCode, $other, $domain, $description);
+		
 		return $response;
 	}
 	
@@ -155,13 +136,37 @@ class JsonHttpResponse extends HttpResponse {
 	}
 	
 	/**
+	 * Generate HTMLResponse from Exception
+	 *
+	 * @param Exception $exception
+	 * @param string $action
+	 * @return JsonHttpResponse
+	 */
+	public static function generateFromException(Throwable $exception, $action = null): HttpResponse {
+		$code = $exception->getCode();
+		if( $code < 100 ) {
+			$code = HTTP_INTERNAL_SERVER_ERROR;
+		}
+		$other = new \stdClass();
+		$other->code = $exception->getCode();
+		$other->message = $exception->getMessage();
+		$other->file = $exception->getFile();
+		$other->line = $exception->getLine();
+		$other->trace = $exception->getTrace();
+		$response = static::render('exception', $other, 'global', t('fatalErrorOccurred', 'global'));
+		$response->setCode($code);
+		
+		return $response;
+	}
+	
+	/**
 	 * Generate HTMLResponse from UserException
 	 *
 	 * @param UserException $exception
 	 * @param array $values
 	 * @return JsonHttpResponse
 	 */
-	public static function generateFromUserException(UserException $exception, $values = []) {
+	public static function generateFromUserException(UserException $exception, $values = []): HttpResponse {
 		$code = $exception->getCode();
 		if( !$code ) {
 			$code = HTTP_BAD_REQUEST;
@@ -173,6 +178,7 @@ class JsonHttpResponse extends HttpResponse {
 			$response = static::render($exception->getMessage(), null, $exception->getDomain());
 		}
 		$response->setCode($code);
+		
 		return $response;
 	}
 	

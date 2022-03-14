@@ -86,7 +86,7 @@ class HtmlHttpResponse extends HttpResponse {
 	 * @param array $values
 	 * @return static
 	 */
-	public static function generateFromUserException(UserException $exception, array $values = []): HtmlHttpResponse {
+	public static function generateFromUserException(UserException $exception, array $values = []): HttpResponse {
 		reportError($exception);
 		$code = $exception->getCode();
 		if( !$code ) {
@@ -104,7 +104,7 @@ class HtmlHttpResponse extends HttpResponse {
 	 * @return static
 	 * @throws Exception
 	 */
-	protected static function generateExceptionHtmlResponse(Throwable $exception, $code, array $values = [], $type = null): HtmlHttpResponse {
+	protected static function generateExceptionHtmlResponse(Throwable $exception, $code, array $values = [], $type = null): HttpResponse {
 		if( DEV_VERSION ) {
 			$response = new static(convertExceptionAsHTMLPage($exception, $code, $values));
 			$response->setCode($code);

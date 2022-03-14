@@ -196,15 +196,16 @@ class HttpResponse extends OutputResponse {
 	 * @param DateTime|int $lastModifiedDate
 	 * @return $this
 	 */
-	public function setLastModifiedDate($lastModifiedDate) {
+	public function setLastModifiedDate($lastModifiedDate): HttpResponse {
 		if( is_numeric($lastModifiedDate) ) {
 			$lastModifiedDate = DateTime::createFromFormat('U', $lastModifiedDate);
 		}
 		$this->lastModifiedDate = $lastModifiedDate;
+		
 		return $this;
 	}
 	
-	public function getHttpDateFormat() {
+	public function getHttpDateFormat(): string {
 		// DATE_RFC7231 is 7.0.19+ & 7.1.5+
 		// See https://www.php.net/manual/fr/class.datetimeinterface.php#datetime.constants.types
 		return defined('DATE_RFC7231') ? DATE_RFC7231 : DATE_RFC2822;
@@ -295,9 +296,9 @@ class HttpResponse extends OutputResponse {
 	 *
 	 * @param Exception $exception
 	 * @param array $values
-	 * @return void
+	 * @return HttpResponse
 	 */
-	public static function generateFromException(Throwable $exception, array $values = []) {
+	public static function generateFromException(Throwable $exception, array $values = []): HttpResponse {
 		return HtmlHttpResponse::generateFromException($exception, $values);
 	}
 	
@@ -306,9 +307,9 @@ class HttpResponse extends OutputResponse {
 	 *
 	 * @param UserException $exception
 	 * @param array $values
-	 * @return HtmlHttpResponse
+	 * @return HttpResponse
 	 */
-	public static function generateFromUserException(UserException $exception, array $values = []) {
+	public static function generateFromUserException(UserException $exception, array $values = []): HttpResponse {
 		return HtmlHttpResponse::generateFromUserException($exception, $values);
 	}
 	

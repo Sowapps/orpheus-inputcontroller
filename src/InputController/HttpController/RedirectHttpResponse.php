@@ -16,7 +16,7 @@ class RedirectHttpResponse extends HttpResponse {
 	 *
 	 * @var string
 	 */
-	protected $destinationUri;
+	protected string $destinationUri;
 	
 	/**
 	 * Constructor
@@ -25,7 +25,7 @@ class RedirectHttpResponse extends HttpResponse {
 	 * @param bool $permanent
 	 * @throws Exception
 	 */
-	public function __construct($destination, $permanent = false) {
+	public function __construct(string $destination, $permanent = false) {
 		parent::__construct();
 		if( $permanent ) {
 			$this->setPermanent();
@@ -66,7 +66,7 @@ class RedirectHttpResponse extends HttpResponse {
 	 *
 	 * @return string
 	 */
-	public function getDestinationUri() {
+	public function getDestinationUri(): string {
 		return $this->destinationUri;
 	}
 	
@@ -76,8 +76,9 @@ class RedirectHttpResponse extends HttpResponse {
 	 * @param string $destinationUri
 	 * @return RedirectHttpResponse
 	 */
-	public function setDestinationUri($destinationUri) {
+	public function setDestinationUri(string $destinationUri): RedirectHttpResponse {
 		$this->destinationUri = $destinationUri;
+		
 		return $this;
 	}
 	
