@@ -15,7 +15,7 @@ abstract class InputRequest {
 	/**
 	 * The current main request
 	 *
-	 * @var InputRequest
+	 * @var static
 	 */
 	protected static $mainRequest;
 	/**

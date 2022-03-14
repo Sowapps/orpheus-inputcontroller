@@ -18,6 +18,16 @@ use Throwable;
 class EmptyDefaultHttpController extends HttpController {
 	
 	/**
+	 * Prepare environment for this request
+	 *
+	 * @param HttpRequest $request
+	 * @throws UserException
+	 */
+	public function prepare($request) {
+		$this->request = $request;
+	}
+	
+	/**
 	 * Run the controller
 	 *
 	 * @param HttpRequest $request The input HTTP request
@@ -117,4 +127,3 @@ EOF
 	}
 	
 }
-

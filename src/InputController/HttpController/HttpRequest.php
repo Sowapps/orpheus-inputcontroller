@@ -1,4 +1,7 @@
 <?php
+/**
+ * @author Florent Hazard <contact@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
 
@@ -10,8 +13,6 @@ use Throwable;
 
 /**
  * The HttpRequest class
- *
- * @author Florent Hazard <contact@sowapps.com>
  */
 class HttpRequest extends InputRequest {
 	
@@ -548,6 +549,7 @@ class HttpRequest extends InputRequest {
 		if( !static::$defaultController ) {
 			$class = IniConfig::get('default_http_controller', 'Orpheus\Controller\EmptyDefaultHttpController');
 			static::$defaultController = new $class(null, []);
+			static::$defaultController->prepare(self::$mainRequest);
 		}
 		
 		return static::$defaultController;
@@ -555,7 +557,7 @@ class HttpRequest extends InputRequest {
 	
 	public static function showFallbackError(Throwable $exception, ?Throwable $responseException) {
 		if( DEV_VERSION ) {
-			convertExceptionAsHTMLPage($exception, 500, null);
+			die(convertExceptionAsHTMLPage($exception, 500));
 		}
 		echo <<<EOF
 A fatal error occurred displaying an error.<br />
