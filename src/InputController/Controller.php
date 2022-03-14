@@ -16,7 +16,7 @@ abstract class Controller {
 	 *
 	 * @var InputRequest
 	 */
-	protected InputRequest $request;
+	protected ?InputRequest $request = null;
 	
 	/**
 	 * The route calling this controller
@@ -25,7 +25,7 @@ abstract class Controller {
 	 *
 	 * @var ControllerRoute|null
 	 */
-	protected ?ControllerRoute $route;
+	protected ?ControllerRoute $route = null;
 	
 	/**
 	 * Running options for this controller
@@ -163,26 +163,6 @@ abstract class Controller {
 	}
 	
 	/**
-	 * Get the route
-	 *
-	 * @return ControllerRoute
-	 */
-	public function getRoute(): ?ControllerRoute {
-		return $this->route ?: ($this->request ? $this->request->getRoute() : null);
-	}
-	
-	/**
-	 * Set the route
-	 *
-	 * @param ControllerRoute
-	 */
-	public function setRoute(ControllerRoute $route): Controller {
-		$this->route = $route;
-		
-		return $this;
-	}
-	
-	/**
 	 * Render the given $layout in $response using $values
 	 *
 	 * @param mixed $response
@@ -221,10 +201,30 @@ abstract class Controller {
 	/**
 	 * Get the request
 	 *
-	 * @return InputRequest
+	 * @return InputRequest|null
 	 */
-	public function getRequest(): InputRequest {
+	public function getRequest(): ?InputRequest {
 		return $this->request;
+	}
+	
+	/**
+	 * Get the route
+	 *
+	 * @return ControllerRoute
+	 */
+	public function getRoute(): ?ControllerRoute {
+		return $this->route ?: ($this->request ? $this->request->getRoute() : null);
+	}
+	
+	/**
+	 * Set the route
+	 *
+	 * @param ControllerRoute
+	 */
+	public function setRoute(ControllerRoute $route): Controller {
+		$this->route = $route;
+		
+		return $this;
 	}
 	
 	/**

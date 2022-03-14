@@ -41,10 +41,11 @@ abstract class InputRequest {
 	
 	/**
 	 * The found route for this request
+	 * A request could exist without any route (e.g. Route initialization failed)
 	 *
-	 * @var ControllerRoute $route
+	 * @var ControllerRoute|null $route
 	 */
-	protected ControllerRoute $route;
+	protected ?ControllerRoute $route = null;
 	
 	/**
 	 * Constructor
@@ -263,9 +264,9 @@ abstract class InputRequest {
 	/**
 	 * Get the route to this request
 	 *
-	 * @return ControllerRoute
+	 * @return ControllerRoute|null
 	 */
-	public function getRoute(): ControllerRoute {
+	public function getRoute(): ?ControllerRoute {
 		return $this->route;
 	}
 	
