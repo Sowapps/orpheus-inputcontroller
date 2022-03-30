@@ -13,7 +13,7 @@ use Orpheus\DataType\StringType;
 use Orpheus\Exception\UserException;
 
 /**
- * The CLIArgument class
+ * The CliArgument class
  *
  * @author Florent Hazard <contact@sowapps.com>
  */
@@ -69,11 +69,11 @@ class CliArgument {
 	}
 	
 	/**
-	 * Make a CLIArgument from config
-	 * 
+	 * Make a CliArgument from config
+	 *
 	 * @param string $name
 	 * @param string $config
-	 * @return \Orpheus\InputController\CLIArgument
+	 * @return \Orpheus\InputController\CliArgument
 	 */
 	public static function make($name, $config) {
 		$required = false;

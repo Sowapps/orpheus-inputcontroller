@@ -14,7 +14,7 @@ use Throwable;
  * The CliController class
  *
  * @author Florent Hazard <contact@sowapps.com>
- * @method getRequest() CLIRequest
+ * @method getRequest() CliRequest
  */
 abstract class CliController extends Controller {
 	

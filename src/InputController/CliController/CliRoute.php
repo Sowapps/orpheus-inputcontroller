@@ -129,7 +129,7 @@ class CliRoute extends ControllerRoute {
 		// 		$parameters = array();
 		// 		if( isset($config['parameters']) && is_array($config['parameters']) ) {
 		// 			foreach( $config['parameters'] as $paramName => $paramConfig ) {
-		// 				$parameters[] = CLIArgument::make($paramName, $paramConfig);
+		// 				$parameters[] = CliArgument::make($paramName, $paramConfig);
 		// 			}
 		// 		}
 		$options = $config;

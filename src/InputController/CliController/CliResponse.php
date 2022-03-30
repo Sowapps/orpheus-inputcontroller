@@ -1,6 +1,6 @@
 <?php
 /**
- * CLIResponse
+ * CliResponse
  */
 
 namespace Orpheus\InputController\CliController;
@@ -12,7 +12,7 @@ use Orpheus\InputController\OutputResponse;
 use Throwable;
 
 /**
- * The CLIResponse class
+ * The CliResponse class
  *
  * @author Florent Hazard <contact@sowapps.com>
  */
@@ -115,7 +115,7 @@ class CliResponse extends OutputResponse {
 	}
 	
 	/**
-	 * Generate CLIResponse from UserException
+	 * Generate CliResponse from UserException
 	 *
 	 * @param UserException $exception
 	 * @param array $values
@@ -126,7 +126,7 @@ class CliResponse extends OutputResponse {
 	}
 	
 	/**
-	 * Generate CLIResponse from Exception
+	 * Generate CliResponse from Exception
 	 *
 	 * @param Exception $exception
 	 * @param string $action

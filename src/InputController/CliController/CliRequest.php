@@ -1,6 +1,6 @@
 <?php
 /**
- * CLIRequest
+ * CliRequest
  */
 
 namespace Orpheus\InputController\CliController;
@@ -10,7 +10,7 @@ use Orpheus\Config\IniConfig;
 use Orpheus\InputController\InputRequest;
 
 /**
- * The CLIRequest class
+ * The CliRequest class
  *
  * @author Florent Hazard <contact@sowapps.com>
  */
@@ -197,7 +197,7 @@ class CliRequest extends InputRequest {
 	}
 	
 	/**
-	 * Handle the current request as a CLIRequest one
+	 * Handle the current request as a CliRequest one
 	 * This method ends the script
 	 */
 	public static function handleCurrentRequest() {
@@ -213,7 +213,7 @@ class CliRequest extends InputRequest {
 	}
 	
 	/**
-	 * Generate CLIRequest from environment
+	 * Generate CliRequest from environment
 	 *
 	 * @return CliRequest
 	 */
@@ -236,7 +236,7 @@ class CliRequest extends InputRequest {
 	}
 	
 	/**
-	 * Get the name of the route class associated to a CLIRequest
+	 * Get the name of the route class associated to a CliRequest
 	 *
 	 * @return string
 	 */
