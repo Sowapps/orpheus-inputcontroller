@@ -1,7 +1,8 @@
 <?php
 /**
- * StaticPageController
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
+
 namespace Orpheus\Controller;
 
 use Exception;
@@ -10,11 +11,6 @@ use Orpheus\InputController\HttpController\HttpController;
 use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\InputController\HttpController\HttpResponse;
 
-/**
- * The StaticPageController class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class StaticPageController extends HttpController {
 	
 	/**

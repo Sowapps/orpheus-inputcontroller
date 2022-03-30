@@ -1,6 +1,6 @@
 <?php
 /**
- * CliResponse
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\InputController\CliController;
@@ -11,11 +11,6 @@ use Orpheus\Exception\UserException;
 use Orpheus\InputController\OutputResponse;
 use Throwable;
 
-/**
- * The CliResponse class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class CliResponse extends OutputResponse {
 	
 	/**
@@ -23,27 +18,28 @@ class CliResponse extends OutputResponse {
 	 *
 	 * @var int
 	 */
-	protected $code;
+	protected int $code;
 	
 	/**
 	 * The HTML body of the response
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected $body;
+	protected ?string $body = null;
 	
 	/**
 	 * Constructor
 	 *
-	 * @param string $body
+	 * @param int|string $code
+	 * @param string|null $body
 	 */
-	public function __construct($code = 0, $body = null) {
+	public function __construct($code = 0, ?string $body = null) {
 		if( is_string($code) ) {
 			$body = $code;
 			$code = 0;
 		}
 		$this->setCode($code);
-		$this->setBody($body . "\n");
+		$this->setBody($body ? $body . "\n" : null);
 	}
 	
 	/**
@@ -59,27 +55,28 @@ class CliResponse extends OutputResponse {
 		}
 	}
 	
-	public function isSuccess() {
+	public function isSuccess(): bool {
 		return !$this->getCode();
 	}
 	
 	/**
 	 * Get the body
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getBody() {
+	public function getBody(): ?string {
 		return $this->body;
 	}
 	
 	/**
 	 * Set the body
 	 *
-	 * @param string $body
+	 * @param string|null $body
 	 * @return CliResponse
 	 */
-	public function setBody($body) {
+	public function setBody(?string $body): CliResponse {
 		$this->body = $body;
+		
 		return $this;
 	}
 	
@@ -88,10 +85,8 @@ class CliResponse extends OutputResponse {
 	 *
 	 * @param string $layout
 	 * @param array $values
-	 * @return NULL
 	 */
-	public function collectFrom($layout, $values = []) {
-		return null;
+	public function collectFrom(string $layout, array $values = []) {
 	}
 	
 	/**
@@ -99,7 +94,7 @@ class CliResponse extends OutputResponse {
 	 *
 	 * @return int
 	 */
-	public function getCode() {
+	public function getCode(): int {
 		return $this->code;
 	}
 	
@@ -109,8 +104,9 @@ class CliResponse extends OutputResponse {
 	 * @param int
 	 * @return CliResponse
 	 */
-	public function setCode($code) {
-		$this->code = (int) $code;
+	public function setCode(int $code): CliResponse {
+		$this->code = $code;
+		
 		return $this;
 	}
 	
@@ -121,7 +117,7 @@ class CliResponse extends OutputResponse {
 	 * @param array $values
 	 * @return static
 	 */
-	public static function generateFromUserException(UserException $exception, $values = []): CliResponse {
+	public static function generateFromUserException(UserException $exception, array $values = []): CliResponse {
 		return static::generateFromException($exception);
 	}
 	
@@ -129,10 +125,10 @@ class CliResponse extends OutputResponse {
 	 * Generate CliResponse from Exception
 	 *
 	 * @param Exception $exception
-	 * @param string $action
+	 * @param array $values
 	 * @return static
 	 */
-	public static function generateFromException(Throwable $exception): CliResponse {
+	public static function generateFromException(Throwable $exception, array $values = []): CliResponse {
 		return new static(1, convertExceptionAsText($exception, 0));
 	}
 	

@@ -1,15 +1,10 @@
 <?php
 /**
- * AbstractType
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\DataType;
 
-/**
- * The TypeValidator class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 abstract class AbstractType {
 	
 	/**

@@ -1,6 +1,6 @@
 <?php
 /**
- * TypeValidator
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\InputController\CliController;
@@ -12,56 +12,52 @@ use Orpheus\DataType\IntegerType;
 use Orpheus\DataType\StringType;
 use Orpheus\Exception\UserException;
 
-/**
- * The CliArgument class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class CliArgument {
+	
+	/**
+	 * Registered regex for a type
+	 *
+	 * @var array
+	 */
+	protected static array $typeValidators = [];
 	
 	/**
 	 * The long name
 	 *
 	 * @var string
 	 */
-	protected $longName;
+	protected string $longName;
 	
 	/**
 	 * The short name
-	 * 
-	 * @var string
+	 *
+	 * @var string|null
 	 */
-	protected $shortName;
+	protected ?string $shortName;
 	
 	/**
 	 * The type
-	 * 
-	 * @var string
+	 *
+	 * @var string|null
 	 */
-	protected $type;
+	protected ?string $type;
 	
 	/**
 	 * Is the argument required ?
-	 * 
+	 *
 	 * @var boolean
 	 */
-	protected $required;
-	
-	/**
-	 * Registered regex for a type
-	 * 
-	 * @var array
-	 */
-	protected static $typeValidators = array();
+	protected bool $required;
 	
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param string $longName
-	 * @param string $shortName
-	 * @param string $type
+	 * @param string|null $shortName
+	 * @param string|null $type
+	 * @param bool $required
 	 */
-	public function __construct($longName, $shortName, $type, $required) {
+	public function __construct(string $longName, ?string $shortName, ?string $type, $required = false) {
 		$this->longName = $longName;
 		$this->shortName = $shortName;
 		$this->type = $type;
@@ -73,112 +69,113 @@ class CliArgument {
 	 *
 	 * @param string $name
 	 * @param string $config
-	 * @return \Orpheus\InputController\CliArgument
+	 * @return CliArgument
 	 */
-	public static function make($name, $config) {
+	public static function make(string $name, string $config): CliArgument {
 		$required = false;
 		if( $config[0] === '+' ) {
 			$required = true;
 			$config = substr($config, 1);
 		}
 		[$shortName, $type] = explodeList(':', $config, 2);
+		
 		return new static($name, $shortName, $type, $required);
 	}
 	
-	public function getUsageCommand() {
+	public function getUsageCommand(): string {
 		$param = $this->getLongCommand($this->getType(), true);
 		if( !$this->isRequired() ) {
-			$param = '['.$param.']';
+			$param = '[' . $param . ']';
 		}
+		
 		return $param;
 	}
 	
-	public function getLongCommand($value, $usage=false) {
-// 		if( $value === false ) {
-// 			return '';
-// 		}
+	public function getLongCommand($value, $usage = false): string {
 		$type = $this->getTypeValidator();
-		$command = '--'.($usage && $type->isFalsable() ? '(not-)' : '').$this->getLongName();
+		$command = '--' . ($usage && $type->isFalsable() ? '(not-)' : '') . $this->getLongName();
 		if( $value !== true ) {
-			$command .= '="'.$type->format($value).'"';
+			$command .= '="' . $type->format($value) . '"';
 		}
+		
 		return $command;
 	}
-
-	public function isRequiringValue() {
+	
+	public function isRequiringValue(): bool {
 		return !$this->getTypeValidator()->isFalsable();
 	}
-
+	
 	public function getValueFrom($values) {
 		return $this->getTypeValidator()->getValueFrom($values, $this->getLongName(), $this->getShortName());
 	}
 	
-	public function verify(&$value) {
+	public function verify($value): bool {
 		if( $value === null ) {
 			if( $this->isRequired() ) {
-				throw new UserException('The parameter "'.$this->longName.'" is required');
+				throw new UserException(sprintf("The parameter \"%s\" is required", $this->longName));
 			} else {
 				return false;
 			}
 		}
 		$type = $this->getType();
 		if( !static::validateParameter($type, $value) ) {
-			throw new UserException('The given value "'.$value.'" of parameter "'.$this->longName.'" is not a valid value of type "'.$type.'"');
+			throw new UserException(sprintf("The given value \"%s\" of parameter \"%s\" is not a valid value of type \"%s\"", $value, $this->longName, $type));
 		}
+		
 		return true;
 	}
 	
 	/**
 	 * Get the long name
-	 * 
+	 *
 	 * @return string
 	 */
-	public function getLongName() {
+	public function getLongName(): string {
 		return $this->longName;
 	}
 	
 	/**
 	 * Get the short name
-	 * 
+	 *
 	 * @return string
 	 */
-	public function getShortName() {
+	public function getShortName(): ?string {
 		return $this->shortName;
 	}
 	
 	/**
 	 * Test argument has a short name
-	 * 
+	 *
 	 * @return boolean
 	 */
-	public function hasShortName() {
+	public function hasShortName(): bool {
 		return !!$this->shortName;
 	}
 	
 	/**
 	 * Get the type
-	 * 
+	 *
 	 * @return string
 	 */
-	public function getType() {
+	public function getType(): ?string {
 		return $this->type;
 	}
 	
 	/**
 	 * Get the type
-	 * 
+	 *
 	 * @return AbstractType
 	 */
-	public function getTypeValidator() {
+	public function getTypeValidator(): AbstractType {
 		return static::getValidatorByType($this->type);
 	}
 	
 	/**
 	 * Is this argument required ?
-	 * 
+	 *
 	 * @return boolean
 	 */
-	public function isRequired() {
+	public function isRequired(): bool {
 		return $this->required;
 	}
 	
@@ -186,26 +183,27 @@ class CliArgument {
 	 * Set the required state
 	 *
 	 * @param boolean $required
-	 * @return \Orpheus\InputController\CliController\CliArgument
+	 * @return CliArgument
 	 */
-	public function setRequired($required) {
+	public function setRequired(bool $required): CliArgument {
 		$this->required = $required;
+		
 		return $this;
 	}
 	
 	/**
 	 * Get a type validator by type name
-	 * 
+	 *
 	 * @param string $type
 	 * @return AbstractType
 	 */
-	public static function getValidatorByType($type) {
+	public static function getValidatorByType(string $type): AbstractType {
 		return static::$typeValidators[$type];
 	}
 	
 	/**
 	 * Add the type validator to validate parameters
-	 * 
+	 *
 	 * @param AbstractType $type
 	 */
 	public static function registerTypeValidator(AbstractType $type) {
@@ -214,12 +212,12 @@ class CliArgument {
 	
 	/**
 	 * Add the type validator to validate parameters
-	 * 
-	 * @param AbstractType $type
+	 *
+	 * @param string $type
 	 * @param mixed $value
 	 * @return boolean
 	 */
-	public static function validateParameter($type, $value) {
+	public static function validateParameter(string $type, $value): bool {
 		$validator = static::getValidatorByType($type);
 		
 		return $validator->validate($value);

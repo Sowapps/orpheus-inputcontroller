@@ -1,17 +1,16 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
 
 use Exception;
 use Orpheus\Exception\UserException;
 use Orpheus\Exception\UserReportsException;
+use stdClass;
 use Throwable;
 
-/**
- * The JsonHttpResponse class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class JsonHttpResponse extends HttpResponse {
 	
 	/**
@@ -19,14 +18,14 @@ class JsonHttpResponse extends HttpResponse {
 	 *
 	 * @var array
 	 */
-	protected $data;
+	protected array $data;
 	
 	/**
 	 * Constructor
 	 *
 	 * @param array $data
 	 */
-	public function __construct($data = null, $download = false, $fileName = null) {
+	public function __construct(array $data = null, bool $download = false, ?string $fileName = null) {
 		parent::__construct(null, 'application/json', $download, $fileName);
 		$this->setData($data);
 	}
@@ -35,13 +34,13 @@ class JsonHttpResponse extends HttpResponse {
 	 * @return bool|false|string
 	 * @throws Exception
 	 */
-	public function run() {
+	public function run(): bool {
 		$json = json_encode($this->data);
 		if( $json !== false ) {
 			// Success
 			echo $json;
 			
-			return;
+			return true;
 		}
 		// Error
 		switch( json_last_error() ) {
@@ -74,10 +73,10 @@ class JsonHttpResponse extends HttpResponse {
 	/**
 	 * Set the data
 	 *
-	 * @param mixed $data
+	 * @param array|null $data
 	 * @return JsonHttpResponse
 	 */
-	public function setData($data) {
+	public function setData(?array $data): JsonHttpResponse {
 		$this->data = $data;
 		
 		return $this;
@@ -90,7 +89,7 @@ class JsonHttpResponse extends HttpResponse {
 	 * @return JsonHttpResponse
 	 * @see JsonHttpResponse::render()
 	 */
-	public static function returnData($data) {
+	public static function returnData($data): JsonHttpResponse {
 		// Return success with data
 		$response = new static();
 		$response->data = $data;
@@ -108,25 +107,22 @@ class JsonHttpResponse extends HttpResponse {
 	 * @return JsonHttpResponse
 	 * @see JsonHttpResponse::returnData()
 	 *
-	 * We recommend to use returnData() to return data, that is more RESTful and to use this method only for errors
+	 * We recommend to use returnData() to return data, that is more restful and to use this method only for errors
 	 */
-	public static function render($textCode, $other = null, $domain = 'global', $description = null) {
+	public static function render($textCode, $other = null, $domain = 'global', $description = null): JsonHttpResponse {
 		$response = new static();
-		$response->collectFrom($textCode, $other, $domain, $description);
+		$response->collect($textCode, $other, $domain, $description);
 		
 		return $response;
 	}
 	
 	/**
-	 *
-	 * {@inheritDoc}
 	 * @param string $textCode
-	 * @param mixed $other
+	 * @param $other
 	 * @param string $domain
-	 * @param string $description
-	 * @see HttpResponse::collectFrom()
+	 * @param string|null $description
 	 */
-	public function collectFrom($textCode, $other = null, $domain = 'global', $description = null) {
+	public function collect(string $textCode, $other = null, string $domain = 'global', ?string $description = null) {
 		// For errors only
 		$this->data = [
 			'code'        => $textCode,
@@ -136,23 +132,24 @@ class JsonHttpResponse extends HttpResponse {
 	}
 	
 	/**
-	 * Generate HTMLResponse from Exception
+	 * Generate HtmlResponse from Exception
 	 *
 	 * @param Exception $exception
-	 * @param string $action
+	 * @param array $values
 	 * @return JsonHttpResponse
 	 */
-	public static function generateFromException(Throwable $exception, $action = null): HttpResponse {
+	public static function generateFromException(Throwable $exception, array $values = []): HttpResponse {
 		$code = $exception->getCode();
 		if( $code < 100 ) {
 			$code = HTTP_INTERNAL_SERVER_ERROR;
 		}
-		$other = new \stdClass();
+		$other = new stdClass();
 		$other->code = $exception->getCode();
 		$other->message = $exception->getMessage();
 		$other->file = $exception->getFile();
 		$other->line = $exception->getLine();
 		$other->trace = $exception->getTrace();
+		$other->values = $values;
 		$response = static::render('exception', $other, 'global', t('fatalErrorOccurred', 'global'));
 		$response->setCode($code);
 		
@@ -160,7 +157,7 @@ class JsonHttpResponse extends HttpResponse {
 	}
 	
 	/**
-	 * Generate HTMLResponse from UserException
+	 * Generate HtmlResponse from UserException
 	 *
 	 * @param UserException $exception
 	 * @param array $values

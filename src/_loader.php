@@ -6,7 +6,6 @@
 use Orpheus\Core\RequestHandler;
 use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\InputController\HttpController\HttpRoute;
-use Orpheus\InputController\InputRequest;
 
 if( !defined('ORPHEUS_PATH') ) {
 	// Do not load in a non-orpheus environment
@@ -27,7 +26,7 @@ function u(string $routeName, array $values = []): string {
 		throw new RuntimeException('Unable to find route ' . $routeName);
 	}
 	
-	return $route->formatURL($values);
+	return $route->formatUrl($values);
 }
 
 /**
@@ -52,29 +51,6 @@ function exists_route(string $routeName): bool {
 }
 
 /**
- * Test if the $route is the one of the current request
- *
- * @param string
- * @return boolean
- * @deprecated Not used, there are other ways to do
- */
-function is_current_route(string $route): bool {
-	return get_current_route() === $route;
-}
-
-/**
- * Get the route name of the current request
- *
- * @return string
- * @deprecated Not used, there are other ways to do
- */
-function get_current_route(): string {
-	$request = InputRequest::getMainRequest();
-	
-	return $request->getRoute()->getName();
-}
-
-/**
  * Get the link of the current request
  *
  * @return string
@@ -82,7 +58,7 @@ function get_current_route(): string {
 function get_current_link(): string {
 	$request = HttpRequest::getMainRequest();
 	if( $request && $request->getRoute() ) {
-		return $request->getRoute()->getLink((array) $request->getPathValues());
+		return $request->getRoute()->getLink($request->getPathValues());
 	}
 	
 	return sprintf('%s://%s%s', $_SERVER['REQUEST_SCHEME'], $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']);

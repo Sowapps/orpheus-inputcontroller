@@ -1,15 +1,10 @@
 <?php
 /**
- * IntegerType
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\DataType;
 
-/**
- * The TypeValidator class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class BooleanType extends AbstractType {
 	
 	public function __construct() {
@@ -21,17 +16,18 @@ class BooleanType extends AbstractType {
 			return $values[$argName] === false ? 'true' : $values[$argName];
 		}
 		if( isset($values['not-' . $argName]) ) {
-			// We dont verify the "not" value, this is not possible by the usual way
+			// We don't verify the "not" value, this is not possible by the usual way
 			return $values['not-' . $argName] === false ? 'false' : $this->format(!$this->parse($values['not-' . $argName]));
 		}
 		if( $argAltName && isset($values[$argAltName]) ) {
 			return $values[$argAltName];
 		}
-		// We might check not value of short option by choosing one lowercase and the other is the uppercase but it mays create conflicts
+		
+		// We might check not value of short option by choosing one lowercase and the other is the uppercase but this may create conflicts
 		return null;
 	}
 	
-	public function format($value) {
+	public function format($value): string {
 		return $value ? 'true' : 'false';
 	}
 	
@@ -49,4 +45,5 @@ class BooleanType extends AbstractType {
 	public function isFalsable(): bool {
 		return true;
 	}
+	
 }

@@ -12,12 +12,12 @@ use Orpheus\InputController\InputRequest;
 use Throwable;
 
 /**
- * The HttpRequest class
+ * @method static HttpRequest getMainRequest()
  */
 class HttpRequest extends InputRequest {
 	
 	/** @var HttpController */
-	protected static $defaultController;
+	protected static ?HttpController $defaultController = null;
 	
 	/**
 	 * The used method for this request
@@ -142,10 +142,8 @@ class HttpRequest extends InputRequest {
 	}
 	
 	/**
-	 * {@inheritDoc}
 	 * @param ControllerRoute $route
 	 * @return RedirectHttpResponse
-	 * @see InputRequest::redirect()
 	 */
 	public function redirect(ControllerRoute $route): RedirectHttpResponse {
 		return new RedirectHttpResponse(u($route->getName()));
@@ -316,7 +314,7 @@ class HttpRequest extends InputRequest {
 	 * @return HttpRequest
 	 */
 	protected function setInputType($inputType): HttpRequest {
-		$this->inputType = $inputType;;
+		$this->inputType = $inputType;
 		
 		return $this;
 	}
@@ -576,7 +574,7 @@ EOF;
 	}
 	
 	/**
-	 * Get the main http request or null if not a HTTP request
+	 * Get the main http request or null if not an HTTP request
 	 *
 	 * @return HttpRequest
 	 */

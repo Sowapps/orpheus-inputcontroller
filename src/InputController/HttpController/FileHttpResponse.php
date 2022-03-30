@@ -1,14 +1,12 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
 
 use RuntimeException;
 
-/**
- * The FileHttpResponse class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class FileHttpResponse extends HttpResponse {
 	
 	/**
@@ -73,8 +71,10 @@ class FileHttpResponse extends HttpResponse {
 		parent::process();
 	}
 	
-	public function run() {
+	public function run(): bool {
 		fpassthru($this->resource);
+		
+		return true;
 	}
 	
 	/**

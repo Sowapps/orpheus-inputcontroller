@@ -1,4 +1,7 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
 
@@ -8,11 +11,6 @@ use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 use RuntimeException;
 
-/**
- * The HttpRoute class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class HttpRoute extends ControllerRoute {
 	
 	const METHOD_GET = 'GET';
@@ -25,7 +23,7 @@ class HttpRoute extends ControllerRoute {
 	 *
 	 * @var array
 	 */
-	protected static $typesRegex = [];
+	protected static array $typesRegex = [];
 	
 	/**
 	 * Registered routes
@@ -118,7 +116,7 @@ class HttpRoute extends ControllerRoute {
 	 */
 	protected static function extractVariable($str, &$var = null, &$regex = null) {
 		[$p1, $p2] = explodeList(':', $str, 2);
-		// Optionnal only if there is a default value
+		// Optional only if there is a default value
 		if( $p2 ) {
 			// {regex|type:variable}
 			$var = $p2;
@@ -134,12 +132,12 @@ class HttpRoute extends ControllerRoute {
 	}
 	
 	/**
-	 * Format the current route to get an URL from path
+	 * Format the current route to get a URL from path
 	 *
 	 * @param string[] $values
 	 * @return string
 	 */
-	public function formatURL($values = []): string {
+	public function formatUrl($values = []): string {
 		$path = preg_replace_callback(
 			'#\{([^\}]+)\}#sm',
 			function ($matches) use ($values) {
@@ -148,7 +146,7 @@ class HttpRoute extends ControllerRoute {
 				if( !isset($values[$var]) ) {
 					throw new RuntimeException('The variable "' . $var . '" is missing to generate URL for route ' . $this->name);
 				}
-				$value = $values[$var] . '';
+				$value = $values[$var];
 				if( !preg_match('#^' . $regex . '$#', $value) ) {
 					throw new RuntimeException('The given value "' . $value . '" of variable "' . $var . '" is not matching the regex requirements to generate URL for route ' . $this->name);
 				}
@@ -226,7 +224,7 @@ class HttpRoute extends ControllerRoute {
 		}
 		$options = $config;
 		unset($options['path'], $options['controller'], $options['method'], $options['restrictTo']);
-		static::register($name, $config['path'], $config['controller'], isset($config['method']) ? $config['method'] : null, $config['restrictTo'], $config['response'], $options);
+		static::register($name, $config['path'], $config['controller'], $config['method'] ?? null, $config['restrictTo'], $config['response'], $options);
 	}
 	
 	/**

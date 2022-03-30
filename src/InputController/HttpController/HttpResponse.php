@@ -1,7 +1,9 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
-
 
 use DateTime;
 use Exception;
@@ -9,72 +11,69 @@ use Orpheus\Exception\UserException;
 use Orpheus\InputController\OutputResponse;
 use Throwable;
 
-/**
- * The HttpResponse class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class HttpResponse extends OutputResponse {
 	
 	/**
-	 * @var string The content type to send to client
+	 * @var string|null The content type to send to client
 	 */
-	protected $contentType;
+	protected ?string $contentType = null;
 	
 	/**
-	 * @var int The content length to send to client
+	 * @var int|null The content length to send to client
 	 */
-	protected $contentLength;
+	protected ?int $contentLength = null;
 	
 	/**
 	 * The HTML body of the response
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected $body;
+	protected ?string $body = null;
 	
 	/**
 	 * The HTTP response code
 	 *
-	 * @var int
+	 * @var int|null
 	 */
-	protected $code;
+	protected ?int $code = null;
 	
 	/**
 	 * The file name shared to the client
 	 *
 	 * @var string
 	 */
-	protected $fileName;
+	protected ?string $fileName = null;
 	
 	/**
 	 * Is the file downloaded ? Or displayed ?
 	 *
 	 * @var bool
 	 */
-	protected $download;
+	protected bool $download = false;
 	
 	/**
 	 * Client cache max age in seconds
 	 *
-	 * @var int
+	 * @var int|null
 	 */
-	protected $cacheMaxAge;
+	protected ?int $cacheMaxAge = null;
 	
 	/**
 	 * Client cache max age in seconds
 	 *
-	 * @var DateTime
+	 * @var DateTime|null
 	 */
-	protected $lastModifiedDate;
+	protected ?DateTime $lastModifiedDate = null;
 	
 	/**
 	 * Constructor
 	 *
-	 * @param string $body
-	 * @param string $contentType
+	 * @param string|null $body
+	 * @param string|null $contentType
+	 * @param bool $download
+	 * @param string|null $fileName
 	 */
-	public function __construct($body = null, $contentType = null, $download = false, $fileName = null) {
+	public function __construct(?string $body = null, ?string $contentType = null, bool $download = false, ?string $fileName = null) {
 		if( $body ) {
 			$this->setBody($body);
 		}
@@ -123,7 +122,7 @@ class HttpResponse extends OutputResponse {
 	/**
 	 * @return string
 	 */
-	public function getContentType() {
+	public function getContentType(): ?string {
 		return $this->contentType;
 	}
 	
@@ -153,7 +152,7 @@ class HttpResponse extends OutputResponse {
 	 *
 	 * @return string
 	 */
-	protected function getContentDisposition() {
+	protected function getContentDisposition(): string {
 		return $this->isDownload() ? 'attachment' : 'inline';
 	}
 	
@@ -230,12 +229,14 @@ class HttpResponse extends OutputResponse {
 	 *
 	 * @return bool
 	 */
-	public function run() {
+	public function run(): bool {
 		if( $this->body !== null ) {
 			// if already generated we display the body
 			echo $this->getBody();
+			
 			return true;
 		}
+		
 		return false;
 	}
 	
@@ -244,30 +245,20 @@ class HttpResponse extends OutputResponse {
 	 *
 	 * @return string
 	 */
-	public function getBody() {
+	public function getBody(): string {
 		return $this->body;
 	}
 	
 	/**
 	 * Set the body
 	 *
-	 * @param string $body
-	 * @return HtmlHttpResponse
+	 * @param string|null $body
+	 * @return HttpResponse
 	 */
-	public function setBody($body) {
+	public function setBody(?string $body): HttpResponse {
 		$this->body = $body;
+		
 		return $this;
-	}
-	
-	/**
-	 * Collect response data from parameters
-	 *
-	 * @param string $layout
-	 * @param array $values
-	 * @return NULL
-	 */
-	public function collectFrom($layout, $values = []) {
-		return null;
 	}
 	
 	/**
@@ -275,7 +266,7 @@ class HttpResponse extends OutputResponse {
 	 *
 	 * @return int
 	 */
-	public function getCode() {
+	public function getCode(): ?int {
 		return $this->code;
 	}
 	
@@ -285,14 +276,14 @@ class HttpResponse extends OutputResponse {
 	 * @param int
 	 * @return HttpResponse
 	 */
-	public function setCode($code) {
-		$this->code = (int) $code;
+	public function setCode(int $code): HttpResponse {
+		$this->code = $code;
 		
 		return $this;
 	}
 	
 	/**
-	 * Generate HTMLResponse from Exception
+	 * Generate HtmlResponse from Exception
 	 *
 	 * @param Exception $exception
 	 * @param array $values
@@ -303,7 +294,7 @@ class HttpResponse extends OutputResponse {
 	}
 	
 	/**
-	 * Generate HTMLResponse from UserException
+	 * Generate HtmlResponse from UserException
 	 *
 	 * @param UserException $exception
 	 * @param array $values

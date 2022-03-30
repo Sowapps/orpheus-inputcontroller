@@ -1,13 +1,12 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
 
-use Exception;
-
 /**
  * The RedirectHttpResponse class
- *
- * @author Florent Hazard <contact@sowapps.com>
  */
 class RedirectHttpResponse extends HttpResponse {
 	
@@ -23,7 +22,6 @@ class RedirectHttpResponse extends HttpResponse {
 	 *
 	 * @param string $destination
 	 * @param bool $permanent
-	 * @throws Exception
 	 */
 	public function __construct(string $destination, $permanent = false) {
 		parent::__construct();
@@ -53,12 +51,12 @@ class RedirectHttpResponse extends HttpResponse {
 	}
 	
 	/**
-	 *
-	 * {@inheritDoc}
-	 * @see HttpResponse::run()
+	 * @return bool
 	 */
-	public function run() {
+	public function run(): bool {
 		header('Location: ' . $this->destinationUri);
+		
+		return true;
 	}
 	
 	/**

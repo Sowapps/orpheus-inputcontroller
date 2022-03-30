@@ -1,6 +1,6 @@
 <?php
 /**
- * CliController
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\InputController\CliController;
@@ -10,21 +10,13 @@ use Orpheus\Exception\UserException;
 use Orpheus\InputController\Controller;
 use Throwable;
 
-/**
- * The CliController class
- *
- * @author Florent Hazard <contact@sowapps.com>
- * @method getRequest() CliRequest
- */
 abstract class CliController extends Controller {
 	
 	/**
 	 * Print text line
 	 */
-	public function printLine($text = null) {
-		if( $text ) {
-			echo $text . "\n";
-		}
+	public function printLine(?string $text = null) {
+		echo ($text ?: '') . "\n";
 	}
 	
 	/**
@@ -38,8 +30,12 @@ abstract class CliController extends Controller {
 	
 	/**
 	 * Request a input line to user
+	 *
+	 * @param string|null $text
+	 * @param bool $return
+	 * @return string
 	 */
-	public function requestInputLine($text = null, $return = true): string {
+	public function requestInputLine(?string $text = null, bool $return = true): string {
 		if( $text ) {
 			echo $text . ($return ? "\n" : ' ');
 		}
@@ -48,14 +44,12 @@ abstract class CliController extends Controller {
 	}
 	
 	/**
-	 *
-	 * {@inheritDoc}
 	 * @param UserException $exception
-	 * @param array $values
-	 * @see Controller::processUserException()
+	 * @param $values
+	 * @return CliResponse
 	 */
-	public function processUserException(UserException $exception, $values = []) {
-		return CliResponse::generateFromUserException($exception);
+	public function processUserException(UserException $exception, array $values = []): CliResponse {
+		return CliResponse::generateFromUserException($exception, $values);
 	}
 	
 	/**
@@ -63,7 +57,8 @@ abstract class CliController extends Controller {
 	 * @param array $values
 	 * @return CliResponse
 	 */
-	public function processException(Throwable $exception, $values = []) {
-		return CliResponse::generateFromException($exception);
+	public function processException(Throwable $exception, array $values = []): CliResponse {
+		return CliResponse::generateFromException($exception, $values);
 	}
+	
 }

@@ -1,4 +1,7 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
 
@@ -8,10 +11,7 @@ use Orpheus\InputController\Controller;
 use Throwable;
 
 /**
- * The HttpController class
- *
  * @method HttpResponse run($request)
- * @author Florent Hazard <contact@sowapps.com>
  */
 abstract class HttpController extends Controller {
 	
@@ -24,7 +24,7 @@ abstract class HttpController extends Controller {
 	 * @param array $values
 	 * @return HtmlHttpResponse
 	 */
-	public function renderHtml($layout, $values = []): HtmlHttpResponse {
+	public function renderHtml(string $layout, $values = []): HtmlHttpResponse {
 		return $this->render(new HtmlHttpResponse(), $layout, $values);
 	}
 	

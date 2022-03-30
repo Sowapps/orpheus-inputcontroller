@@ -1,6 +1,6 @@
 <?php
 /**
- * RedirectController
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\Controller;
@@ -12,11 +12,6 @@ use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\InputController\HttpController\HttpResponse;
 use Orpheus\InputController\HttpController\RedirectHttpResponse;
 
-/**
- * The RedirectController class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class RedirectController extends HttpController {
 	
 	/**
@@ -36,7 +31,7 @@ class RedirectController extends HttpController {
 		} elseif( empty($options['redirect']) ) {
 			throw new Exception('The RedirectController requires a redirect option, add it to your route configuration.');
 		} else {
-			$url = u($options['redirect'], (array) $request->getPathValues());
+			$url = u($options['redirect'], $request->getPathValues());
 		}
 		
 		return new RedirectHttpResponse($url);

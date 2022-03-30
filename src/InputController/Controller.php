@@ -1,20 +1,18 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController;
 
 use Orpheus\Exception\UserException;
 
-/**
- * The Controller class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 abstract class Controller {
 	
 	/**
 	 * The request calling this controller
 	 *
-	 * @var InputRequest
+	 * @var InputRequest|null
 	 */
 	protected ?InputRequest $request = null;
 	
@@ -48,8 +46,8 @@ abstract class Controller {
 	 * @param array $options
 	 */
 	public function __construct(?ControllerRoute $route, array $options) {
-		$this->route = $route;
-		$this->options = $options;
+		$this->setRoute($route);
+		$this->setOptions($options);
 	}
 	
 	/**
@@ -118,19 +116,19 @@ abstract class Controller {
 	 * @param InputRequest $request
 	 * @return OutputResponse|null
 	 */
-	public function preRun($request) {
+	public function preRun($request): ?OutputResponse {
 		return null;
 	}
 	
 	/**
 	 * Process the given UserException
 	 *
-	 * @param UserException $e
+	 * @param UserException $exception
 	 * @return mixed
 	 * @throws UserException
 	 */
-	public function processUserException(UserException $e) {
-		throw $e;// Throw to request
+	public function processUserException(UserException $exception) {
+		throw $exception;// Throw to request
 	}
 	
 	/**
@@ -145,9 +143,10 @@ abstract class Controller {
 	 * After running the controller
 	 *
 	 * @param InputRequest $request
+	 * @param $response
 	 * @return OutputResponse|null
 	 */
-	public function postRun($request, $response) {
+	public function postRun($request, $response): ?OutputResponse {
 		return $response;
 	}
 	
@@ -165,14 +164,14 @@ abstract class Controller {
 	/**
 	 * Render the given $layout in $response using $values
 	 *
-	 * @param mixed $response
+	 * @param OutputResponse $response
 	 * @param string $layout
 	 * @param array $values
 	 * @return mixed The $response
 	 */
-	public function render($response, $layout, $values = []) {
-		$this->fillValues($values);
+	public function render($response, string $layout, array $values = []): OutputResponse {
 		$response->collectFrom($layout, $values);
+		$this->fillValues($values);
 		
 		return $response;
 	}
@@ -220,6 +219,7 @@ abstract class Controller {
 	 * Set the route
 	 *
 	 * @param ControllerRoute
+	 * @return Controller
 	 */
 	public function setRoute(ControllerRoute $route): Controller {
 		$this->route = $route;

@@ -1,15 +1,10 @@
 <?php
 /**
- * IntegerType
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\DataType;
 
-/**
- * The TypeValidator class
- * 
- * @author Florent Hazard <contact@sowapps.com>
- */
 class FileType extends AbstractType {
 	
 	public function __construct() {
@@ -19,4 +14,5 @@ class FileType extends AbstractType {
 	public function check($value): bool {
 		return is_readable($value);
 	}
+	
 }

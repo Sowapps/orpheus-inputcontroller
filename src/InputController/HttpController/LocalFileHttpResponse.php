@@ -1,14 +1,12 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController\HttpController;
 
 use Orpheus\Exception\NotFoundException;
 
-/**
- * The LocalFileHttpResponse class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class LocalFileHttpResponse extends FileHttpResponse {
 	
 	/**

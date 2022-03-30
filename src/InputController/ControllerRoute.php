@@ -1,4 +1,7 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController;
 
@@ -8,12 +11,8 @@ use Orpheus\Core\RequestHandler;
 use Orpheus\Core\Route;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\NotFoundException;
+use RuntimeException;
 
-/**
- * The ControllerRoute class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 abstract class ControllerRoute extends Route {
 	
 	const REQUIREMENTS_KEY = 'require-packages';
@@ -113,7 +112,7 @@ abstract class ControllerRoute extends Route {
 	 * @param array $values
 	 * @param boolean $alternative True if we are looking for an alternative route, because we did not find any primary one
 	 */
-	public abstract function isMatchingRequest(InputRequest $request, array &$values = [], $alternative = false);
+	public abstract function isMatchingRequest(InputRequest $request, array &$values = [], bool $alternative = false);
 	
 	/**
 	 * Run the $request by processing the matching controller
@@ -136,15 +135,13 @@ abstract class ControllerRoute extends Route {
 		if( !$this->isAccessible() ) {
 			throw new ForbiddenException('This route is not available by this context');
 		}
-		$result = $this->controller->process($request);
 		
-		return $result;
+		return $this->controller->process($request);
 	}
 	
 	/**
-	 *
-	 * {@inheritDoc}
-	 * @see Route::isAccessible()
+	 * @return bool
+	 * @throws Exception
 	 */
 	public function isAccessible(): bool {
 		if( !CHECK_MODULE_ACCESS ) {
@@ -160,6 +157,7 @@ abstract class ControllerRoute extends Route {
 				}
 			}
 		}
+		
 		return true;
 	}
 	
@@ -216,12 +214,14 @@ abstract class ControllerRoute extends Route {
 	}
 	
 	/**
+	 * Get link of route
 	 *
-	 * {@inheritDoc}
-	 * @see Route::getLink()
+	 * @param array $values
+	 * @return bool
+	 * @see formatUrl()
 	 */
-	public function getLink($values = []): bool {
-		return $this->formatURL($values);
+	public function getLink(array $values = []): bool {
+		return $this->formatUrl($values);
 	}
 	
 	/**
@@ -229,7 +229,7 @@ abstract class ControllerRoute extends Route {
 	 *
 	 * @param array $values
 	 */
-	public abstract function formatURL(array $values = []);
+	public abstract function formatUrl(array $values = []);
 	
 	/**
 	 * Get all registered routes
@@ -237,8 +237,9 @@ abstract class ControllerRoute extends Route {
 	 *
 	 * @return ControllerRoute[]
 	 */
-	public static function getRoutes() {
+	public static function getRoutes(): array {
 		static::initialize();
+		
 		return static::$routes;
 	}
 	
@@ -250,9 +251,7 @@ abstract class ControllerRoute extends Route {
 			return;
 		}
 		static::$initialized = true;
-		
 		$routes = [];
-		
 		static::loadRoutes($routes);
 		
 		// Register routes
@@ -281,7 +280,6 @@ abstract class ControllerRoute extends Route {
 	 *
 	 * @param array $routes
 	 * @param string|null $package
-	 * @throws Exception
 	 */
 	protected static function loadRoutes(array &$routes, ?string $package = null) {
 		// TODO: Protect against loop
@@ -337,7 +335,6 @@ abstract class ControllerRoute extends Route {
 	 * @param string $file
 	 * @param string|null $package
 	 * @param bool $optional
-	 * @throws Exception
 	 */
 	protected static function populateRoutesFromFile(array &$routes, string $file, ?string $package = null, bool $optional = false) {
 		$conf = YAML::buildFrom($package, $file, true, $optional);
@@ -368,10 +365,9 @@ abstract class ControllerRoute extends Route {
 	 *
 	 * @param string $name
 	 * @param array $config
-	 * @throws Exception
 	 */
 	public static function registerConfig(string $name, array $config) {
-		throw new Exception('The class "' . get_called_class() . '" should override the `registerConfig()` static method from "' . get_class() . '"');
+		throw new RuntimeException(sprintf("The class \"%s\" should override the `registerConfig()` static method from \"%s\"", get_called_class(), get_class()));
 	}
 	
 	/**

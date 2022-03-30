@@ -1,6 +1,6 @@
 <?php
 /**
- * CliRoute
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\InputController\CliController;
@@ -10,12 +10,6 @@ use Orpheus\Core\Route;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 
-/**
- * The CliRoute class
- *
- * @author Florent Hazard <contact@sowapps.com>
- * TODO: Process options
- */
 class CliRoute extends ControllerRoute {
 	
 	/**
@@ -60,13 +54,13 @@ class CliRoute extends ControllerRoute {
 	}
 	
 	/**
-	 * Format the current route to get an URL from path
+	 * Format the current route to get a URL from path
 	 *
 	 * @param string[] $values
 	 * @return string
 	 * @throws Exception
 	 */
-	public function formatURL($values = []): string {
+	public function formatUrl($values = []): string {
 		$params = '';
 		if( $values ) {
 			$params = implode(' ', $values);
@@ -75,7 +69,7 @@ class CliRoute extends ControllerRoute {
 		return static::getRootCommand() . ' ' . $this->getPath() . $params;
 	}
 	
-	public static function getRootCommand() {
+	public static function getRootCommand(): string {
 		return 'php -f app/console/run.php';
 	}
 	
@@ -119,7 +113,7 @@ class CliRoute extends ControllerRoute {
 	 *
 	 * @param string $name
 	 * @param array $config
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function registerConfig($name, array $config) {
 		if( empty($config['path']) ) {
@@ -155,7 +149,7 @@ class CliRoute extends ControllerRoute {
 	 *
 	 * @return array
 	 */
-	public static function getRoutes() {
+	public static function getRoutes(): array {
 		return static::$routes;
 	}
 	

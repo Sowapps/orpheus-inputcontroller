@@ -11,11 +11,6 @@ use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\InputController\HttpController\HttpResponse;
 use Orpheus\InputController\HttpController\LocalFileHttpResponse;
 
-/**
- * The RedirectController class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class ResourceController extends HttpController {
 	
 	/**
@@ -33,13 +28,12 @@ class ResourceController extends HttpController {
 	}
 	
 	/**
-	 * @param $webPath
-	 * @param $package
+	 * @param string $webPath
+	 * @param string $package
 	 * @return string The absolute path to resource
 	 */
-	public function resolveResource($webPath, $package): string {
+	public function resolveResource(string $webPath, string $package): string {
 		return VENDOR_PATH . $package . '/res/' . $webPath;
 	}
-	
 	
 }

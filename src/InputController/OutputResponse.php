@@ -1,30 +1,28 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController;
 
 use Orpheus\Exception\UserException;
 use Throwable;
 
-/**
- * The OutputResponse class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 abstract class OutputResponse {
 	
 	/**
 	 * The output of the controller when running it
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected $controllerOutput;
+	protected ?string $controllerOutput = null;
 	
 	/**
 	 * Get the controller output
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getControllerOutput() {
+	public function getControllerOutput(): ?string {
 		return $this->controllerOutput;
 	}
 	
@@ -35,6 +33,10 @@ abstract class OutputResponse {
 	 */
 	public function setControllerOutput($controllerOutput) {
 		$this->controllerOutput = $controllerOutput;
+	}
+	
+	public function collectFrom(string $layout, array $values = []) {
+		// Do nothing
 	}
 	
 	/**

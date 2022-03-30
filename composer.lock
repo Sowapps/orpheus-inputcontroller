@@ -33,10 +33,10 @@
             ],
             "authors": [
                 {
-                    "name": "Florent HAZARD",
-                    "email": "contact@sowapps.com",
-                    "homepage": "http://sowapps.com",
-                    "role": "Developer"
+	                "name": "Florent HAZARD",
+	                "email": "contact@sowapps.com",
+	                "homepage": "https://sowapps.com",
+	                "role": "Developer"
                 }
             ],
             "description": "Orpheus Cache",
@@ -79,12 +79,12 @@
                 "MIT"
             ],
             "authors": [
-                {
-                    "name": "Florent HAZARD",
-                    "email": "contact@sowapps.com",
-                    "homepage": "http://sowapps.com",
-                    "role": "Developer"
-                }
+	            {
+		            "name": "Florent HAZARD",
+		            "email": "contact@sowapps.com",
+		            "homepage": "https://sowapps.com",
+		            "role": "Developer"
+	            }
             ],
             "description": "Orpheus Core",
             "keywords": [
@@ -121,12 +121,12 @@
                 "MIT"
             ],
             "authors": [
-                {
-                    "name": "Florent HAZARD",
-                    "email": "contact@sowapps.com",
-                    "homepage": "http://sowapps.com",
-                    "role": "Developer"
-                }
+	            {
+		            "name": "Florent HAZARD",
+		            "email": "contact@sowapps.com",
+		            "homepage": "https://sowapps.com",
+		            "role": "Developer"
+	            }
             ],
             "description": "Orpheus Hook",
             "homepage": "https://github.com/Sowapps/orpheus-hook",
@@ -169,12 +169,12 @@
                 "MIT"
             ],
             "authors": [
-                {
-                    "name": "Florent HAZARD",
-                    "email": "contact@sowapps.com",
-                    "homepage": "http://sowapps.com",
-                    "role": "Developer"
-                }
+	            {
+		            "name": "Florent HAZARD",
+		            "email": "contact@sowapps.com",
+		            "homepage": "https://sowapps.com",
+		            "role": "Developer"
+	            }
             ],
             "description": "Orpheus Rendering",
             "keywords": [
@@ -213,12 +213,12 @@
                 "MIT"
             ],
             "authors": [
-                {
-                    "name": "Florent HAZARD",
-                    "email": "contact@sowapps.com",
-                    "homepage": "http://sowapps.com",
-                    "role": "Developer"
-                }
+	            {
+		            "name": "Florent HAZARD",
+		            "email": "contact@sowapps.com",
+		            "homepage": "https://sowapps.com",
+		            "role": "Developer"
+	            }
             ],
             "description": "Orpheus WebTools",
             "keywords": [
@@ -261,12 +261,12 @@
                 "MIT"
             ],
             "authors": [
-                {
-                    "name": "Florent HAZARD",
-                    "email": "contact@sowapps.com",
-                    "homepage": "http://sowapps.com",
-                    "role": "Developer"
-                }
+	            {
+		            "name": "Florent HAZARD",
+		            "email": "contact@sowapps.com",
+		            "homepage": "https://sowapps.com",
+		            "role": "Developer"
+	            }
             ],
             "description": "Orpheus YAML",
             "keywords": [

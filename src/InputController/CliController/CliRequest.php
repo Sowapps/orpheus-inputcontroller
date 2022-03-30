@@ -1,6 +1,6 @@
 <?php
 /**
- * CliRequest
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\InputController\CliController;
@@ -9,11 +9,6 @@ use Exception;
 use Orpheus\Config\IniConfig;
 use Orpheus\InputController\InputRequest;
 
-/**
- * The CliRequest class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class CliRequest extends InputRequest {
 	
 	// Inspired from Symfony\Component\Console\Formatter\OutputFormatterInterface\OutputInterface
@@ -95,7 +90,7 @@ class CliRequest extends InputRequest {
 	 * @return string
 	 */
 	public function getUrl(): string {
-		return $this->route->formatURL($this->parameters);
+		return $this->route->formatUrl($this->parameters);
 	}
 	
 	/**
@@ -162,7 +157,7 @@ class CliRequest extends InputRequest {
 	 * Test if path contains a value and return it as parameter
 	 *
 	 * @param string $path The path to get the value
-	 * @param string $value The value as ouput parameter
+	 * @param string $value The value as output parameter
 	 * @return boolean
 	 */
 	public function hasDataKey(?string $path = null, &$value = null): bool {
@@ -180,7 +175,7 @@ class CliRequest extends InputRequest {
 	 *
 	 * @param string $content
 	 * @param string $contentType
-	 * @return \Orpheus\InputController\CliController\CliRequest
+	 * @return CliRequest
 	 * @deprecated Function is wrongly implemented
 	 */
 	protected function setContent(string $content): CliRequest {
@@ -230,9 +225,7 @@ class CliRequest extends InputRequest {
 		$path = $argv[1];
 		$parameters = static::parseArguments(array_slice($argv, 2));
 		
-		$request = new static($path, $parameters, $input);
-		
-		return $request;
+		return new static($path, $parameters, $input);
 	}
 	
 	/**

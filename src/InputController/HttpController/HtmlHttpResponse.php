@@ -12,26 +12,21 @@ use Orpheus\Exception\UserException;
 use Orpheus\Rendering\HtmlRendering;
 use Throwable;
 
-/**
- * The HtmlHttpResponse class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 class HtmlHttpResponse extends HttpResponse {
 	
 	/**
 	 * The layout to use ot generate HTML
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected $layout;
+	protected ?string $layout = null;
 	
 	/**
 	 * The values to send to the layout
 	 *
-	 * @var array
+	 * @var array|null
 	 */
-	protected $values;
+	protected ?array $values = null;
 	
 	/**
 	 * Constructor
@@ -43,11 +38,9 @@ class HtmlHttpResponse extends HttpResponse {
 	}
 	
 	/**
-	 *
-	 * {@inheritDoc}
-	 * @see HttpResponse::run()
+	 * @return bool|void
 	 */
-	public function run() {
+	public function run(): bool {
 		if( parent::run() ) {
 			return;
 		}
@@ -57,11 +50,14 @@ class HtmlHttpResponse extends HttpResponse {
 		$env['CONTROLLER_OUTPUT'] = $this->getControllerOutput();
 		
 		$rendering->display($this->layout, $env);
+		
 		// In case of error, display was aborted and any output is lost
+		
+		return true;
 	}
 	
 	/**
-	 * Generate HTMLResponse from Exception
+	 * Generate HtmlResponse from Exception
 	 *
 	 * @param Exception $exception
 	 * @param array $values
@@ -76,11 +72,11 @@ class HtmlHttpResponse extends HttpResponse {
 			$code = HTTP_INTERNAL_SERVER_ERROR;
 		}
 		
-		return static::generateExceptionHtmlResponse($exception, $code, $values, null);
+		return static::generateExceptionHtmlResponse($exception, $code, $values);
 	}
 	
 	/**
-	 * Generate HTMLResponse from UserException
+	 * Generate HtmlResponse from UserException
 	 *
 	 * @param UserException $exception
 	 * @param array $values
@@ -102,11 +98,10 @@ class HtmlHttpResponse extends HttpResponse {
 	 * @param array $values
 	 * @param string|null $type
 	 * @return static
-	 * @throws Exception
 	 */
-	protected static function generateExceptionHtmlResponse(Throwable $exception, $code, array $values = [], $type = null): HttpResponse {
+	public static function generateExceptionHtmlResponse(Throwable $exception, $code, array $values = [], $type = null): HttpResponse {
 		if( DEV_VERSION ) {
-			$response = new static(convertExceptionAsHTMLPage($exception, $code, $values));
+			$response = new static(convertExceptionAsHTMLPage($exception, $code));
 			$response->setCode($code);
 			
 			return $response;
@@ -131,7 +126,7 @@ class HtmlHttpResponse extends HttpResponse {
 			}
 		}
 		if( !$layout ) {
-			// Fatal error, no way to display user friendly error and we don't want to display debug error on prod.
+			// Fatal error, no way to display user-friendly error, and we don't want to display debug error on prod.
 			$typeText = $type ?: 'classic';
 			$layoutList = implode(', ', $layouts);
 			
@@ -169,17 +164,13 @@ EOF
 	}
 	
 	/**
-	 *
-	 * {@inheritDoc}
 	 * @param string $layout
 	 * @param array $values
-	 * @return NULL
-	 * @see HttpResponse::collectFrom()
+	 * @return void
 	 */
-	public function collectFrom($layout, $values = []) {
+	public function collectFrom(string $layout, array $values = []) {
 		$this->layout = $layout;
 		$this->values = $values;
-		return null;
 	}
 	
 }

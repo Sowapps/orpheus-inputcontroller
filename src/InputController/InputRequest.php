@@ -1,36 +1,35 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\InputController;
 
 use Exception;
 use Orpheus\Exception\NotFoundException;
 
-/**
- * The InputRequest class
- *
- * @author Florent Hazard <contact@sowapps.com>
- */
 abstract class InputRequest {
 	
 	/**
 	 * The current main request
 	 *
-	 * @var static
+	 * @var static|null
 	 */
-	protected static $mainRequest;
+	protected static ?InputRequest $mainRequest = null;
+	
 	/**
 	 * The path
 	 *
 	 * @var string
 	 */
-	protected $path;
+	protected string $path;
 	
 	/**
 	 * The input parameters (inline parameters)
 	 *
 	 * @var array
 	 */
-	protected $parameters;
+	protected array $parameters;
 	
 	/**
 	 * The input (like stdin)
@@ -52,9 +51,9 @@ abstract class InputRequest {
 	 *
 	 * @param string $path
 	 * @param array $parameters
-	 * @param array $input
+	 * @param array|string|null $input
 	 */
-	public function __construct($path, $parameters, $input) {
+	public function __construct(string $path, array $parameters, $input) {
 		$this->path = $path;
 		$this->parameters = $parameters;
 		$this->input = $input;
@@ -92,7 +91,7 @@ abstract class InputRequest {
 	 * @param boolean $alternative
 	 * @return ControllerRoute|null
 	 */
-	public function findFirstMatchingRoute($alternative = false): ?ControllerRoute {
+	public function findFirstMatchingRoute(bool $alternative = false): ?ControllerRoute {
 		foreach( $this->getRoutes() as $route ) {
 			$values = [];
 			if( $route->isMatchingRequest($this, $values, $alternative) ) {
@@ -166,7 +165,7 @@ abstract class InputRequest {
 	 * @return boolean
 	 */
 	public function hasParameter(string $key): bool {
-		return $this->getParameter($key, null) !== null;
+		return $this->getParameter($key) !== null;
 	}
 	
 	/**
@@ -238,7 +237,7 @@ abstract class InputRequest {
 	 * @return boolean
 	 */
 	public function hasInputValue(string $key): bool {
-		return $this->getInputValue($key, null) !== null;
+		return $this->getInputValue($key) !== null;
 	}
 	
 	/**
@@ -296,10 +295,12 @@ abstract class InputRequest {
 	 *
 	 * @return InputRequest
 	 */
-	public static function getMainRequest(): InputRequest {
+	public static function getMainRequest(): ?InputRequest {
 		return static::$mainRequest;
 	}
 	
 	public abstract static function getDefaultController();
+	
+	public abstract static function getRouteClass(): string;
 	
 }
