@@ -46,7 +46,7 @@ abstract class Controller {
 	 * @param array $options
 	 */
 	public function __construct(?ControllerRoute $route, array $options) {
-		$this->setRoute($route);
+		$this->route = $route;
 		$this->setOptions($options);
 	}
 	
@@ -137,7 +137,7 @@ abstract class Controller {
 	 * @param InputRequest $request
 	 * @return OutputResponse|null
 	 */
-	public abstract function run($request): OutputResponse;
+	abstract public function run($request): OutputResponse;
 	
 	/**
 	 * After running the controller
@@ -212,19 +212,11 @@ abstract class Controller {
 	 * @return ControllerRoute
 	 */
 	public function getRoute(): ?ControllerRoute {
-		return $this->route ?: ($this->request ? $this->request->getRoute() : null);
-	}
-	
-	/**
-	 * Set the route
-	 *
-	 * @param ControllerRoute
-	 * @return Controller
-	 */
-	public function setRoute(ControllerRoute $route): Controller {
-		$this->route = $route;
+		if( $this->route ) {
+			return $this->route;
+		}
 		
-		return $this;
+		return $this->request ? $this->request->getRoute() : null;
 	}
 	
 	/**
