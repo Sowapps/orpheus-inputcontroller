@@ -23,9 +23,9 @@ class JsonHttpResponse extends HttpResponse {
 	/**
 	 * Constructor
 	 *
-	 * @param array $data
+	 * @param array|JsonSerializable|stdClass|null $data
 	 */
-	public function __construct(array $data = null, bool $download = false, ?string $fileName = null) {
+	public function __construct($data = null, bool $download = false, ?string $fileName = null) {
 		parent::__construct(null, 'application/json', $download, $fileName);
 		$this->setData($data);
 	}
