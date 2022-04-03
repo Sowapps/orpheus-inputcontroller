@@ -42,7 +42,7 @@ class HtmlHttpResponse extends HttpResponse {
 	 */
 	public function run(): bool {
 		if( parent::run() ) {
-			return;
+			return false;
 		}
 		$rendering = HtmlRendering::getCurrent();
 		
