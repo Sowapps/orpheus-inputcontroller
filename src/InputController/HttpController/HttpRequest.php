@@ -442,9 +442,9 @@ class HttpRequest extends InputRequest {
 	 *
 	 * @param string $key
 	 * @param mixed $default
-	 * @return string The path value for $key
+	 * @return string|null The path value for $key
 	 */
-	public function getPathValue($key, $default = null): string {
+	public function getPathValue($key, $default = null): ?string {
 		return $this->pathValues[$key] ?? $default;
 	}
 	
