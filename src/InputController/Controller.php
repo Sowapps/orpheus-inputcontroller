@@ -90,24 +90,24 @@ abstract class Controller {
 		try {
 			// Could prevent Run & PostRun
 			// We recommend that PreRun only return Redirects and Exceptions
-			$result = $this->preRun($request);
+			$response = $this->preRun($request);
 		} catch( UserException $e ) {
-			$result = $this->processUserException($e);
+			$response = $this->processUserException($e);
 		}
-		if( !$result ) {
+		if( !$response ) {
 			// PreRun could prevent Run & PostRun
 			try {
-				$result = $this->run($request);
+				$response = $this->run($request);
 			} catch( UserException $e ) {
-				$result = $this->processUserException($e);
+				$response = $this->processUserException($e);
 			}
-			$result = $this->postRun($request, $result);
+			$response = $this->postRun($request, $response);
 		}
 		if( $this->catchControllerOutput ) {
-			$result->setControllerOutput(ob_get_clean());
+			$response->setControllerOutput(ob_get_clean());
 		}
 		
-		return $result;
+		return $response;
 	}
 	
 	/**
@@ -170,8 +170,8 @@ abstract class Controller {
 	 * @return mixed The $response
 	 */
 	public function render($response, string $layout, array $values = []): OutputResponse {
-		$response->collectFrom($layout, $values);
 		$this->fillValues($values);
+		$response->collectFrom($layout, $values);
 		
 		return $response;
 	}

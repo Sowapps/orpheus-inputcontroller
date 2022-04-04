@@ -46,8 +46,10 @@ class LocalFileHttpResponse extends FileHttpResponse {
 		return filesize($this->localFilePath);
 	}
 	
-	public function run() {
+	public function run(): bool {
 		readfile($this->localFilePath);
+		
+		return true;
 	}
 	
 	public function process() {

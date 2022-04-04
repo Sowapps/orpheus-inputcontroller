@@ -12,6 +12,7 @@ use Throwable;
 
 /**
  * @method HttpResponse run($request)
+ * @method HttpResponse|null preRun($request)
  */
 abstract class HttpController extends Controller {
 	
