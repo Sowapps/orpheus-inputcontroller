@@ -109,7 +109,7 @@ class HtmlHttpResponse extends HttpResponse {
 		$rendering = HtmlRendering::getCurrent();
 		
 		// Test layouts' availability to get the more specific one
-		$values = [
+		$layoutValues = [
 			'{type}' => $type,
 			'{code}' => $code,
 		];
@@ -119,7 +119,7 @@ class HtmlHttpResponse extends HttpResponse {
 		$layouts = array_merge($layouts, ['error/error-{code}', 'error/error']);
 		$layout = null;
 		foreach( $layouts as &$testLayout ) {
-			$testLayout = strtr($testLayout, $values);
+			$testLayout = strtr($testLayout, $layoutValues);
 			if( $rendering->existsLayoutPath($testLayout) ) {
 				$layout = $testLayout;
 				break;
