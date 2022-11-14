@@ -1,7 +1,7 @@
 {
-	"name" : "orpheus/orpheus-inputcontroller",
-	"description" : "Orpheus Input Controller",
-	"keywords" : [
+	"name": "orpheus/orpheus-inputcontroller",
+	"description": "Orpheus Input Controller",
+	"keywords": [
 		"orpheus",
 		"input",
 		"controller",
@@ -9,30 +9,31 @@
 		"view",
 		"mvc"
 	],
-	"autoload" : {
-		"psr-4" : {
-			"Orpheus\\" : "src"
+	"autoload": {
+		"psr-4": {
+			"Orpheus\\": "src"
 		},
-		"files" : [
+		"files": [
 			"src/_loader.php"
 		]
 	},
-	"require" : {
-	  "php": "7.4.*",
-	  "orpheus/orpheus-core": "1.*",
-	  "orpheus/orpheus-hook": "1.*",
-	  "orpheus/orpheus-yaml": "1.*",
-	  "orpheus/orpheus-cache": "1.*",
-	  "orpheus/orpheus-webtools": "1.*",
-	  "orpheus/orpheus-rendering": "1.*"
+	"require": {
+		"php": ">=7.4",
+		"orpheus/orpheus-core": "1.*",
+		"orpheus/orpheus-hook": "1.*",
+		"orpheus/orpheus-yaml": "1.*",
+		"orpheus/orpheus-cache": "1.*",
+		"orpheus/orpheus-webtools": "1.*",
+		"orpheus/orpheus-rendering": "1.*"
 	},
-	"type" : "library",
-	"license" : "MIT",
-	"authors" : [{
-		"name": "Florent HAZARD",
-		"email": "contact@sowapps.com",
-		"homepage": "https://sowapps.com",
-		"role": "Developer"
-	}
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Florent HAZARD",
+			"email": "contact@sowapps.com",
+			"homepage": "https://sowapps.com",
+			"role": "Developer"
+		}
 	]
 }
