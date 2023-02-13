@@ -46,7 +46,9 @@ abstract class HttpController extends Controller {
 	 * @return HttpResponse
 	 */
 	public function processException(Throwable $exception, $values = []): HttpResponse {
-		log_error($exception, 'Processing response', false);
+		if( $exception ) {
+			log_report($exception, $exception instanceof UserException ? $exception->getChannel() : LOGFILE_SYSTEM, 'Processing response');
+		}
 		$this->fillValues($values);
 		
 		return HtmlHttpResponse::generateFromException($exception, $values);
