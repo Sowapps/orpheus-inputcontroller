@@ -37,10 +37,7 @@ class FileHttpResponse extends HttpResponse {
 	/**
 	 * Constructor
 	 *
-	 * @param resource $resource
-	 * @param string $fileName
-	 * @param bool $download
-	 * @param int $cacheMaxAge
+	 * @param resource|null $resource resource to get read while rendering, pass null and override run() to get it by your own way
 	 */
 	public function __construct($resource, string $fileName, bool $download = true, int $cacheMaxAge = 0) {
 		if( $resource && !is_resource($resource) ) {
@@ -55,15 +52,15 @@ class FileHttpResponse extends HttpResponse {
 		return fstat($this->resource)['size'];
 	}
 	
-	public function process() {
+	public function process(): void {
 		$this->setContentType($this->getMimeType());
 		$this->setContentLength($this->getSize());
 		
-		// Close to unlock session
+		// Close session to prevent session-blocking
 		if( session_status() === PHP_SESSION_ACTIVE ) {
 			session_write_close();
 		}
-		// Clean all output buffers to not send it
+		// Clean any previous output
 		while( ob_get_level() ) {
 			ob_end_clean();
 		}
@@ -79,8 +76,6 @@ class FileHttpResponse extends HttpResponse {
 	
 	/**
 	 * Get mimetype
-	 *
-	 * @return string
 	 */
 	public function getMimeType(): string {
 		return static::getMimetypeFromExtension(pathinfo($this->fileName, PATHINFO_EXTENSION));
@@ -88,21 +83,15 @@ class FileHttpResponse extends HttpResponse {
 	
 	/**
 	 * Get mimetype from extension
-	 *
-	 * @param string $extension
-	 * @return string
 	 */
-	protected static function getMimetypeFromExtension($extension): string {
+	protected static function getMimetypeFromExtension(string $extension): string {
 		return static::$extensionMimeTypes[$extension] ?? self::DEFAULT_MIMETYPE;
 	}
 	
 	/**
 	 * Set extension's mimetype
-	 *
-	 * @param string $extension
-	 * @param string $mimetype
 	 */
-	protected static function setExtensionMimetype($extension, $mimetype) {
+	protected static function setExtensionMimetype(string $extension, string $mimetype): void {
 		static::$extensionMimeTypes[$extension] = $mimetype;
 	}
 	

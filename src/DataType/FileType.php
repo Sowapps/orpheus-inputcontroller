@@ -11,7 +11,7 @@ class FileType extends AbstractType {
 		parent::__construct('file');
 	}
 	
-	public function check($value): bool {
+	public function check(mixed $value): bool {
 		return is_readable($value);
 	}
 	

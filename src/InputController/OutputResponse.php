@@ -19,8 +19,6 @@ abstract class OutputResponse {
 	
 	/**
 	 * Get the controller output
-	 *
-	 * @return string|null
 	 */
 	public function getControllerOutput(): ?string {
 		return $this->controllerOutput;
@@ -28,14 +26,12 @@ abstract class OutputResponse {
 	
 	/**
 	 * Set the controller output
-	 *
-	 * @param string $controllerOutput
 	 */
-	public function setControllerOutput($controllerOutput) {
+	public function setControllerOutput(string $controllerOutput): void {
 		$this->controllerOutput = $controllerOutput;
 	}
 	
-	public function collectFrom(string $layout, array $values = []) {
+	public function collectFrom(string $layout, array $values = []): void {
 		// Do nothing
 	}
 	
@@ -51,8 +47,6 @@ abstract class OutputResponse {
 	/**
 	 * Generate OutputResponse from Exception
 	 *
-	 * @param Throwable $exception
-	 * @param array $values
 	 * @return static
 	 */
 	public static function generateFromException(Throwable $exception, array $values = []): self {
@@ -62,8 +56,6 @@ abstract class OutputResponse {
 	/**
 	 * Generate OutputResponse from UserException
 	 *
-	 * @param UserException $exception
-	 * @param array $values
 	 * @return static
 	 */
 	public static function generateFromUserException(UserException $exception, array $values = []): self {

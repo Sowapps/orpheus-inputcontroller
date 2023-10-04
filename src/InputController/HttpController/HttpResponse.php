@@ -40,7 +40,7 @@ class HttpResponse extends OutputResponse {
 	/**
 	 * The file name shared to the client
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	protected ?string $fileName = null;
 	
@@ -67,11 +67,6 @@ class HttpResponse extends OutputResponse {
 	
 	/**
 	 * Constructor
-	 *
-	 * @param string|null $body
-	 * @param string|null $contentType
-	 * @param bool $download
-	 * @param string|null $fileName
 	 */
 	public function __construct(?string $body = null, ?string $contentType = null, bool $download = false, ?string $fileName = null) {
 		if( $body ) {
@@ -89,12 +84,12 @@ class HttpResponse extends OutputResponse {
 	/**
 	 * Process the response
 	 */
-	public function process() {
+	public function process(): void {
 		$this->sendHeaders();
 		$this->run();
 	}
 	
-	protected function sendHeaders() {
+	protected function sendHeaders(): void {
 		if( headers_sent() ) {
 			return;
 		}
@@ -105,7 +100,7 @@ class HttpResponse extends OutputResponse {
 			header('Content-Type: ' . $this->getContentType());
 		}
 		if( $this->contentLength ) {
-			header('Content-Type: ' . $this->getContentLength());
+			header('Content-Length: ' . $this->getContentLength());
 		}
 		if( $this->fileName || $this->download ) {
 			header('Content-Disposition: ' . $this->getContentDisposition() . ($this->getFileName() ? '; filename="' . $this->getFileName() . '"' : ''));
@@ -119,83 +114,54 @@ class HttpResponse extends OutputResponse {
 		header('Pragma: public');
 	}
 	
-	/**
-	 * @return string
-	 */
 	public function getContentType(): ?string {
 		return $this->contentType;
 	}
 	
-	/**
-	 * @param string $contentType
-	 */
-	public function setContentType(string $contentType) {
+	public function setContentType(string $contentType): void {
 		$this->contentType = $contentType;
 	}
 	
-	/**
-	 * @return int
-	 */
 	public function getContentLength(): int {
 		return $this->contentLength;
 	}
 	
-	/**
-	 * @param int $contentLength
-	 */
 	public function setContentLength(int $contentLength): void {
 		$this->contentLength = $contentLength;
 	}
 	
 	/**
 	 * Get content disposition header value
-	 *
-	 * @return string
 	 */
 	protected function getContentDisposition(): string {
 		return $this->isDownload() ? 'attachment' : 'inline';
 	}
 	
-	/**
-	 * @return bool
-	 */
 	public function isDownload(): bool {
 		return $this->download;
 	}
 	
-	/**
-	 * @param bool $download
-	 */
 	public function setDownload(bool $download): void {
 		$this->download = $download;
 	}
 	
-	/**
-	 * @return string
-	 */
 	public function getFileName(): string {
 		return $this->fileName;
 	}
 	
-	/**
-	 * @param string $fileName
-	 */
 	public function setFileName(string $fileName): void {
 		$this->fileName = $fileName;
 	}
 	
-	/**
-	 * @return DateTime
-	 */
 	public function getLastModifiedDate(): DateTime {
 		return $this->lastModifiedDate;
 	}
 	
 	/**
-	 * @param DateTime|int $lastModifiedDate
+	 * @param DateTime|int $lastModifiedDate DateTime or timestamp
 	 * @return $this
 	 */
-	public function setLastModifiedDate($lastModifiedDate): HttpResponse {
+	public function setLastModifiedDate(DateTime|int $lastModifiedDate): HttpResponse {
 		if( is_numeric($lastModifiedDate) ) {
 			$lastModifiedDate = DateTime::createFromFormat('U', $lastModifiedDate);
 		}
@@ -210,24 +176,16 @@ class HttpResponse extends OutputResponse {
 		return defined('DATE_RFC7231') ? DATE_RFC7231 : DATE_RFC2822;
 	}
 	
-	/**
-	 * @return int
-	 */
 	public function getCacheMaxAge(): int {
 		return $this->cacheMaxAge;
 	}
 	
-	/**
-	 * @param int $cacheMaxAge
-	 */
 	public function setCacheMaxAge(int $cacheMaxAge): void {
 		$this->cacheMaxAge = $cacheMaxAge;
 	}
 	
 	/**
 	 * Process response to client
-	 *
-	 * @return bool
 	 */
 	public function run(): bool {
 		if( $this->body !== null ) {
@@ -242,8 +200,6 @@ class HttpResponse extends OutputResponse {
 	
 	/**
 	 * Get the body
-	 *
-	 * @return string
 	 */
 	public function getBody(): string {
 		return $this->body;
@@ -251,9 +207,6 @@ class HttpResponse extends OutputResponse {
 	
 	/**
 	 * Set the body
-	 *
-	 * @param string|null $body
-	 * @return HttpResponse
 	 */
 	public function setBody(?string $body): HttpResponse {
 		$this->body = $body;
@@ -263,8 +216,6 @@ class HttpResponse extends OutputResponse {
 	
 	/**
 	 * Get the code
-	 *
-	 * @return int
 	 */
 	public function getCode(): ?int {
 		return $this->code;
@@ -272,9 +223,6 @@ class HttpResponse extends OutputResponse {
 	
 	/**
 	 * Set the code
-	 *
-	 * @param int
-	 * @return HttpResponse
 	 */
 	public function setCode(int $code): HttpResponse {
 		$this->code = $code;
@@ -286,8 +234,6 @@ class HttpResponse extends OutputResponse {
 	 * Generate HtmlResponse from Exception
 	 *
 	 * @param Exception $exception
-	 * @param array $values
-	 * @return HttpResponse
 	 */
 	public static function generateFromException(Throwable $exception, array $values = []): HttpResponse {
 		return HtmlHttpResponse::generateFromException($exception, $values);
@@ -295,10 +241,6 @@ class HttpResponse extends OutputResponse {
 	
 	/**
 	 * Generate HtmlResponse from UserException
-	 *
-	 * @param UserException $exception
-	 * @param array $values
-	 * @return HttpResponse
 	 */
 	public static function generateFromUserException(UserException $exception, array $values = []): HttpResponse {
 		return HtmlHttpResponse::generateFromUserException($exception, $values);

@@ -11,7 +11,7 @@ class BooleanType extends AbstractType {
 		parent::__construct('bool', '(?:true|false|[0-1])');
 	}
 	
-	public function getValueFrom(array $values, $argName, $argAltName) {
+	public function getValueFrom(array $values, string $argName, ?string $argAltName): mixed {
 		if( isset($values[$argName]) ) {
 			return $values[$argName] === false ? 'true' : $values[$argName];
 		}
@@ -27,11 +27,7 @@ class BooleanType extends AbstractType {
 		return null;
 	}
 	
-	public function format($value): string {
-		return $value ? 'true' : 'false';
-	}
-	
-	public function parse($value) {
+	public function parse(mixed $value): bool {
 		$value = strtolower($value);
 		if( in_array($value, ['true', 'yes', 'on'], true) ) {
 			return true;
@@ -40,6 +36,10 @@ class BooleanType extends AbstractType {
 			return false;
 		}
 		return boolval($value);
+	}
+	
+	public function format(mixed $value): string {
+		return $value ? 'true' : 'false';
 	}
 	
 	public function isFalsable(): bool {

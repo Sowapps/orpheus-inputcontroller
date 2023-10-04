@@ -6,15 +6,16 @@
 namespace Orpheus\InputController;
 
 use Orpheus\Exception\UserException;
+use Orpheus\Initernationalization\TranslationService;
 
-abstract class Controller {
+abstract class AbstractController {
 	
 	/**
 	 * The request calling this controller
 	 *
 	 * @var InputRequest|null
 	 */
-	protected ?InputRequest $request = null;
+	private ?InputRequest $request = null;
 	
 	/**
 	 * The route calling this controller
@@ -41,9 +42,6 @@ abstract class Controller {
 	
 	/**
 	 * Controller constructor
-	 *
-	 * @param ControllerRoute|null $route
-	 * @param array $options
 	 */
 	public function __construct(?ControllerRoute $route, array $options) {
 		$this->route = $route;
@@ -61,28 +59,26 @@ abstract class Controller {
 	
 	/**
 	 * Prepare environment for this route
-	 *
-	 * @param InputRequest $request
 	 */
-	public function prepare($request) {
+	public function prepare($request): ?OutputResponse {
+		$this->request = $request;
+		return null;
 	}
 	
 	/**
 	 * Process the $request
 	 *
-	 * @param InputRequest $request
-	 * @return OutputResponse
 	 * @uses ControllerRoute::run()
-	 * @see  Controller::preRun()
-	 * @see  Controller::run()
-	 * @see  Controller::postRun()
+	 * @see  AbstractController::preRun()
+	 * @see  AbstractController::run()
+	 * @see  AbstractController::postRun()
 	 *
 	 * preRun() and postRun() are not declared in this class because PHP does not handle inheritance of parameters
 	 * if preRun() is declared getting a InputRequest, we could not declare a preRun() using a HttpRequest
 	 */
-	public function process(InputRequest $request): ?OutputResponse {
+	public function process(): ?OutputResponse {
 		// run, preRun and postRun take parameter depending on Controller, request may be of a child class of InputRequest
-		$this->request = $request;
+		$request = $this->request;
 		
 		if( $this->catchControllerOutput ) {
 			ob_start();
@@ -112,9 +108,6 @@ abstract class Controller {
 	
 	/**
 	 * Before running controller
-	 *
-	 * @param InputRequest $request
-	 * @return OutputResponse|null
 	 */
 	public function preRun($request): ?OutputResponse {
 		return null;
@@ -123,28 +116,22 @@ abstract class Controller {
 	/**
 	 * Process the given UserException
 	 *
-	 * @param UserException $exception
 	 * @return mixed
 	 * @throws UserException
 	 */
-	public function processUserException(UserException $exception) {
+	public function processUserException(UserException $exception): OutputResponse {
 		throw $exception;// Throw to request
 	}
 	
 	/**
 	 * Run this controller
-	 *
-	 * @param InputRequest $request
-	 * @return OutputResponse|null
 	 */
 	abstract public function run($request): OutputResponse;
 	
 	/**
 	 * After running the controller
 	 *
-	 * @param InputRequest $request
-	 * @param $response
-	 * @return OutputResponse|null
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	public function postRun($request, $response): ?OutputResponse {
 		return $response;
@@ -152,24 +139,19 @@ abstract class Controller {
 	
 	/**
 	 * Get the route name
-	 *
-	 * @return string
 	 */
 	public function getRouteName(): ?string {
 		$route = $this->getRoute();
 		
-		return $route ? $route->getName() : null;
+		return $route?->getName();
 	}
 	
 	/**
 	 * Render the given $layout in $response using $values
 	 *
-	 * @param OutputResponse $response
-	 * @param string $layout
-	 * @param array $values
 	 * @return mixed The $response
 	 */
-	public function render($response, string $layout, array $values = []): OutputResponse {
+	public function render(OutputResponse $response, string $layout, array $values = []): OutputResponse {
 		$this->fillValues($values);
 		$response->collectFrom($layout, $values);
 		
@@ -178,10 +160,11 @@ abstract class Controller {
 	
 	/**
 	 * Fill array with default values
-	 *
-	 * @param array $values
 	 */
-	public function fillValues(&$values = []) {
+	public function fillValues(array &$values = []): void {
+		if( class_exists(TranslationService::class) ) {
+			$values['translator'] = TranslationService::getActive();
+		}
 		$values['controller'] = $this;
 		$values['request'] = $this->getRequest();
 		$values['route'] = $this->getRoute();
@@ -190,8 +173,6 @@ abstract class Controller {
 	/**
 	 * Get parameter values of this controller
 	 * Use it to generate routes (as for menus) with path parameters & you can get the current context
-	 *
-	 * @return array
 	 */
 	public function getValues(): array {
 		return [];
@@ -199,8 +180,6 @@ abstract class Controller {
 	
 	/**
 	 * Get the request
-	 *
-	 * @return InputRequest|null
 	 */
 	public function getRequest(): ?InputRequest {
 		return $this->request;
@@ -208,36 +187,29 @@ abstract class Controller {
 	
 	/**
 	 * Get the route
-	 *
-	 * @return ControllerRoute
 	 */
 	public function getRoute(): ?ControllerRoute {
 		if( $this->route ) {
 			return $this->route;
 		}
 		
-		return $this->request ? $this->request->getRoute() : null;
+		return $this->request?->getRoute();
 	}
 	
 	/**
 	 * Get an option by $key
 	 *
-	 * @param string $key
-	 * @param mixed $default
+	 * @param mixed|null $default
 	 * @return string|mixed
 	 */
-	public function getOption(string $key, $default = null) {
+	public function getOption(string $key, mixed $default = null): mixed {
 		return array_key_exists($key, $this->options) ? $this->options[$key] : $default;
 	}
 	
 	/**
 	 * Set an option by $key
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 * @return Controller
 	 */
-	public function setOption(string $key, $value): Controller {
+	public function setOption(string $key, mixed $value): AbstractController {
 		$this->options[$key] = $value;
 		
 		return $this;
@@ -245,11 +217,8 @@ abstract class Controller {
 	
 	/**
 	 * Set an option by $key
-	 *
-	 * @param array $options
-	 * @return Controller
 	 */
-	public function setOptions(array $options): Controller {
+	public function setOptions(array $options): AbstractController {
 		$this->options = $options;
 		
 		return $this;

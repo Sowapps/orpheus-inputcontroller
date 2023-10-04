@@ -6,10 +6,11 @@
 namespace Orpheus\InputController\HttpController;
 
 use Exception;
-use Orpheus\Config\Config;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\UserException;
 use Orpheus\Rendering\HtmlRendering;
+use Orpheus\Service\ApplicationKernel;
+use Orpheus\Service\SecurityService;
 use Throwable;
 
 class HtmlHttpResponse extends HttpResponse {
@@ -37,9 +38,6 @@ class HtmlHttpResponse extends HttpResponse {
 		parent::__construct($body, $contentType);
 	}
 	
-	/**
-	 * @return bool|void
-	 */
 	public function run(): bool {
 		if( parent::run() ) {
 			return false;
@@ -60,12 +58,16 @@ class HtmlHttpResponse extends HttpResponse {
 	 * Generate HtmlResponse from Exception
 	 *
 	 * @param Exception $exception
-	 * @param array $values
 	 * @return HtmlHttpResponse
 	 */
 	public static function generateFromException(Throwable $exception, array $values = []): HttpResponse {
-		if( Config::get('forbidden_to_home', true) && $exception instanceof ForbiddenException ) {
-			return new RedirectHttpResponse(u(DEFAULT_ROUTE));
+		// Forbidden access redirect to another route
+		if( $exception instanceof ForbiddenException ) {
+			$security = SecurityService::get();
+			$response = $security->getForbiddenHttpResponse($exception);
+			if( $response ) {
+				return $response;
+			}
 		}
 		$code = $exception->getCode();
 		if( $code < 100 ) {
@@ -78,8 +80,6 @@ class HtmlHttpResponse extends HttpResponse {
 	/**
 	 * Generate HtmlResponse from UserException
 	 *
-	 * @param UserException $exception
-	 * @param array $values
 	 * @return static
 	 */
 	public static function generateFromUserException(UserException $exception, array $values = []): HttpResponse {
@@ -94,13 +94,10 @@ class HtmlHttpResponse extends HttpResponse {
 	
 	/**
 	 * @param Exception $exception
-	 * @param int $code
-	 * @param array $values
-	 * @param string|null $type
 	 * @return static
 	 */
-	public static function generateExceptionHtmlResponse(Throwable $exception, $code, array $values = [], $type = null): HttpResponse {
-		if( DEV_VERSION ) {
+	public static function generateExceptionHtmlResponse(Throwable $exception, int $code, array $values = [], ?string $type = null): HttpResponse {
+		if( ApplicationKernel::get()->isDebugEnabled() ) {
 			$response = new static(convertExceptionAsHTMLPage($exception, $code));
 			$response->setCode($code);
 			
@@ -151,24 +148,16 @@ EOF
 	/**
 	 * Render the $layout with these $values
 	 *
-	 * @param string $layout
-	 * @param array $values
-	 * @return HtmlHttpResponse
 	 * @see HtmlHttpResponse::run()
 	 */
-	public static function render($layout, $values = []): HtmlHttpResponse {
+	public static function render(string $layout, array $values = []): HtmlHttpResponse {
 		$response = new static();
 		$response->collectFrom($layout, $values);
 		
 		return $response;
 	}
 	
-	/**
-	 * @param string $layout
-	 * @param array $values
-	 * @return void
-	 */
-	public function collectFrom(string $layout, array $values = []) {
+	public function collectFrom(string $layout, array $values = []): void {
 		$this->layout = $layout;
 		$this->values = $values;
 	}

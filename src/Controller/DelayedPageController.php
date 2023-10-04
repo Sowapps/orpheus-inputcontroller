@@ -6,7 +6,7 @@
 namespace Orpheus\Controller;
 
 use Exception;
-use Orpheus\Cache\APCache;
+use Orpheus\Cache\ApcCache;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\NotFoundException;
 use Orpheus\InputController\ControllerRoute;
@@ -14,6 +14,7 @@ use Orpheus\InputController\HttpController\HtmlHttpResponse;
 use Orpheus\InputController\HttpController\HttpController;
 use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\InputController\HttpController\HttpResponse;
+use Orpheus\Service\ApplicationKernel;
 
 class DelayedPageController extends HttpController {
 	
@@ -24,11 +25,11 @@ class DelayedPageController extends HttpController {
 	 * @see HttpController::run()
 	 */
 	public function run($request): HttpResponse {
-		if( !DEV_VERSION ) {
+		if( !ApplicationKernel::get()->isDebugEnabled() ) {
 			throw new ForbiddenException("You're not allowed to access to this content.");
 		}
 		$pathValues = $request->getPathValues();
-		$cache = new APCache('delayedpage', $pathValues['page']);
+		$cache = new ApcCache('DelayedPage', $pathValues['page']);
 		$content = null;
 		if( !$cache->get($content) ) {
 			$cache->clear();
@@ -41,9 +42,6 @@ class DelayedPageController extends HttpController {
 	/**
 	 * Store the $content associated to the $page
 	 *
-	 * @param string $page
-	 * @param string $content
-	 * @return string
 	 * @throws Exception
 	 */
 	public static function store(string $page, string $content): string {
@@ -53,10 +51,10 @@ class DelayedPageController extends HttpController {
 			throw new Exception('Routes not initialized, application is not able to show content, it will fail again & again...');
 		}
 		
-		$cache = new APCache('delayedpage', $page, 60);
+		$cache = new ApcCache('DelayedPage', $page, 60);
 		$cache->set($content);
 		
-		return u('delayedpage', ['page' => $page]);
+		return u('delayed_page', ['page' => $page]);
 	}
 	
 }

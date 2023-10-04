@@ -18,11 +18,6 @@ class LocalFileHttpResponse extends FileHttpResponse {
 	
 	/**
 	 * Constructor
-	 *
-	 * @param string $filePath
-	 * @param string|null $fileName
-	 * @param bool $download
-	 * @param int $cacheMaxAge
 	 */
 	public function __construct(string $filePath, ?string $fileName = null, bool $download = true, int $cacheMaxAge = 0) {
 		// If is directory or not readable (imply not found)
@@ -52,7 +47,7 @@ class LocalFileHttpResponse extends FileHttpResponse {
 		return true;
 	}
 	
-	public function process() {
+	public function process(): void {
 		$this->setLastModifiedDate(filemtime($this->localFilePath));
 		
 		parent::process();

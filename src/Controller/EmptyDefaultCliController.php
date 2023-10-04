@@ -5,23 +5,12 @@
 
 namespace Orpheus\Controller;
 
-use Orpheus\Exception\UserException;
 use Orpheus\InputController\CliController\CliController;
 use Orpheus\InputController\CliController\CliResponse;
 use Orpheus\InputController\HttpController\HttpController;
 use Orpheus\InputController\HttpController\HttpRequest;
 
 class EmptyDefaultCliController extends CliController {
-	
-	/**
-	 * Prepare environment for this request
-	 *
-	 * @param HttpRequest $request
-	 * @throws UserException
-	 */
-	public function prepare($request) {
-		$this->request = $request;
-	}
 	
 	/**
 	 * Run the controller

@@ -6,6 +6,7 @@
 namespace Orpheus\InputController\HttpController;
 
 use Exception;
+use JsonSerializable;
 use Orpheus\Exception\UserException;
 use Orpheus\Exception\UserReportsException;
 use stdClass;
@@ -16,22 +17,19 @@ class JsonHttpResponse extends HttpResponse {
 	/**
 	 * The data of the JSON response
 	 *
-	 * @var array
+	 * @var array|JsonSerializable|stdClass|null
 	 */
-	protected array $data;
+	protected array|JsonSerializable|stdClass|null $data;
 	
 	/**
 	 * Constructor
-	 *
-	 * @param array|JsonSerializable|stdClass|null $data
 	 */
-	public function __construct($data = null, bool $download = false, ?string $fileName = null) {
+	public function __construct(array|JsonSerializable|stdClass|null $data = null, bool $download = false, ?string $fileName = null) {
 		parent::__construct(null, 'application/json', $download, $fileName);
 		$this->setData($data);
 	}
 	
 	/**
-	 * @return bool|false|string
 	 * @throws Exception
 	 */
 	public function run(): bool {
@@ -43,40 +41,28 @@ class JsonHttpResponse extends HttpResponse {
 			return true;
 		}
 		// Error
-		switch( json_last_error() ) {
-			case JSON_ERROR_NONE:
-				throw new Exception('JSON Encoding error - No errors');
-			case JSON_ERROR_DEPTH:
-				throw new Exception('JSON Encoding error - Maximum stack depth exceeded');
-			case JSON_ERROR_STATE_MISMATCH:
-				throw new Exception('JSON Encoding error - Underflow or the modes mismatch');
-			case JSON_ERROR_CTRL_CHAR:
-				throw new Exception('JSON Encoding error - Unexpected control character found');
-			case JSON_ERROR_SYNTAX:
-				throw new Exception('JSON Encoding error - Syntax error, malformed JSON');
-			case JSON_ERROR_UTF8:
-				throw new Exception('JSON Encoding error - Malformed UTF-8 characters, possibly incorrectly encoded');
-			default:
-				throw new Exception('JSON Encoding error - Unknown error');
-		}
+		throw match (json_last_error()) {
+			JSON_ERROR_NONE => new Exception('JSON Encoding error - No errors'),
+			JSON_ERROR_DEPTH => new Exception('JSON Encoding error - Maximum stack depth exceeded'),
+			JSON_ERROR_STATE_MISMATCH => new Exception('JSON Encoding error - Underflow or the modes mismatch'),
+			JSON_ERROR_CTRL_CHAR => new Exception('JSON Encoding error - Unexpected control character found'),
+			JSON_ERROR_SYNTAX => new Exception('JSON Encoding error - Syntax error, malformed JSON'),
+			JSON_ERROR_UTF8 => new Exception('JSON Encoding error - Malformed UTF-8 characters, possibly incorrectly encoded'),
+			default => new Exception('JSON Encoding error - Unknown error'),
+		};
 	}
 	
 	/**
 	 * Get the data
-	 *
-	 * @return mixed
 	 */
-	public function getData() {
+	public function getData(): array|stdClass|JsonSerializable|null {
 		return $this->data;
 	}
 	
 	/**
 	 * Set the data
-	 *
-	 * @param array|null $data
-	 * @return JsonHttpResponse
 	 */
-	public function setData(?array $data): JsonHttpResponse {
+	public function setData(array|JsonSerializable|stdClass|null $data): JsonHttpResponse {
 		$this->data = $data;
 		
 		return $this;
@@ -85,11 +71,9 @@ class JsonHttpResponse extends HttpResponse {
 	/**
 	 * Get a response with the given $data
 	 *
-	 * @param mixed $data
-	 * @return JsonHttpResponse
 	 * @see JsonHttpResponse::render()
 	 */
-	public static function returnData($data): JsonHttpResponse {
+	public static function returnData(mixed $data): JsonHttpResponse {
 		// Return success with data
 		$response = new static();
 		$response->data = $data;
@@ -100,29 +84,19 @@ class JsonHttpResponse extends HttpResponse {
 	/**
 	 * Render the given data
 	 *
-	 * @param string $textCode
-	 * @param mixed $other
-	 * @param string $domain
-	 * @param string $description
-	 * @return JsonHttpResponse
+	 * @param mixed|null $other
 	 * @see JsonHttpResponse::returnData()
 	 *
 	 * We recommend to use returnData() to return data, that is more restful and to use this method only for errors
 	 */
-	public static function render($textCode, $other = null, $domain = 'global', $description = null): JsonHttpResponse {
+	public static function render(string $textCode, mixed $other = null, string $domain = 'global', ?string $description = null): JsonHttpResponse {
 		$response = new static();
 		$response->collect($textCode, $other, $domain, $description);
 		
 		return $response;
 	}
 	
-	/**
-	 * @param string $textCode
-	 * @param $other
-	 * @param string $domain
-	 * @param string|null $description
-	 */
-	public function collect(string $textCode, $other = null, string $domain = 'global', ?string $description = null) {
+	public function collect(string $textCode, $other = null, string $domain = 'global', ?string $description = null): void {
 		// For errors only
 		$this->data = [
 			'code'        => $textCode,
@@ -135,7 +109,6 @@ class JsonHttpResponse extends HttpResponse {
 	 * Generate HtmlResponse from Exception
 	 *
 	 * @param Exception $exception
-	 * @param array $values
 	 * @return JsonHttpResponse
 	 */
 	public static function generateFromException(Throwable $exception, array $values = []): HttpResponse {
@@ -150,7 +123,7 @@ class JsonHttpResponse extends HttpResponse {
 		$other->line = $exception->getLine();
 		$other->trace = $exception->getTrace();
 		$other->values = $values;
-		$response = static::render('exception', $other, 'global', t('fatalErrorOccurred', 'global'));
+		$response = static::render('exception', $other, 'global', t('fatalErrorOccurred'));
 		$response->setCode($code);
 		
 		return $response;
@@ -159,11 +132,9 @@ class JsonHttpResponse extends HttpResponse {
 	/**
 	 * Generate HtmlResponse from UserException
 	 *
-	 * @param UserException $exception
-	 * @param array $values
 	 * @return JsonHttpResponse
 	 */
-	public static function generateFromUserException(UserException $exception, $values = []): HttpResponse {
+	public static function generateFromUserException(UserException $exception, array $values = []): HttpResponse {
 		$code = $exception->getCode();
 		if( !$code ) {
 			$code = HTTP_BAD_REQUEST;

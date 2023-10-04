@@ -7,6 +7,7 @@ namespace Orpheus\InputController;
 
 use Exception;
 use Orpheus\Exception\NotFoundException;
+use Orpheus\InputController\HttpController\RedirectHttpResponse;
 
 abstract class InputRequest {
 	
@@ -36,7 +37,7 @@ abstract class InputRequest {
 	 *
 	 * @var array|string|null
 	 */
-	protected $input;
+	protected mixed $input;
 	
 	/**
 	 * The found route for this request
@@ -47,13 +48,16 @@ abstract class InputRequest {
 	protected ?ControllerRoute $route = null;
 	
 	/**
-	 * Constructor
+	 * The values in path
 	 *
-	 * @param string $path
-	 * @param array $parameters
-	 * @param array|string|null $input
+	 * @var array
 	 */
-	public function __construct(string $path, array $parameters, $input) {
+	protected array $pathValues;
+	
+	/**
+	 * Constructor
+	 */
+	public function __construct(string $path, array $parameters, array|string|null $input) {
 		$this->path = $path;
 		$this->parameters = $parameters;
 		$this->input = $input;
@@ -62,44 +66,29 @@ abstract class InputRequest {
 	/**
 	 * Process the request by finding a route and processing it
 	 *
-	 * @return OutputResponse
 	 * @throws Exception
 	 */
 	public function process(): OutputResponse {
-		$route = $this->findFirstMatchingRoute();
+		[$route, $values] = $this->findFirstMatchingRoute();
 		if( !$route ) {
-			// Not found, look for an alternative (with /)
-			$route = $this->findFirstMatchingRoute(true);
-			if( $route ) {
-				// Alternative found, try to redirect to this one
-				$r = $this->redirect($route);
-				if( $r ) {
-					// Redirect
-					return $r;
-				}
-				// Unable to redirect, throw not found
-				$route = null;
-			}
+			throw new NotFoundException(sprintf('No route matches the current request "%s"', $this));
 		}
 		
-		return $this->processRoute($route);
+		return $this->processRoute($route, $values);
 	}
 	
 	/**
 	 * Find a matching route according to the request
-	 *
-	 * @param boolean $alternative
-	 * @return ControllerRoute|null
 	 */
-	public function findFirstMatchingRoute(bool $alternative = false): ?ControllerRoute {
+	public function findFirstMatchingRoute(): array {
 		foreach( $this->getRoutes() as $route ) {
 			$values = [];
-			if( $route->isMatchingRequest($this, $values, $alternative) ) {
-				return $route;
+			if( $route->isMatchingRequest($this, $values) ) {
+				return [$route, $values];
 			}
 		}
 		
-		return null;
+		return [null, null];
 	}
 	
 	/**
@@ -112,35 +101,34 @@ abstract class InputRequest {
 	/**
 	 * Redirect response to $route
 	 *
-	 * @param ControllerRoute $route
-	 * @return NULL
+	 * @return RedirectHttpResponse|null
 	 *
 	 * Should be overridden to be used
 	 */
-	public function redirect(ControllerRoute $route) {
+	public function redirect(ControllerRoute $route): ?RedirectHttpResponse {
 		return null;
 	}
 	
 	/**
 	 * Process the given route
 	 *
-	 * @param ControllerRoute $route
-	 * @return OutputResponse
 	 * @throws Exception
 	 */
-	public function processRoute($route): OutputResponse {
-		if( !$route ) {
-			throw new NotFoundException('No route matches the current request ' . $this);
-		}
-		$this->setRoute($route);
+	public function processRoute(ControllerRoute $route, array $values): OutputResponse {
+		$this->setRoute($route, $values);
 		
 		return $this->route->run($this);
 	}
 	
 	/**
+	 * Test path is matching regex
+	 */
+	public function matchPath(string $regex, ?array &$matches): string {
+		return preg_match($regex, urldecode($this->path), $matches);
+	}
+	
+	/**
 	 * Get the path
-	 *
-	 * @return string
 	 */
 	public function getPath(): string {
 		return $this->path;
@@ -148,9 +136,6 @@ abstract class InputRequest {
 	
 	/**
 	 * Set the path
-	 *
-	 * @param string $path
-	 * @return InputRequest
 	 */
 	protected function setPath(string $path): InputRequest {
 		$this->path = $path;
@@ -160,9 +145,6 @@ abstract class InputRequest {
 	
 	/**
 	 * Test if parameter $key exists in this request
-	 *
-	 * @param string $key
-	 * @return boolean
 	 */
 	public function hasParameter(string $key): bool {
 		return $this->getParameter($key) !== null;
@@ -171,18 +153,14 @@ abstract class InputRequest {
 	/**
 	 * Get the parameter by $key, assuming $default value
 	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @return mixed
+	 * @param mixed|null $default
 	 */
-	public function getParameter(string $key, $default = null) {
-		return apath_get($this->parameters, $key, $default);
+	public function getParameter(string $key, mixed $default = null): mixed {
+		return array_path_get($this->parameters, $key, $default);
 	}
 	
 	/**
 	 * Get all parameters
-	 *
-	 * @return array
 	 */
 	public function getParameters(): array {
 		return $this->parameters;
@@ -190,9 +168,6 @@ abstract class InputRequest {
 	
 	/**
 	 * Set the parameters
-	 *
-	 * @param array
-	 * @return InputRequest
 	 */
 	protected function setParameters(array $parameters): InputRequest {
 		$this->parameters = $parameters;
@@ -202,8 +177,6 @@ abstract class InputRequest {
 	
 	/**
 	 * Test if request has any input
-	 *
-	 * @return boolean
 	 */
 	public function hasInput(): bool {
 		return !!$this->input;
@@ -211,8 +184,6 @@ abstract class InputRequest {
 	
 	/**
 	 * Get input
-	 *
-	 * @return array
 	 */
 	public function getInput(): array {
 		return $this->input;
@@ -220,11 +191,8 @@ abstract class InputRequest {
 	
 	/**
 	 * Set the input
-	 *
-	 * @param mixed
-	 * @return InputRequest
 	 */
-	protected function setInput($input): InputRequest {
+	protected function setInput(array|string|null $input): InputRequest {
 		$this->input = $input;
 		
 		return $this;
@@ -232,9 +200,6 @@ abstract class InputRequest {
 	
 	/**
 	 * Test if input $key exists in this request
-	 *
-	 * @param string $key
-	 * @return boolean
 	 */
 	public function hasInputValue(string $key): bool {
 		return $this->getInputValue($key) !== null;
@@ -242,19 +207,13 @@ abstract class InputRequest {
 	
 	/**
 	 * Get the input by $key, assuming $default value
-	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @return mixed
 	 */
-	public function getInputValue(string $key, $default = null) {
-		return apath_get($this->input, $key, $default);
+	public function getInputValue(string $key, mixed $default = null): mixed {
+		return array_path_get($this->input, $key, $default);
 	}
 	
 	/**
 	 * Get the route name to this request
-	 *
-	 * @return string
 	 */
 	public function getRouteName(): string {
 		return $this->route->getName();
@@ -262,8 +221,6 @@ abstract class InputRequest {
 	
 	/**
 	 * Get the route to this request
-	 *
-	 * @return ControllerRoute|null
 	 */
 	public function getRoute(): ?ControllerRoute {
 		return $this->route;
@@ -271,32 +228,35 @@ abstract class InputRequest {
 	
 	/**
 	 * Set the route to this request
-	 *
-	 * @param ControllerRoute $route
-	 * @return InputRequest
 	 */
-	public function setRoute(ControllerRoute $route): InputRequest {
+	public function setRoute(ControllerRoute $route, array $values): InputRequest {
 		$this->route = $route;
+		$this->pathValues = $values;
 		
 		return $this;
 	}
 	
 	/**
 	 * Get running controller
-	 *
-	 * @return Controller
 	 */
-	public function getController(): Controller {
+	public function getController(): AbstractController {
 		return $this->getRoute() ? $this->getRoute()->getController() : static::getDefaultController();
 	}
 	
 	/**
 	 * Get the main input request
-	 *
-	 * @return InputRequest
 	 */
 	public static function getMainRequest(): ?InputRequest {
 		return static::$mainRequest;
+	}
+	
+	/**
+	 * Clone this request using another path (expecting a sub path)
+	 */
+	public function cloneWithPath(string $path): InputRequest {
+		$clone = clone $this;
+		$clone->setPath($path);
+		return $clone;
 	}
 	
 	public abstract static function getDefaultController();

@@ -9,6 +9,7 @@ use Exception;
 use Orpheus;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
+use Orpheus\Service\ApplicationKernel;
 use RuntimeException;
 
 class HttpRoute extends ControllerRoute {
@@ -49,11 +50,11 @@ class HttpRoute extends ControllerRoute {
 	];
 	
 	/**
-	 * The method to reach this route
+	 * The methods allowed to reach this route
 	 *
-	 * @var string
+	 * @var array
 	 */
-	protected string $method;
+	protected array $methods;
 	
 	/**
 	 * Path with converted regex
@@ -71,25 +72,17 @@ class HttpRoute extends ControllerRoute {
 	
 	/**
 	 * Constructor
-	 *
-	 * @param string $name
-	 * @param string $path
-	 * @param string $controller
-	 * @param string $method
-	 * @param array $restrictTo
-	 * @param string $defaultResponse
-	 * @param array $options
 	 */
-	protected function __construct($name, $path, $controller, $method, $restrictTo, $defaultResponse, $options) {
+	protected function __construct(string $name, string $path, string $controller, array $methods, ?array $restrictTo, string $defaultResponse, array $options) {
 		parent::__construct($name, $path, $controller, $restrictTo, $defaultResponse, $options);
-		$this->method = $method;
+		$this->methods = $methods;
 		$this->generatePathRegex();
 	}
 	
 	/**
 	 * Generate all regex of the path from extracted variables
 	 */
-	protected function generatePathRegex() {
+	protected function generatePathRegex(): void {
 		if( $this->pathRegex ) {
 			return;
 		}
@@ -109,24 +102,20 @@ class HttpRoute extends ControllerRoute {
 	
 	/**
 	 * Extract variable from configuration string
-	 *
-	 * @param string $str
-	 * @param string $var
-	 * @param string $regex
 	 */
-	protected static function extractVariable($str, &$var = null, &$regex = null) {
-		[$p1, $p2] = explodeList(':', $str, 2);
+	protected static function extractVariable(string $value, ?string &$variable = null, ?string &$regex = null): void {
+		[$p1, $p2] = explodeList(':', $value, 2);
 		// Optional only if there is a default value
 		if( $p2 ) {
 			// {regex|type:variable}
-			$var = $p2;
+			$variable = $p2;
 			$regex = $p1;
 			if( ctype_alpha($regex) && isset(static::$typesRegex[$regex]) ) {
 				$regex = static::$typesRegex[$regex];
 			}
 		} else {
 			// {variable}, regex=[^\/]+
-			$var = $p1;
+			$variable = $p1;
 			$regex = '[^\/]+';
 		}
 	}
@@ -135,35 +124,35 @@ class HttpRoute extends ControllerRoute {
 	 * Format the current route to get a URL from path
 	 *
 	 * @param string[] $values
-	 * @return string
 	 */
-	public function formatUrl($values = []): string {
+	public function formatUrl(array $values = [], array $parameters = []): string {
 		$path = preg_replace_callback(
 			'#\{([^\}]+)\}#sm',
 			function ($matches) use ($values) {
 				$var = $regex = null;
 				static::extractVariable($matches[1], $var, $regex);
 				if( !isset($values[$var]) ) {
-					throw new RuntimeException('The variable "' . $var . '" is missing to generate URL for route ' . $this->name);
+					throw new RuntimeException(sprintf('The variable "%s" is missing to generate URL for route "%s"', $var, $this->name));
 				}
 				$value = $values[$var];
 				if( !preg_match('#^' . $regex . '$#', $value) ) {
-					throw new RuntimeException('The given value "' . $value . '" of variable "' . $var . '" is not matching the regex requirements to generate URL for route ' . $this->name);
+					throw new RuntimeException(sprintf('The given value "%s" of variable "%s" is not matching the regex requirements to generate URL for route "%s"', $value, $var, $this->name));
 				}
 				return $value;
 			},
 			$this->path
 		);
-		return WEB_ROOT . '/' . (isset($path[0]) && $path[0] === '/' ? substr($path, 1) : $path);
+		// Format path to ensure it start with slash
+		$path = $path && $path[0] === '/' ? $path : '/' . $path;
+		ApplicationKernel::get()->formatRoutePath($this,$path, $values);
+		return WEB_ROOT . $path . ($parameters ? '?' . http_build_query($parameters) : '');
 	}
 	
 	/**
 	 * Get route as string
-	 *
-	 * @return string
 	 */
-	public function __toString() {
-		return $this->method . '("' . $this->path . '")';
+	public function __toString(): string {
+		return sprintf('%s([%s], %s)', $this->name, implode(',', $this->methods), $this->path);
 	}
 	
 	/**
@@ -171,21 +160,16 @@ class HttpRoute extends ControllerRoute {
 	 *
 	 * {@inheritDoc}
 	 * @param HttpRequest $request
-	 * @param array $values
 	 * @param boolean $alternative
 	 * @see ControllerRoute::isMatchingRequest()
 	 */
-	public function isMatchingRequest(InputRequest $request, array &$values = [], $alternative = false): bool {
+	public function isMatchingRequest(InputRequest $request, array &$values = []): bool {
 		// Method match && Path match (variables included)
-		if( $this->method !== $request->getMethod() ) {
+		if( !in_array($request->getMethod(), $this->methods) ) {
 			return false;
 		}
 		$regex = $this->pathRegex;
-		if( $alternative ) {
-			// If last char is / or not, it will end with /? (optional /)
-			$regex .= str_last($regex) === '/' ? '?' : '/?';
-		}
-		$matches = null;
+		$matches = [];
 		if( preg_match('#^' . $regex . '$#i', urldecode($request->getPath()), $matches) ) {
 			unset($matches[0]);
 			$values = array_combine($this->pathVariables, $matches);
@@ -199,11 +183,9 @@ class HttpRoute extends ControllerRoute {
 	/**
 	 * Register route by $name from config
 	 *
-	 * @param string $name
-	 * @param array $config
 	 * @throws Exception
 	 */
-	public static function registerConfig($name, array $config) {
+	public static function registerConfig(string $name, array $config): void {
 		if( empty($config['path']) ) {
 			throw new Exception('Missing a valid `path` in configuration of route "' . $name . '"');
 		}
@@ -224,81 +206,70 @@ class HttpRoute extends ControllerRoute {
 		}
 		$options = $config;
 		unset($options['path'], $options['controller'], $options['method'], $options['restrictTo']);
-		static::register($name, $config['path'], $config['controller'], $config['method'] ?? null, $config['restrictTo'], $config['response'], $options);
+		$methods = $config['method'] ?? null;
+		if( is_string($methods) ) {
+			$methods = [$methods];
+		}
+		$path = static::parsePath($config['path']);
+		static::register($name, $path, $config['controller'], $methods, $config['restrictTo'], $config['response'], $options);
+	}
+	
+	/**
+	 * Normalize path by removing any trailing slash
+	 */
+	public static function parsePath(string $path): string {
+		// Remove query string
+		$path = parse_url($path, PHP_URL_PATH);
+		// Remove trailing slash
+		return strlen($path) > 1 ? rtrim($path, '/') : $path;
 	}
 	
 	/**
 	 * Get the output response
-	 *
-	 * @param string $output
-	 * @return mixed
 	 */
-	public static function getOutputResponse($output) {
+	public static function getOutputResponse(string $output): mixed {
 		return static::$outputResponses[$output];
 	}
 	
 	/**
 	 * Register route by $name
 	 *
-	 * @param string $name
-	 * @param string $path
-	 * @param string $controller
-	 * @param string|array|null $methods
-	 * @param array|null $restrictTo
-	 * @param string $defaultResponse
-	 * @param array $options
+	 * @throws Exception
 	 */
-	public static function register($name, $path, $controller, $methods, $restrictTo, $defaultResponse, $options = []) {
-		if( $methods && !is_array($methods) ) {
-			$methods = [$methods];
-		}
-		foreach( static::$knownMethods as $method ) {
-			if( (!$methods && !empty(static::$routes[$name][$method])) || ($methods && !in_array($method, $methods)) ) {
-				continue;
+	public static function register(string $name, string $path, string $controller, ?array $methods, ?array $restrictTo, string $defaultResponse, array $options = []): void {
+		if( $methods ) {
+			// Check methods are valid
+			$diff = array_diff($methods, self::getKnownMethods());
+			if( $diff ) {
+				throw new Exception(sprintf('Invalid routes configuration, unknown methods "%s" for route "%s"', implode(',', $diff), $name));
 			}
-			static::$routes[$name][$method] = new static($name, $path, $controller, $method, $restrictTo, $defaultResponse, $options);
+		} else {
+			$methods = self::getKnownMethods();
 		}
+		static::$routes[$name] = new static($name, $path, $controller, $methods, $restrictTo, $defaultResponse, $options);
 	}
 	
 	/**
 	 * Set the output response
-	 *
-	 * @param string $output
-	 * @param string $responseClass
 	 */
-	public static function setOutputResponse($output, $responseClass) {
+	public static function setOutputResponse(string $output, string $responseClass): void {
 		static::$outputResponses[$output] = $responseClass;
 	}
 	
 	/**
 	 * Set the regex of a type, used to parse paths
-	 *
-	 * @param string $type
-	 * @param string $regex
 	 */
-	public static function setTypeRegex($type, $regex) {
+	public static function setTypeRegex(string $type, string $regex): void {
 		static::$typesRegex[$type] = $regex;
 	}
 	
 	/**
 	 * Get the route object for the $route name
-	 *
-	 * @param string $name
-	 * @return HttpRoute
 	 */
 	public static function getRoute(string $name): ?HttpRoute {
-		//	public static function getRoute(string $route, ?string $method = null): ?HttpRoute {
+		/** @var HttpRoute[] $routes */
 		$routes = static::getRoutes();
-		//		if( $method ) {
-		//			return isset($routes[$route][$method]) ? $routes[$route][$method] : null;
-		//		}
-		foreach( static::getKnownMethods() as $method ) {
-			if( isset($routes[$name][$method]) ) {
-				return $routes[$name][$method];
-			}
-		}
-		
-		return null;
+		return $routes[$name] ?? null;
 	}
 	
 	/**

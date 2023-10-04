@@ -28,8 +28,6 @@ class ResourceController extends HttpController {
 	}
 	
 	/**
-	 * @param string $webPath
-	 * @param string $package
 	 * @return string The absolute path to resource
 	 */
 	public function resolveResource(string $webPath, string $package): string {

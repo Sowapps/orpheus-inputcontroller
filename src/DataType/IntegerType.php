@@ -11,7 +11,7 @@ class IntegerType extends AbstractType {
 		parent::__construct('int', '\d+');
 	}
 	
-	public function parse($value) {
+	public function parse(mixed $value): int {
 		return (int) $value;
 	}
 	

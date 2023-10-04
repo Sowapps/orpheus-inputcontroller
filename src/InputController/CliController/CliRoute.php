@@ -19,13 +19,13 @@ class CliRoute extends ControllerRoute {
 	 */
 	protected static array $routes = [];
 	
-	/**
+	/*
 	 * Available parameters by short name
 	 *
 	 * @var CliArgument[]
 	 */
 	// 	protected $parametersBySN = array();
-	/**
+	/*
 	 * Available parameters
 	 *
 	 * @var CliArgument[]
@@ -35,13 +35,9 @@ class CliRoute extends ControllerRoute {
 	/**
 	 * Constructor
 	 *
-	 * @param string $name
-	 * @param string $path
-	 * @param string $controller
 	 * @param string[] $parameters
-	 * @param array $options
 	 */
-	protected function __construct($name, $path, $controller, $parameters, $options) {
+	protected function __construct(string $name, string $path, string $controller, array $parameters, array $options) {
 		parent::__construct($name, $path, $controller, null, 'Orpheus\InputController\CliController\CliResponse', $options);
 		// 		$this->parameters = $parameters;
 		// TODO : Process options
@@ -57,10 +53,8 @@ class CliRoute extends ControllerRoute {
 	 * Format the current route to get a URL from path
 	 *
 	 * @param string[] $values
-	 * @return string
-	 * @throws Exception
 	 */
-	public function formatUrl($values = []): string {
+	public function formatUrl(array $values = [], array $parameters = []): string {
 		$params = '';
 		if( $values ) {
 			$params = implode(' ', $values);
@@ -95,37 +89,23 @@ class CliRoute extends ControllerRoute {
 	 *
 	 * {@inheritDoc}
 	 * @param CliRequest $request
-	 * @param array $values
-	 * @param boolean $alternative
-	 * @see \Orpheus\InputController\ControllerRoute::isMatchingRequest()
+	 * @see ControllerRoute::isMatchingRequest
 	 */
-	public function isMatchingRequest(InputRequest $request, array &$values = [], $alternative = false): bool {
+	public function isMatchingRequest(InputRequest $request, array &$values = [], bool $alternative = false): bool {
 		// CLI does not use alternative
 		return $request->getPath() === $this->getPath();
 	}
 	
-	//	public function getParameters() {
-	//		return $this->parameters;
-	//	}
-	
 	/**
 	 * Register route by $name from config
 	 *
-	 * @param string $name
-	 * @param array $config
 	 * @throws Exception
 	 */
-	public static function registerConfig($name, array $config) {
+	public static function registerConfig(string $name, array $config): void {
 		if( empty($config['path']) ) {
 			throw new Exception('Missing a valid "path" in configuration of route "' . $name . '"');
 		}
 		
-		// 		$parameters = array();
-		// 		if( isset($config['parameters']) && is_array($config['parameters']) ) {
-		// 			foreach( $config['parameters'] as $paramName => $paramConfig ) {
-		// 				$parameters[] = CliArgument::make($paramName, $paramConfig);
-		// 			}
-		// 		}
 		$options = $config;
 		unset($options['path'], $options['controller'], $options['parameters']);
 		static::register($name, $config['path'], $config['controller'], [], $options);
@@ -133,21 +113,13 @@ class CliRoute extends ControllerRoute {
 	
 	/**
 	 * Register route by $name
-	 *
-	 * @param string $name
-	 * @param string $path
-	 * @param string $controller
-	 * @param array $parameters
-	 * @param array $options
 	 */
-	public static function register($name, $path, $controller, $parameters, $options = []) {
+	public static function register(string $name, string $path, string $controller, array $parameters, array $options = []): void {
 		static::$routes[$name] = new static($name, $path, $controller, $parameters, $options);
 	}
 	
 	/**
 	 * Get registered routes
-	 *
-	 * @return array
 	 */
 	public static function getRoutes(): array {
 		return static::$routes;
@@ -156,7 +128,6 @@ class CliRoute extends ControllerRoute {
 	/**
 	 * Get the route object for the $route name
 	 *
-	 * @param string $name
 	 * @return CliRoute
 	 */
 	public static function getRoute(string $name): Route {

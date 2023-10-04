@@ -20,7 +20,6 @@ class RedirectHttpResponse extends HttpResponse {
 	/**
 	 * Constructor
 	 *
-	 * @param string $destination
 	 * @param bool $permanent
 	 */
 	public function __construct(string $destination, $permanent = false) {
@@ -39,20 +38,17 @@ class RedirectHttpResponse extends HttpResponse {
 	/**
 	 * Set this redirection permanent
 	 */
-	public function setPermanent() {
+	public function setPermanent(): void {
 		$this->setCode(HTTP_MOVED_PERMANENTLY);
 	}
 	
 	/**
 	 * Set this redirection temporarily
 	 */
-	public function setTemporarily() {
+	public function setTemporarily(): void {
 		$this->setCode(HTTP_MOVED_TEMPORARILY);
 	}
 	
-	/**
-	 * @return bool
-	 */
 	public function run(): bool {
 		header('Location: ' . $this->destinationUri);
 		
@@ -61,8 +57,6 @@ class RedirectHttpResponse extends HttpResponse {
 	
 	/**
 	 * Get the destination URI
-	 *
-	 * @return string
 	 */
 	public function getDestinationUri(): string {
 		return $this->destinationUri;
@@ -70,9 +64,6 @@ class RedirectHttpResponse extends HttpResponse {
 	
 	/**
 	 * Set the destination URI
-	 *
-	 * @param string $destinationUri
-	 * @return RedirectHttpResponse
 	 */
 	public function setDestinationUri(string $destinationUri): RedirectHttpResponse {
 		$this->destinationUri = $destinationUri;

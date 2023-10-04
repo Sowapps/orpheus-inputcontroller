@@ -7,17 +7,9 @@ use Orpheus\Core\RequestHandler;
 use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\InputController\HttpController\HttpRoute;
 
-if( !defined('ORPHEUS_PATH') ) {
-	// Do not load in a non-orpheus environment
-	return;
-}
-
 /**
  * Generate URL to a route
  *
- * @param string $routeName
- * @param array $values
- * @return string
  */
 function u(string $routeName, array $values = []): string {
 	/* @var HttpRoute $route */
@@ -32,19 +24,15 @@ function u(string $routeName, array $values = []): string {
 /**
  * Display URL to a route
  *
- * @param string $route
- * @param array $values
- * @throws Exception
+ * @deprecated Use u() with echo
  */
-function _u($route, $values = []) {
-	echo u($route, $values);
+function _u(string $routeName, array $values = []): void {
+	echo u($routeName, $values);
 }
 
 /**
  * Test if a route exists
  *
- * @param string $routeName
- * @return boolean
  */
 function exists_route(string $routeName): bool {
 	return !!HttpRoute::getRoute($routeName);
@@ -53,7 +41,6 @@ function exists_route(string $routeName): bool {
 /**
  * Get the link of the current request
  *
- * @return string
  */
 function get_current_link(): string {
 	$request = HttpRequest::getMainRequest();
@@ -69,7 +56,7 @@ if( !function_exists('getallheaders') ) {
 	function getallheaders(): array {
 		$headers = [];
 		foreach( $_SERVER as $name => $value ) {
-			if( substr($name, 0, 5) === 'HTTP_' ) {
+			if( str_starts_with($name, 'HTTP_') ) {
 				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
 			}
 		}
@@ -80,5 +67,3 @@ if( !function_exists('getallheaders') ) {
 
 RequestHandler::suggestHandler(RequestHandler::TYPE_HTTP, 'Orpheus\InputController\HttpController\HttpRequest');
 RequestHandler::suggestHandler(RequestHandler::TYPE_CONSOLE, 'Orpheus\InputController\CliController\CliRequest');
-
-//Route::suggestResolver('Orpheus\InputController\HttpController\HttpRoute');

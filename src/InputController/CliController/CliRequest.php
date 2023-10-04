@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 /**
  * @author Florent HAZARD <f.hazard@sowapps.com>
  */
@@ -30,6 +30,10 @@ class CliRequest extends InputRequest {
 		if( isset($parameters['v']) ) {
 			$this->verbosity = pow(2, 5 + intval($parameters['v']));
 		}
+	}
+	
+	public function getArgument(int $index): ?string {
+		return $this->parameters['options'][$index] ?? null;
 	}
 	
 	public function isVerbose(): bool {
@@ -97,7 +101,7 @@ class CliRequest extends InputRequest {
 	 * Get all available routes
 	 *
 	 * @return CliRoute[]
-	 * @see \Orpheus\InputController\InputRequest::getRoutes()
+	 * @see InputRequest::getRoutes()
 	 */
 	public function getRoutes(): array {
 		return CliRoute::getRoutes();
@@ -118,7 +122,7 @@ class CliRequest extends InputRequest {
 	 * @param string $key
 	 * @return mixed
 	 */
-	public function getArrayData(string $key) {
+	public function getArrayData(string $key): mixed {
 		return $this->getInputValue($key, []);
 	}
 	
@@ -139,14 +143,14 @@ class CliRequest extends InputRequest {
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function getData(string $key, $default = null) {
+	public function getData(string $key, $default = null): mixed {
 		return $this->getInputValue($key, $default);
 	}
 	
 	/**
 	 * Test if data contains the $key
 	 *
-	 * @param string $key
+	 * @param string|null $key
 	 * @return boolean
 	 */
 	public function hasData(?string $key = null): bool {
@@ -195,7 +199,7 @@ class CliRequest extends InputRequest {
 	 * Handle the current request as a CliRequest one
 	 * This method ends the script
 	 */
-	public static function handleCurrentRequest() {
+	public static function handleCurrentRequest(): void {
 		try {
 			CliRoute::initialize();
 			static::$mainRequest = static::generateFromEnvironment();
@@ -213,7 +217,7 @@ class CliRequest extends InputRequest {
 	 * @return CliRequest
 	 */
 	public static function generateFromEnvironment(): CliRequest {
-		global $argc, $argv;
+		global $argv;
 		
 		$stdin = defined('STDIN') ? STDIN : fopen('php://stdin', 'r');
 		$data = stream_get_meta_data($stdin);
@@ -222,7 +226,7 @@ class CliRequest extends InputRequest {
 			stream_set_blocking($stdin, false);
 			$input = trim(stream_get_contents($stdin));
 		}
-		$path = $argv[1];
+		$path = $argv[1] ?? '';
 		$parameters = static::parseArguments(array_slice($argv, 2));
 		
 		return new static($path, $parameters, $input);

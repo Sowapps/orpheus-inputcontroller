@@ -7,34 +7,31 @@ namespace Orpheus\InputController\HttpController;
 
 use Exception;
 use Orpheus\Exception\UserException;
-use Orpheus\InputController\Controller;
+use Orpheus\InputController\AbstractController;
+use Orpheus\InputController\InputRequest;
 use Throwable;
 
 /**
  * @method HttpResponse run($request)
  * @method HttpResponse|null preRun($request)
  */
-abstract class HttpController extends Controller {
+abstract class HttpController extends AbstractController {
+	const OPTION_PAGE_TITLE = 'pageTitle';
+	const OPTION_PAGE_DESCRIPTION = 'pageDescription';
 	
 	protected bool $catchControllerOutput = true;
 	
 	/**
 	 * Render the given $layout with $values
-	 *
-	 * @param string $layout
-	 * @param array $values
-	 * @return HtmlHttpResponse
 	 */
-	public function renderHtml(string $layout, $values = []): HtmlHttpResponse {
+	public function renderHtml(string $layout, array $values = []): HtmlHttpResponse {
 		return $this->render(new HtmlHttpResponse(), $layout, $values);
 	}
 	
 	/**
-	 * @param UserException $exception
-	 * @param array $values
 	 * @return HtmlHttpResponse
 	 */
-	public function processUserException(UserException $exception, $values = []): HttpResponse {
+	public function processUserException(UserException $exception, array $values = []): HttpResponse {
 		$this->fillValues($values);
 		
 		return HtmlHttpResponse::generateFromUserException($exception, $values);
@@ -42,25 +39,12 @@ abstract class HttpController extends Controller {
 	
 	/**
 	 * @param Exception $exception
-	 * @param array $values
-	 * @return HttpResponse
 	 */
-	public function processException(Throwable $exception, $values = []): HttpResponse {
-		if( $exception ) {
-			log_report($exception, $exception instanceof UserException ? $exception->getChannel() : LOGFILE_SYSTEM, 'Processing response');
-		}
+	public function processException(Throwable $exception, array $values = []): HttpResponse {
+		log_report($exception, $exception instanceof UserException ? $exception->getChannel() : LOGFILE_SYSTEM, 'Processing response');
 		$this->fillValues($values);
 		
 		return HtmlHttpResponse::generateFromException($exception, $values);
-	}
-	
-	/**
-	 * Get the HTTP request
-	 *
-	 * @return HttpRequest
-	 */
-	public function getRequest(): HttpRequest {
-		return $this->request;
 	}
 	
 	/**
@@ -69,11 +53,23 @@ abstract class HttpController extends Controller {
 	 * @param HttpRequest $request
 	 * @throws UserException
 	 */
-	public function prepare($request) {
+	public function prepare($request): ?HttpResponse {
 		parent::prepare($request);
-		$routeOptions = $this->getRoute()->getOptions();
-		if( !isset($routeOptions['session']) || $routeOptions['session'] ) {
+		// May be empty if request failed to generate
+		$routeOptions = $this->getRoute()?->getOptions() ?? [];
+		if( $routeOptions['session'] ?? true ) {
 			startSession();
 		}
+		
+		return null;
 	}
+	
+	protected function redirectToSelf(): RedirectHttpResponse {
+		return new RedirectHttpResponse($this->getCurrentUrl());
+	}
+	
+	public function getCurrentUrl(): string {
+		return $this->getRequest()->getUrl();// With QueryString
+	}
+	
 }

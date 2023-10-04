@@ -6,11 +6,12 @@
 namespace Orpheus\InputController;
 
 use Exception;
-use Orpheus\Config\YAML\YAML;
+use Orpheus\Config\Yaml\Yaml;
 use Orpheus\Core\RequestHandler;
 use Orpheus\Core\Route;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\Exception\NotFoundException;
+use Orpheus\Service\ApplicationKernel;
 use RuntimeException;
 
 abstract class ControllerRoute extends Route {
@@ -60,10 +61,8 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * The running controller
-	 *
-	 * @var Controller The controller
 	 */
-	protected Controller $controller;
+	protected AbstractController $controller;
 	
 	/**
 	 * Restrictions to access this route
@@ -88,13 +87,6 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Constructor
-	 *
-	 * @param string $name
-	 * @param string $path
-	 * @param string $controller
-	 * @param array|null $restrictTo
-	 * @param string $defaultResponse
-	 * @param array $options
 	 */
 	protected function __construct(string $name, string $path, string $controller, ?array $restrictTo, string $defaultResponse, array $options) {
 		$this->name = $name;
@@ -107,23 +99,17 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Test if the route matches the given $request
-	 *
-	 * @param InputRequest $request
-	 * @param array $values
-	 * @param boolean $alternative True if we are looking for an alternative route, because we did not find any primary one
 	 */
-	public abstract function isMatchingRequest(InputRequest $request, array &$values = [], bool $alternative = false);
+	public abstract function isMatchingRequest(InputRequest $request, array &$values = []);
 	
 	/**
 	 * Run the $request by processing the matching controller
 	 *
-	 * @param InputRequest $request
-	 * @return OutputResponse
 	 * @throws Exception
 	 * @uses InputRequest::processRoute()
 	 */
 	public function run(InputRequest $request): OutputResponse {
-		if( !$this->controllerClass || !class_exists($this->controllerClass, true) ) {
+		if( !$this->controllerClass || !class_exists($this->controllerClass) ) {
 			throw new NotFoundException('The controller "' . $this->controllerClass . '" was not found');
 		}
 		// Controller should be available now, we could need it to prepare request
@@ -136,11 +122,10 @@ abstract class ControllerRoute extends Route {
 			throw new ForbiddenException('This route is not available by this context');
 		}
 		
-		return $this->controller->process($request);
+		return $this->controller->process();
 	}
 	
 	/**
-	 * @return bool
 	 * @throws Exception
 	 */
 	public function isAccessible(): bool {
@@ -150,7 +135,7 @@ abstract class ControllerRoute extends Route {
 		if( $this->restrictTo ) {
 			foreach( $this->restrictTo as $type => $options ) {
 				if( empty(static::$routesRestrictions[$type]) ) {
-					throw new Exception('Unknown route access type "' . $type . '" in config file');
+					throw new RuntimeException(sprintf('Unknown route access type "%s" in config file', $type));
 				}
 				if( !call_user_func(static::$routesRestrictions[$type], $this, $options) ) {
 					return false;
@@ -163,14 +148,12 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Instantiate the controller and return it
-	 *
-	 * @return Controller
 	 */
-	public function instantiateController(): Controller {
+	public function instantiateController(): AbstractController {
 		$class = $this->controllerClass;
-		/* @var Controller $controller */
+		/* @var AbstractController $controller */
 		$controller = new $class($this, $this->getOptions());
-		if( !($controller instanceof Controller) ) {
+		if( !($controller instanceof AbstractController) ) {
 			throw new NotFoundException('The controller "' . $this->controllerClass . '" is not a valid controller, the class must inherit from "' . get_class() . '"');
 		}
 		
@@ -179,8 +162,6 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Get the name
-	 *
-	 * @return string
 	 */
 	public function getName(): string {
 		return $this->name;
@@ -188,8 +169,6 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Get the path
-	 *
-	 * @return string
 	 */
 	public function getPath(): string {
 		return $this->path;
@@ -197,8 +176,6 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Get the controller class
-	 *
-	 * @return string
 	 */
 	public function getControllerClass(): string {
 		return $this->controllerClass;
@@ -206,8 +183,6 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Get route options
-	 *
-	 * @return array
 	 */
 	public function getOptions(): array {
 		return $this->options;
@@ -216,20 +191,16 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Get link of route
 	 *
-	 * @param array $values
-	 * @return bool
 	 * @see formatUrl()
 	 */
-	public function getLink(array $values = []): bool {
+	public function getLink(array $values = []): string {
 		return $this->formatUrl($values);
 	}
 	
 	/**
 	 * Format the URL to this route using $values
-	 *
-	 * @param array $values
 	 */
-	public abstract function formatUrl(array $values = []);
+	public abstract function formatUrl(array $values = [], array $parameters = []): string;
 	
 	/**
 	 * Get all registered routes
@@ -246,7 +217,7 @@ abstract class ControllerRoute extends Route {
 	/**
 	 * Initialize the route class by loading the configuration (once only)
 	 */
-	public static function initialize() {
+	public static function initialize(): void {
 		if( static::isInitialized() ) {
 			return;
 		}
@@ -256,8 +227,9 @@ abstract class ControllerRoute extends Route {
 		
 		// Register routes
 		foreach( $routes as $type => $typeRoutes ) {
+			/** @var class-string $routeClass */
 			$routeClass = RequestHandler::getRouteClass($type);
-			if( !class_exists($routeClass, true) || !in_array(get_class(), class_parents($routeClass)) ) {
+			if( !class_exists($routeClass) || !in_array(get_class(), class_parents($routeClass)) ) {
 				continue;
 			}
 			foreach( $typeRoutes as $routeName => $routeConfig ) {
@@ -268,8 +240,6 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Test if the class is initialized
-	 *
-	 * @return boolean
 	 */
 	public static function isInitialized(): bool {
 		return static::$initialized;
@@ -277,18 +247,16 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Load routes from $package or app (if null)
-	 *
-	 * @param array $routes
-	 * @param string|null $package
 	 */
-	protected static function loadRoutes(array &$routes, ?string $package = null) {
+	protected static function loadRoutes(array &$routes, ?string $package = null): void {
 		// TODO: Protect against loop
 		
 		$packageRoutes = [];
 		// Load prod routes (all environments routes)
 		static::populateRoutesFromFile($packageRoutes, 'routes', $package);
+		$kernel = ApplicationKernel::get();
 		// Load dev routes
-		if( DEV_VERSION ) {
+		if( $kernel->isDebugEnabled() ) {
 			// If there is no routes_dev file, we get an empty array
 			static::populateRoutesFromFile($packageRoutes, 'routes_dev', $package, true);
 		}
@@ -330,14 +298,9 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Populate given array with routes from $file in $package (or app if null)
-	 *
-	 * @param array $routes
-	 * @param string $file
-	 * @param string|null $package
-	 * @param bool $optional
 	 */
-	protected static function populateRoutesFromFile(array &$routes, string $file, ?string $package = null, bool $optional = false) {
-		$conf = YAML::buildFrom($package, $file, true, $optional);
+	protected static function populateRoutesFromFile(array &$routes, string $file, ?string $package = null, bool $optional = false): void {
+		$conf = Yaml::buildFrom($package, $file, true, $optional);
 		if( $conf ) {
 			static::mergeRoutes($routes, $conf->asArray());
 		}
@@ -345,11 +308,8 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Merge routes array with routes' logic
-	 *
-	 * @param array $routes
-	 * @param array $added
 	 */
-	protected static function mergeRoutes(array &$routes, array $added) {
+	protected static function mergeRoutes(array &$routes, array $added): void {
 		// First level (only) is merged
 		foreach( $added as $type => $typeRoutes ) {
 			if( isset($routes[$type]) ) {
@@ -362,9 +322,6 @@ abstract class ControllerRoute extends Route {
 	
 	/**
 	 * Register a route configuration
-	 *
-	 * @param string $name
-	 * @param array $config
 	 */
 	public static function registerConfig(string $name, array $config) {
 		throw new RuntimeException(sprintf("The class \"%s\" should override the `registerConfig()` static method from \"%s\"", get_called_class(), get_class()));
@@ -374,27 +331,20 @@ abstract class ControllerRoute extends Route {
 	 * Register the access restriction $type
 	 * This will be used by isAccessible()
 	 *
-	 * @param string $type
-	 * @param callable $callable
 	 * @uses isAccessible()
 	 */
-	public static function registerAccessRestriction($type, $callable) {
+	public static function registerAccessRestriction(string $type, callable $callable): void {
 		static::$routesRestrictions[$type] = $callable;
 	}
 	
 	/**
 	 * Get the current route name
-	 *
-	 * @return string
 	 */
 	public static function getCurrentRouteName(): string {
 		return InputRequest::getMainRequest()->getRouteName();
 	}
 	
-	/**
-	 * @return Controller
-	 */
-	public function getController(): Controller {
+	public function getController(): AbstractController {
 		return $this->controller;
 	}
 	

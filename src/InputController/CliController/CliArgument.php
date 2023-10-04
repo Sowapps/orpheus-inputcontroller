@@ -51,13 +51,8 @@ class CliArgument {
 	
 	/**
 	 * Constructor
-	 *
-	 * @param string $longName
-	 * @param string|null $shortName
-	 * @param string|null $type
-	 * @param bool $required
 	 */
-	public function __construct(string $longName, ?string $shortName, ?string $type, $required = false) {
+	public function __construct(string $longName, ?string $shortName, ?string $type, bool $required = false) {
 		$this->longName = $longName;
 		$this->shortName = $shortName;
 		$this->type = $type;
@@ -66,10 +61,6 @@ class CliArgument {
 	
 	/**
 	 * Make a CliArgument from config
-	 *
-	 * @param string $name
-	 * @param string $config
-	 * @return CliArgument
 	 */
 	public static function make(string $name, string $config): CliArgument {
 		$required = false;
@@ -127,8 +118,6 @@ class CliArgument {
 	
 	/**
 	 * Get the long name
-	 *
-	 * @return string
 	 */
 	public function getLongName(): string {
 		return $this->longName;
@@ -136,8 +125,6 @@ class CliArgument {
 	
 	/**
 	 * Get the short name
-	 *
-	 * @return string
 	 */
 	public function getShortName(): ?string {
 		return $this->shortName;
@@ -145,8 +132,6 @@ class CliArgument {
 	
 	/**
 	 * Test argument has a short name
-	 *
-	 * @return boolean
 	 */
 	public function hasShortName(): bool {
 		return !!$this->shortName;
@@ -154,8 +139,6 @@ class CliArgument {
 	
 	/**
 	 * Get the type
-	 *
-	 * @return string
 	 */
 	public function getType(): ?string {
 		return $this->type;
@@ -163,8 +146,6 @@ class CliArgument {
 	
 	/**
 	 * Get the type
-	 *
-	 * @return AbstractType
 	 */
 	public function getTypeValidator(): AbstractType {
 		return static::getValidatorByType($this->type);
@@ -172,8 +153,6 @@ class CliArgument {
 	
 	/**
 	 * Is this argument required ?
-	 *
-	 * @return boolean
 	 */
 	public function isRequired(): bool {
 		return $this->required;
@@ -181,9 +160,6 @@ class CliArgument {
 	
 	/**
 	 * Set the required state
-	 *
-	 * @param boolean $required
-	 * @return CliArgument
 	 */
 	public function setRequired(bool $required): CliArgument {
 		$this->required = $required;
@@ -193,9 +169,6 @@ class CliArgument {
 	
 	/**
 	 * Get a type validator by type name
-	 *
-	 * @param string $type
-	 * @return AbstractType
 	 */
 	public static function getValidatorByType(string $type): AbstractType {
 		return static::$typeValidators[$type];
@@ -203,21 +176,15 @@ class CliArgument {
 	
 	/**
 	 * Add the type validator to validate parameters
-	 *
-	 * @param AbstractType $type
 	 */
-	public static function registerTypeValidator(AbstractType $type) {
+	public static function registerTypeValidator(AbstractType $type): void {
 		static::$typeValidators[$type->getName()] = $type;
 	}
 	
 	/**
 	 * Add the type validator to validate parameters
-	 *
-	 * @param string $type
-	 * @param mixed $value
-	 * @return boolean
 	 */
-	public static function validateParameter(string $type, $value): bool {
+	public static function validateParameter(string $type, mixed $value): bool {
 		$validator = static::getValidatorByType($type);
 		
 		return $validator->validate($value);
