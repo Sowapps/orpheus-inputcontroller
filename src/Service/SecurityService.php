@@ -15,7 +15,7 @@ use RuntimeException;
 
 class SecurityService {
 	
-	private static ?SecurityService $instance = null;
+	private static SecurityService $instance;
 	
 	public function getForbiddenHttpResponse(ForbiddenException $exception): ?HttpResponse {
 		$authenticated = AbstractUser::isLogged();
@@ -82,11 +82,7 @@ class SecurityService {
 	}
 	
 	public static function get(): SecurityService {
-		if( !static::$instance ) {
-			static::$instance = new SecurityService();
-		}
-		
-		return static::$instance;
+		return static::$instance ??= new SecurityService();
 	}
 	
 }

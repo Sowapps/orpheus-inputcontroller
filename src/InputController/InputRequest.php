@@ -160,6 +160,15 @@ abstract class InputRequest {
 	}
 	
 	/**
+	 * Get the option by $key, assuming $default value
+	 *
+	 * @param mixed|null $default
+	 */
+	public function getOption(string $key, ?string $short=null, mixed $default = null): mixed {
+		return $this->getParameter($key, $short ? $this->getParameter($short, $default) : $default);
+	}
+	
+	/**
 	 * Get all parameters
 	 */
 	public function getParameters(): array {
