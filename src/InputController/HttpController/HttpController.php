@@ -8,7 +8,7 @@ namespace Orpheus\InputController\HttpController;
 use Exception;
 use Orpheus\Exception\UserException;
 use Orpheus\InputController\AbstractController;
-use Orpheus\InputController\InputRequest;
+use Orpheus\Service\SecurityService;
 use Throwable;
 
 /**
@@ -60,6 +60,8 @@ abstract class HttpController extends AbstractController {
 		if( $routeOptions['session'] ?? true ) {
 			startSession();
 		}
+		$security = SecurityService::get();
+		$security->loadUserAuthentication($request);
 		
 		return null;
 	}

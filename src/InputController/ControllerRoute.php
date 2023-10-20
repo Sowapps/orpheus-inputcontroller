@@ -110,7 +110,7 @@ abstract class ControllerRoute extends Route {
 	 */
 	public function run(InputRequest $request): OutputResponse {
 		if( !$this->controllerClass || !class_exists($this->controllerClass) ) {
-			throw new NotFoundException('The controller "' . $this->controllerClass . '" was not found');
+			throw new NotFoundException(sprintf('The controller "%s" was not found', $this->controllerClass));
 		}
 		// Controller should be available now, we could need it to prepare request
 		$this->controller = $this->instantiateController();
@@ -154,7 +154,7 @@ abstract class ControllerRoute extends Route {
 		/* @var AbstractController $controller */
 		$controller = new $class($this, $this->getOptions());
 		if( !($controller instanceof AbstractController) ) {
-			throw new NotFoundException('The controller "' . $this->controllerClass . '" is not a valid controller, the class must inherit from "' . get_class() . '"');
+			throw new NotFoundException(sprintf('The controller "%s" is not a valid controller, the class must inherit from "%s"', $this->controllerClass, get_class()));
 		}
 		
 		return $controller;

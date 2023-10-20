@@ -5,17 +5,60 @@
 
 namespace Orpheus\Service;
 
+use Orpheus\Authentication\AbstractAuthentication;
+use Orpheus\Authentication\AuthenticationManager;
+use Orpheus\Authentication\OrpheusAuthenticationManager;
 use Orpheus\Config\Config;
 use Orpheus\EntityDescriptor\User\AbstractUser;
 use Orpheus\Exception\ForbiddenException;
 use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\InputController\HttpController\HttpResponse;
 use Orpheus\InputController\HttpController\RedirectHttpResponse;
+use Orpheus\InputController\InputRequest;
 use RuntimeException;
 
 class SecurityService {
 	
+	private string $authenticationManager = OrpheusAuthenticationManager::class;
+	private ?AbstractAuthentication $authentication = null;
+	private ?AbstractUser $authenticatedUser = null;
+	private ?AbstractUser $activeUser = null;
+	
 	private static SecurityService $instance;
+	
+	public function loadUserAuthentication(InputRequest $request): void {
+		$managerClass = $this->authenticationManager;
+		/** @var AuthenticationManager $manager */
+		$manager = new $managerClass();
+		$authentication = $manager->getAuthentication($request);
+		if( $authentication ) {
+			$this->authenticate($authentication);
+		}
+	}
+	
+	public function isAuthenticated(): bool {
+		return !!$this->authenticatedUser;
+	}
+	
+	public function authenticate(AbstractAuthentication $authentication): void {
+		if( $this->isAuthenticated() ) {
+			throw new RuntimeException(sprintf('Already authenticated with "%s"', $this->authenticatedUser));
+		}
+		if( !$authentication->isAuthenticated() ) {
+			throw new RuntimeException('Invalid authentication');
+		}
+		$this->authenticatedUser = $this->activeUser = $authentication->getAuthenticatedUser();
+		$this->authentication = $authentication;
+	}
+	
+	public function setActiveUser(AbstractUser $user): void {
+		if( !$this->isAuthenticated() ) {
+			throw new RuntimeException('Authentication required');
+		}
+		if( !$this->activeUser->equals($user) ) {
+			$this->activeUser = $user;
+		}
+	}
 	
 	public function getForbiddenHttpResponse(ForbiddenException $exception): ?HttpResponse {
 		$authenticated = AbstractUser::isLogged();
@@ -79,6 +122,18 @@ class SecurityService {
 	
 	public function isAuthenticationLoginRecoveringNavigation(): bool {
 		return Config::get('authentication.login.recover_navigation') ?? false;
+	}
+	
+	public function getAuthentication(): ?AbstractAuthentication {
+		return $this->authentication;
+	}
+	
+	public function getAuthenticatedUser(): ?AbstractUser {
+		return $this->authenticatedUser;
+	}
+	
+	public function getActiveUser(): ?AbstractUser {
+		return $this->activeUser;
 	}
 	
 	public static function get(): SecurityService {

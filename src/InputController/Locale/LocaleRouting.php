@@ -33,7 +33,8 @@ class LocaleRouting {
 	 */
 	public function extractLocaleFromPath(): array {
 		if( $this->request instanceof HttpRequest ) {
-			if( $this->matchPath('#^/(\w{2,3}(?:\-\w{2,3})?)(/.*)?$#i', $matches) ) {
+			// TODO Maybe if locale is invalid, this is not a locale, test & fix it
+			if( $this->matchPath('#^/(\w{2}(?:\-\w{2,3})?)(/.*)?$#i', $matches) ) {
 				// We found a locale and extract the left path
 				[, $locale, $leftPath] = $matches + [2 => null];
 				

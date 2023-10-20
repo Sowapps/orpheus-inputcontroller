@@ -89,9 +89,9 @@ class JsonHttpResponse extends HttpResponse {
 	 *
 	 * We recommend to use returnData() to return data, that is more restful and to use this method only for errors
 	 */
-	public static function render(string $textCode, mixed $other = null, string $domain = 'global', ?string $description = null): JsonHttpResponse {
+	public static function render(string $textCode, mixed $other = null, ?string $domain = null, ?string $description = null): JsonHttpResponse {
 		$response = new static();
-		$response->collect($textCode, $other, $domain, $description);
+		$response->collect($textCode, $other, $domain ?? 'global', $description);
 		
 		return $response;
 	}
