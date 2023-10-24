@@ -447,7 +447,9 @@ class HttpRequest extends InputRequest {
 		if( !static::$defaultController ) {
 			$class = IniConfig::get('default_http_controller', 'Orpheus\Controller\EmptyDefaultHttpController');
 			static::$defaultController = new $class(null, []);
-			static::$defaultController->prepare(self::$mainRequest);
+			if( self::$mainRequest ) {
+				static::$defaultController->prepare(self::$mainRequest);
+			} // Main request could have failed to generate, so we are displaying the exception.
 		}
 		
 		return static::$defaultController;

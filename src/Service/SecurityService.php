@@ -8,6 +8,7 @@ namespace Orpheus\Service;
 use Orpheus\Authentication\AbstractAuthentication;
 use Orpheus\Authentication\AuthenticationManager;
 use Orpheus\Authentication\OrpheusAuthenticationManager;
+use Orpheus\Authentication\SessionAuthentication;
 use Orpheus\Config\Config;
 use Orpheus\EntityDescriptor\User\AbstractUser;
 use Orpheus\Exception\ForbiddenException;
@@ -19,7 +20,8 @@ use RuntimeException;
 
 class SecurityService {
 	
-	private string $authenticationManager = OrpheusAuthenticationManager::class;
+	private string $authenticationManagerClass = OrpheusAuthenticationManager::class;
+	private AuthenticationManager $authenticationManager;
 	private ?AbstractAuthentication $authentication = null;
 	private ?AbstractUser $authenticatedUser = null;
 	private ?AbstractUser $activeUser = null;
@@ -27,9 +29,13 @@ class SecurityService {
 	private static SecurityService $instance;
 	
 	public function loadUserAuthentication(InputRequest $request): void {
-		$managerClass = $this->authenticationManager;
+		if( $this->isAuthenticated() ) {
+			// Already authenticated - silent reject
+			return;
+		}
+		$managerClass = $this->authenticationManagerClass;
 		/** @var AuthenticationManager $manager */
-		$manager = new $managerClass();
+		$this->authenticationManager = $manager = new $managerClass();
 		$authentication = $manager->getAuthentication($request);
 		if( $authentication ) {
 			$this->authenticate($authentication);
@@ -40,6 +46,16 @@ class SecurityService {
 		return !!$this->authenticatedUser;
 	}
 	
+	public function setPersistentAuthentication(AbstractUser $user): void {
+		if( $this->isAuthenticated() ) {
+			throw new RuntimeException('Already authenticated');
+		}
+		$authentication = new SessionAuthentication();
+		$authentication->create($user);
+		$authentication->authenticate();
+		$this->authenticate($authentication);
+	}
+	
 	public function authenticate(AbstractAuthentication $authentication): void {
 		if( $this->isAuthenticated() ) {
 			throw new RuntimeException(sprintf('Already authenticated with "%s"', $this->authenticatedUser));
@@ -47,8 +63,17 @@ class SecurityService {
 		if( !$authentication->isAuthenticated() ) {
 			throw new RuntimeException('Invalid authentication');
 		}
-		$this->authenticatedUser = $this->activeUser = $authentication->getAuthenticatedUser();
+		$this->authenticatedUser = $authentication->getAuthenticatedUser();
+		$this->activeUser = $authentication->getImpersonatedUser() ?? $this->authenticatedUser;
 		$this->authentication = $authentication;
+		$this->authenticatedUser->onAuthenticated();
+	}
+	
+	public function invalidateAuthentication(): void {
+		if( $this->authentication ) {
+			$this->authentication->revoke();
+			$this->authenticatedUser = $this->activeUser = $this->authentication = null;
+		}
 	}
 	
 	public function setActiveUser(AbstractUser $user): void {
@@ -57,11 +82,16 @@ class SecurityService {
 		}
 		if( !$this->activeUser->equals($user) ) {
 			$this->activeUser = $user;
+			// Store impersonation using current authentication
+			$this->authentication->impersonate($user);
+		} else {
+			// Store impersonation using current authentication
+			$this->authentication->terminateImpersonation();
 		}
 	}
 	
 	public function getForbiddenHttpResponse(ForbiddenException $exception): ?HttpResponse {
-		$authenticated = AbstractUser::isLogged();
+		$authenticated = $this->isAuthenticated();
 		// User is logged but accessing a forbidden route OR User is not logged and try to access a route with required authentication
 		$route = $authenticated ? $this->getAuthenticationForbiddenTargetRoute() : $this->getAuthenticationExpirationTargetRoute();
 		if( $route ) {
@@ -134,6 +164,10 @@ class SecurityService {
 	
 	public function getActiveUser(): ?AbstractUser {
 		return $this->activeUser;
+	}
+	
+	public function getAuthenticationManager(): AuthenticationManager {
+		return $this->authenticationManager;
 	}
 	
 	public static function get(): SecurityService {

@@ -9,6 +9,7 @@ use Orpheus\InputController\InputRequest;
 
 class OrpheusAuthenticationManager implements AuthenticationManager {
 	private array $authentications = [
+		HeaderAuthentication::class,
 		SessionAuthentication::class,
 	];
 	
@@ -16,7 +17,7 @@ class OrpheusAuthenticationManager implements AuthenticationManager {
 		foreach( $this->authentications as $authenticationClass ) {
 			/** @var AbstractAuthentication $authentication */
 			$authentication = new $authenticationClass($request);
-			$authentication->process();
+			$authentication->authenticate();
 			if( $authentication->isAuthenticated() ) {
 				return $authentication;
 			}

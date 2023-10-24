@@ -9,7 +9,7 @@ use Exception;
 use Orpheus\Config\Yaml\Yaml;
 use Orpheus\Core\RequestHandler;
 use Orpheus\Core\Route;
-use Orpheus\Exception\ForbiddenException;
+use Orpheus\Exception\ForbiddenRouteException;
 use Orpheus\Exception\NotFoundException;
 use Orpheus\Service\ApplicationKernel;
 use RuntimeException;
@@ -119,7 +119,7 @@ abstract class ControllerRoute extends Route {
 		$this->controller->prepare($request);
 		
 		if( !$this->isAccessible() ) {
-			throw new ForbiddenException('This route is not available by this context');
+			throw new ForbiddenRouteException($this);
 		}
 		
 		return $this->controller->process();
