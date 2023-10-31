@@ -14,6 +14,7 @@ use Orpheus\Service\ApplicationKernel;
 use Throwable;
 
 /**
+ * @property ?HttpRoute $route
  * @method static HttpRequest getMainRequest()
  */
 class HttpRequest extends InputRequest {
@@ -101,7 +102,11 @@ class HttpRequest extends InputRequest {
 	 */
 	public function formatUrl(array $values = []): string {
 		$values += $this->pathValues;
-		return $this->route->formatUrl($values, $this->getParameters());
+		return $this->getSecureRoute()->formatUrl($values, $this->getParameters());
+	}
+	
+	protected function getSecureRoute(): HttpRoute {
+		return $this->route ?? HttpRoute::getDefaultRoute();
 	}
 	
 	/**

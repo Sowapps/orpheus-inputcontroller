@@ -52,7 +52,7 @@ abstract class InputRequest {
 	 *
 	 * @var array
 	 */
-	protected array $pathValues;
+	protected array $pathValues = [];
 	
 	/**
 	 * Constructor

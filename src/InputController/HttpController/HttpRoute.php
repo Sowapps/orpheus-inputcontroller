@@ -273,6 +273,16 @@ class HttpRoute extends ControllerRoute {
 	}
 	
 	/**
+	 * Get the route object for the $route name
+	 */
+	public static function getDefaultRoute(): HttpRoute {
+		// If specific default route is available
+		// Else the app global default route
+		// Else we build one because it may be required (Links to self request on template of error's page)
+		return static::getRoute('default') ?? static::getRoute(DEFAULT_ROUTE) ?? new HttpRoute('default', '/', '', [], null, '', []);
+	}
+	
+	/**
 	 * Get the known HTTP methods
 	 *
 	 * @return string[]
